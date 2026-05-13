@@ -4129,7 +4129,7 @@
     a.download = filename;
     a.click();
     URL.revokeObjectURL(a.href);
-    if (typeof currentUser !== 'undefined' && currentUser) saveToCloud(filename.replace(/\.json$/i, ''));
+    if (typeof currentUser !== 'undefined' && currentUser && sb) saveToCloud(filename.replace(/\.json$/i, ''));
   }
 
   let lastFileName = 'io-konfigürasyon.json';
@@ -4233,8 +4233,9 @@
 
   document.getElementById('btn-kullanici-giris').addEventListener('click', () => {
     if (typeof currentUser !== 'undefined' && currentUser) {
-      if (confirm('Çıkış yapmak istiyor musunuz?')) sb.auth.signOut();
+      if (confirm('Çıkış yapmak istiyor musunuz?')) { if (sb) sb.auth.signOut(); }
     } else {
+      if (!sb) { alert('Bulut bağlantısı aktif değil. İnternet bağlantınızı kontrol edin.'); return; }
       document.getElementById('modal-auth').classList.remove('hidden');
     }
   });
@@ -4244,8 +4245,16 @@
   // ===== SUPABASE =====
   const SUPA_URL = 'https://gkeqdwsxukgejwnoenwk.supabase.co';
   const SUPA_KEY = 'sb_publishable_g8CzSE4bCv-L5gjDOTPWxw_RfTRFv9B';
-  const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+  let sb = null;
   let currentUser = null;
+
+  try {
+    if (window.supabase) {
+      sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    }
+  } catch(e) {
+    console.warn('Supabase başlatılamadı:', e);
+  }
 
   function updateAuthUI() {
     const girisBtn = document.getElementById('btn-kullanici-giris');
@@ -4274,7 +4283,7 @@
   }
 
   async function saveToCloud(name) {
-    if (!currentUser) return;
+    if (!sb || !currentUser) return;
     const data = buildSaveData();
     const { data: existing } = await sb.from('projects').select('id').eq('user_id', currentUser.id).eq('name', name).maybeSingle();
     let res;
@@ -4390,14 +4399,16 @@
   }
 
   // Auth state
-  sb.auth.onAuthStateChange((_event, session) => {
-    currentUser = session?.user || null;
-    updateAuthUI();
-  });
-  sb.auth.getSession().then(({ data: { session } }) => {
-    currentUser = session?.user || null;
-    updateAuthUI();
-  });
+  if (sb) {
+    sb.auth.onAuthStateChange((_event, session) => {
+      currentUser = session?.user || null;
+      updateAuthUI();
+    });
+    sb.auth.getSession().then(({ data: { session } }) => {
+      currentUser = session?.user || null;
+      updateAuthUI();
+    });
+  }
 
   // Auth modal
   const _authModal = document.getElementById('modal-auth');
