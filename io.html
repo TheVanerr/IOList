@@ -7,6 +7,7 @@
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
   body {
@@ -134,13 +135,22 @@
        <button id="btn-disari-aktar" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-violet-500 text-slate-300 hover:text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i> Dışarı Aktar
        </button>
+       <button id="btn-iceri-aktar" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-fuchsia-500 text-slate-300 hover:text-fuchsia-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i> İçeri Aktar
+       </button>
        <input type="file" id="input-yukle" accept=".json" class="hidden">
+       <input type="file" id="input-iceri-aktar" accept=".json" class="hidden">
       </div>
      </div>
-     <!-- Sağ: Kullanıcı Girişi -->
-     <button id="btn-kullanici-giris" class="shrink-0 px-4 py-1.5 rounded-lg bg-gradient-to-r from-slate-800 to-slate-700 border border-slate-600 hover:border-sky-500 text-slate-300 hover:text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
-      <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş
-     </button>
+     <!-- Sağ: Cloud + Kullanıcı Girişi -->
+     <div class="flex items-center gap-1.5">
+      <button id="btn-bulut-yukle" class="hidden shrink-0 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-sky-400 text-slate-300 hover:text-sky-300 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="cloud-download" class="w-3.5 h-3.5"></i> Projelerim
+      </button>
+      <button id="btn-kullanici-giris" class="shrink-0 px-4 py-1.5 rounded-lg bg-gradient-to-r from-slate-800 to-slate-700 border border-slate-600 hover:border-sky-500 text-slate-300 hover:text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş
+      </button>
+     </div>
     </div>
    </header><!-- Main Content Area -->
    <main class="flex-1 overflow-auto p-6 pb-24">
@@ -4119,6 +4129,7 @@
     a.download = filename;
     a.click();
     URL.revokeObjectURL(a.href);
+    if (typeof currentUser !== 'undefined' && currentUser) saveToCloud(filename.replace(/\.json$/i, ''));
   }
 
   let lastFileName = 'io-konfigürasyon.json';
@@ -4221,10 +4232,250 @@
   });
 
   document.getElementById('btn-kullanici-giris').addEventListener('click', () => {
-    alert('Kullanıcı giriş modülü yakında eklenecek.');
+    if (typeof currentUser !== 'undefined' && currentUser) {
+      if (confirm('Çıkış yapmak istiyor musunuz?')) sb.auth.signOut();
+    } else {
+      document.getElementById('modal-auth').classList.remove('hidden');
+    }
   });
 
   // ===== END KAYDET / YÜKLE =====
+
+  // ===== SUPABASE =====
+  const SUPA_URL = 'https://gkeqdwsxukgejwnoenwk.supabase.co';
+  const SUPA_KEY = 'sb_publishable_g8CzSE4bCv-L5gjDOTPWxw_RfTRFv9B';
+  const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+  let currentUser = null;
+
+  function updateAuthUI() {
+    const girisBtn = document.getElementById('btn-kullanici-giris');
+    const bulutBtn = document.getElementById('btn-bulut-yukle');
+    if (currentUser) {
+      const email = currentUser.email || '';
+      const short = email.length > 18 ? email.slice(0, 15) + '…' : email;
+      girisBtn.innerHTML = `<i data-lucide="user-check" class="w-3.5 h-3.5"></i> ${short}`;
+      girisBtn.title = 'Çıkış yapmak için tıkla';
+      bulutBtn.classList.remove('hidden');
+    } else {
+      girisBtn.innerHTML = `<i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş`;
+      girisBtn.title = '';
+      bulutBtn.classList.add('hidden');
+    }
+    lucide.createIcons();
+  }
+
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('app-toast');
+    toast.textContent = msg;
+    toast.className = `fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-lg text-sm font-semibold mono shadow-xl pointer-events-none transition-opacity ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`;
+    toast.style.opacity = '1';
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+  }
+
+  async function saveToCloud(name) {
+    if (!currentUser) return;
+    const data = buildSaveData();
+    const { data: existing } = await sb.from('projects').select('id').eq('user_id', currentUser.id).eq('name', name).maybeSingle();
+    let res;
+    if (existing) {
+      res = await sb.from('projects').update({ data, updated_at: new Date().toISOString() }).eq('id', existing.id);
+    } else {
+      res = await sb.from('projects').insert({ user_id: currentUser.id, name, data, updated_at: new Date().toISOString() });
+    }
+    if (res.error) showToast('Bulut hatası: ' + res.error.message, 'error');
+    else showToast('Buluta kaydedildi ✓');
+  }
+
+  async function applyProjectData(d) {
+    Object.assign(state, d.state);
+    document.getElementById('val-makine-tipi').textContent = state.makineTipi;
+    document.getElementById('val-tank-sayisi').textContent = state.tankSayisi;
+    document.getElementById('val-otomatik-dolum').textContent = state.otomatikDolum;
+    document.getElementById('val-salt-grubu').textContent = state.saltGrubu;
+    document.getElementById('val-tepe-lambasi').textContent = state.tepeLambasi;
+    document.getElementById('val-kurutma-unitesi').textContent = state.kurutmaUnitesi;
+    valIsinBariyeri.textContent = state.isinBariyeri;
+    valIsinBariyeri.style.color = state.isinBariyeri === 'VAR' ? '#e879f9' : '';
+    const labelIsin = document.getElementById('label-isin-bariyeri');
+    if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
+    document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
+    if (d.motorData) {
+      d.motorData.forEach(m => {
+        const motorId = m.id || Date.now();
+        state.motors.push({ id: motorId });
+        const newRow = createMotorRow(motorId);
+        motorTbody.insertBefore(newRow, document.getElementById('motor-add-row'));
+        const grubuBtn = newRow.querySelector('.motor-grubu-cell');
+        newRow.dataset.grubu = m.grubu || '';
+        if (grubuBtn) grubuBtn.textContent = m.grubu || 'Seç';
+        const adiSelect = newRow.querySelector('.motor-adi-select');
+        if (adiSelect && m.grubu && motorAdiOptions[m.grubu]) {
+          adiSelect.innerHTML = '<option value="">Seç...</option>';
+          motorAdiOptions[m.grubu].forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.adi; opt.dataset.kod = item.kod; opt.textContent = item.adi;
+            adiSelect.appendChild(opt);
+          });
+          adiSelect.value = m.adi || '';
+        }
+        const kodInput = newRow.querySelector('.motor-kod-input');
+        if (kodInput) kodInput.value = m.kod || '';
+        const gucSelect = newRow.querySelector('select.guc-select-all');
+        if (gucSelect) { gucSelect.value = m.guc || ''; gucSelect.dispatchEvent(new Event('change')); }
+        const korumaBtn = newRow.querySelector('[data-koruma-type]');
+        if (korumaBtn && m.korumaType) {
+          korumaBtn.dataset.korumaType = m.korumaType;
+          korumaBtn.textContent = m.korumaType === 'invertor' ? 'İnvertör/Sigorta' : 'MKŞ/Kontaktör';
+        }
+        if (newRow.updateDriveComponents) newRow.updateDriveComponents();
+      });
+    }
+    renderRezistansTable();
+    renderKurutmaTable();
+    renderKacakAkimTable();
+    renderTmsTable();
+    renderSensorTable();
+    lucide.createIcons();
+    if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
+  }
+
+  async function loadCloudProjects() {
+    if (!currentUser) return;
+    const { data, error } = await sb.from('projects')
+      .select('id, name, updated_at')
+      .eq('user_id', currentUser.id)
+      .order('updated_at', { ascending: false });
+    if (error) { showToast('Hata: ' + error.message, 'error'); return; }
+    const modal = document.getElementById('modal-cloud');
+    const listEl = document.getElementById('cloud-project-list');
+    listEl.innerHTML = '';
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '<p class="text-slate-500 mono text-sm text-center py-10">// Henüz kaydedilmiş proje yok</p>';
+    } else {
+      data.forEach(p => {
+        const date = new Date(p.updated_at).toLocaleString('tr-TR');
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between px-4 py-3 border-b border-slate-700/40 hover:bg-slate-800/40 transition';
+        row.innerHTML = `<div><p class="text-sm font-semibold text-slate-200 mono">${p.name}</p><p class="text-xs text-slate-500 mono mt-0.5">${date}</p></div><div class="flex gap-2"><button class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs mono font-semibold transition" data-load-id="${p.id}">Yükle</button><button class="px-2.5 py-1.5 rounded-lg bg-red-900/60 hover:bg-red-700 text-red-300 text-xs mono transition" data-del-id="${p.id}">Sil</button></div>`;
+        listEl.appendChild(row);
+      });
+      listEl.querySelectorAll('[data-load-id]').forEach(btn => {
+        btn.addEventListener('click', () => cloudLoadProject(btn.dataset.loadId, modal));
+      });
+      listEl.querySelectorAll('[data-del-id]').forEach(btn => {
+        btn.addEventListener('click', () => cloudDeleteProject(btn.dataset.delId, btn.parentElement.parentElement));
+      });
+    }
+    modal.classList.remove('hidden');
+    lucide.createIcons();
+  }
+
+  async function cloudLoadProject(id, modal) {
+    const { data, error } = await sb.from('projects').select('data, name').eq('id', id).single();
+    if (error || !data) { showToast('Yüklenemedi', 'error'); return; }
+    try {
+      lastFileName = data.name.endsWith('.json') ? data.name : data.name + '.json';
+      await applyProjectData(data.data);
+      modal.classList.add('hidden');
+      showToast('Proje yüklendi ✓');
+    } catch(err) { showToast('Yükleme hatası: ' + err.message, 'error'); }
+  }
+
+  async function cloudDeleteProject(id, rowEl) {
+    if (!confirm('Bu projeyi silmek istiyor musunuz?')) return;
+    const { error } = await sb.from('projects').delete().eq('id', id);
+    if (error) showToast('Silinemedi: ' + error.message, 'error');
+    else { rowEl.remove(); showToast('Proje silindi'); }
+  }
+
+  // Auth state
+  sb.auth.onAuthStateChange((_event, session) => {
+    currentUser = session?.user || null;
+    updateAuthUI();
+  });
+  sb.auth.getSession().then(({ data: { session } }) => {
+    currentUser = session?.user || null;
+    updateAuthUI();
+  });
+
+  // Auth modal
+  const _authModal = document.getElementById('modal-auth');
+  document.getElementById('modal-auth-close').addEventListener('click', () => _authModal.classList.add('hidden'));
+  _authModal.addEventListener('click', e => { if (e.target === _authModal) _authModal.classList.add('hidden'); });
+
+  // Cloud modal
+  const _cloudModal = document.getElementById('modal-cloud');
+  document.getElementById('modal-cloud-close').addEventListener('click', () => _cloudModal.classList.add('hidden'));
+  _cloudModal.addEventListener('click', e => { if (e.target === _cloudModal) _cloudModal.classList.add('hidden'); });
+
+  // Auth tabs
+  let authMode = 'giris';
+  document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      authMode = tab.dataset.mode;
+      document.querySelectorAll('.auth-tab').forEach(t => {
+        const active = t.dataset.mode === authMode;
+        t.classList.toggle('border-sky-500', active);
+        t.classList.toggle('text-sky-400', active);
+        t.classList.toggle('border-transparent', !active);
+        t.classList.toggle('text-slate-500', !active);
+      });
+      document.getElementById('auth-submit-label').textContent = authMode === 'giris' ? 'Giriş Yap' : 'Kayıt Ol';
+      document.getElementById('auth-error').textContent = '';
+    });
+  });
+
+  // Auth form
+  document.getElementById('auth-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const errEl = document.getElementById('auth-error');
+    errEl.style.color = '#f87171';
+    errEl.textContent = '';
+    const btn = document.getElementById('auth-submit-btn');
+    btn.disabled = true;
+    const labelEl = document.getElementById('auth-submit-label');
+    labelEl.textContent = '...';
+    const result = authMode === 'giris'
+      ? await sb.auth.signInWithPassword({ email, password })
+      : await sb.auth.signUp({ email, password });
+    btn.disabled = false;
+    labelEl.textContent = authMode === 'giris' ? 'Giriş Yap' : 'Kayıt Ol';
+    if (result.error) {
+      errEl.textContent = result.error.message;
+    } else if (authMode === 'kayit' && !result.data.session) {
+      errEl.style.color = '#34d399';
+      errEl.textContent = 'Kayıt başarılı! E-posta adresinizi onaylayın.';
+    } else {
+      _authModal.classList.add('hidden');
+      showToast('Hoş geldiniz ✓');
+    }
+  });
+
+  // Projelerim
+  document.getElementById('btn-bulut-yukle').addEventListener('click', () => loadCloudProjects());
+
+  // İçeri Aktar
+  document.getElementById('btn-iceri-aktar').addEventListener('click', () => document.getElementById('input-iceri-aktar').click());
+  document.getElementById('input-iceri-aktar').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        lastFileName = file.name;
+        await applyProjectData(data);
+        if (typeof currentUser !== 'undefined' && currentUser) saveToCloud(file.name.replace(/\.json$/i, ''));
+        showToast('Dosya içe aktarıldı ✓');
+      } catch(err) { showToast('Dosya hatalı: ' + err.message, 'error'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  // ===== END SUPABASE =====
 
   // Initialize icons
   lucide.createIcons();
@@ -4247,5 +4498,51 @@
     });
   }
 </script>
+
+<!-- Toast -->
+<div id="app-toast" class="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-lg text-sm font-semibold mono shadow-xl pointer-events-none opacity-0 bg-emerald-600 text-white" style="transition: opacity 0.3s;"></div>
+
+<!-- Auth Modal -->
+<div id="modal-auth" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-sm mx-4">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+      <h2 class="text-sm font-bold mono text-slate-200">Kullanıcı Girişi</h2>
+      <button id="modal-auth-close" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="flex border-b border-slate-700">
+      <button class="auth-tab flex-1 py-2.5 text-xs font-semibold mono border-b-2 border-sky-500 text-sky-400 transition" data-mode="giris">Giriş Yap</button>
+      <button class="auth-tab flex-1 py-2.5 text-xs font-semibold mono border-b-2 border-transparent text-slate-500 transition" data-mode="kayit">Kayıt Ol</button>
+    </div>
+    <form id="auth-form" class="px-6 py-5 flex flex-col gap-3">
+      <div>
+        <label class="block text-xs mono text-slate-400 mb-1">E-posta</label>
+        <input id="auth-email" type="email" required autocomplete="email"
+          class="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-200 focus:border-sky-500 focus:outline-none mono">
+      </div>
+      <div>
+        <label class="block text-xs mono text-slate-400 mb-1">Şifre</label>
+        <input id="auth-password" type="password" required autocomplete="current-password" minlength="6"
+          class="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-200 focus:border-sky-500 focus:outline-none mono">
+      </div>
+      <p id="auth-error" class="text-xs text-red-400 mono min-h-[16px]"></p>
+      <button id="auth-submit-btn" type="submit"
+        class="w-full py-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold mono transition disabled:opacity-50">
+        <span id="auth-submit-label">Giriş Yap</span>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Cloud Projects Modal -->
+<div id="modal-cloud" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md mx-4">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+      <h2 class="text-sm font-bold mono text-slate-200">☁ Bulut Projelerim</h2>
+      <button id="modal-cloud-close" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div id="cloud-project-list" class="max-h-96 overflow-y-auto"></div>
+  </div>
+</div>
+
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f6d8ff3f7d123a8',t:'MTc3Nzk2MTIxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
