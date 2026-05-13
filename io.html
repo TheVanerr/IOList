@@ -108,19 +108,39 @@
   <div class="h-full w-full flex flex-col">
    <!-- Top Header -->
    <header class="px-6 py-4 border-b border-slate-800/60 bg-slate-950/40 backdrop-blur-sm">
-    <div class="flex items-center justify-between">
-     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-lg shadow-cyan-500/30">
-       <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
+    <div class="flex items-center justify-between gap-4">
+     <!-- Sol: Logo + Başlık + Aksiyonlar -->
+     <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3 shrink-0">
+       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+        <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
+       </div>
+       <div>
+        <h1 class="text-lg font-bold text-white tracking-tight">PANO IO KONFİGÜRATÖR</h1>
+        <p class="text-xs text-slate-500 mono">Electrical Panel IO List Generator</p>
+       </div>
       </div>
-      <div>
-       <h1 class="text-lg font-bold text-white tracking-tight">PANO IO KONFİGÜRATÖR</h1>
-       <p class="text-xs text-slate-500 mono">Electrical Panel IO List Generator</p>
+      <!-- Aksiyon butonları — başlığın hemen sağında -->
+      <div class="flex items-center gap-1.5">
+       <button id="btn-farkli-kaydet" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> Farklı Kaydet
+       </button>
+       <button id="btn-kaydet" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-emerald-500 text-slate-300 hover:text-emerald-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="save" class="w-3.5 h-3.5"></i> Kaydet
+       </button>
+       <button id="btn-yukle" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-amber-500 text-slate-300 hover:text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="folder-open" class="w-3.5 h-3.5"></i> Yükle
+       </button>
+       <button id="btn-disari-aktar" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-violet-500 text-slate-300 hover:text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="upload" class="w-3.5 h-3.5"></i> Dışarı Aktar
+       </button>
+       <input type="file" id="input-yukle" accept=".json" class="hidden">
       </div>
      </div>
-     <div class="flex items-center gap-2">
-      <span class="badge-dot"></span> <span class="text-xs mono text-slate-400">SYSTEM READY</span>
-     </div>
+     <!-- Sağ: Kullanıcı Girişi -->
+     <button id="btn-kullanici-giris" class="shrink-0 px-4 py-1.5 rounded-lg bg-gradient-to-r from-slate-800 to-slate-700 border border-slate-600 hover:border-sky-500 text-slate-300 hover:text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+      <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş
+     </button>
     </div>
    </header><!-- Main Content Area -->
    <main class="flex-1 overflow-auto p-6 pb-24">
@@ -202,7 +222,7 @@
          <i data-lucide="scan-line" class="w-3.5 h-3.5 text-fuchsia-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Işın Bariyeri</div>
+       <div id="label-isin-bariyeri" class="label-tag mono mb-0.5 text-[10px]">Işın Bariyeri</div>
        <div id="val-isin-bariyeri" class="text-base font-bold value-tag">YOK</div>
       </button>
      </div>
@@ -282,7 +302,7 @@
      </div>
      <div id="io-content"></div>
     </section><!-- MALZEME PAGE -->
-    <section id="page-malzeme" class="page flex-col gap-6 max-w-5xl mx-auto">
+    <section id="page-malzeme" class="page flex-col gap-6 w-full">
      <div>
       <div class="flex items-center gap-2 mb-1">
        <i data-lucide="package" class="w-4 h-4 text-pink-400"></i> <span class="label-tag mono">Step 04 / Materials</span>
@@ -291,10 +311,7 @@
       <p class="text-slate-400 text-sm mt-1">Kullanılacak komponent ve malzemeler burada toplanacak.</p>
       <div class="header-line mt-4"></div>
      </div>
-     <div class="placeholder-card rounded-xl p-10 text-center">
-      <i data-lucide="package-open" class="w-12 h-12 text-slate-600 mx-auto mb-3"></i>
-      <p class="text-slate-500 mono text-sm">// Malzeme listesi arayüzü hazırlanacak</p>
-     </div>
+     <div id="malzeme-content"></div>
     </section><!-- FİYATLAR PAGE -->
     <section id="page-fiyatlar" class="page flex-col gap-6 w-full">
      <div>
@@ -2101,6 +2118,649 @@
     ]},
   ];
 
+  // ===== MALZEME TABLOSU =====
+  const SABIT_KALEMLER = [
+    { kullanim: 'KUMANDA SİSTEMİ', urunler: [
+      { urunAdi: 'SİGORTA A9F74103 1*3', stok: '10 00302' }
+    ]},
+    { kullanim: 'FAZ KORUMA', urunler: [
+      { urunAdi: 'FAZ KORUMA RÖLESİ MKS-03', stok: '10 00258' }
+    ]},
+    { kullanim: 'LAMBA', urunler: [
+      { urunAdi: 'TEPE LAMBASI 3 RENKLİ', stok: '1004905' }
+    ]},
+    { kullanim: 'PRİZ', urunler: [
+      { urunAdi: 'PRİZ RAYA MONTAJ TOPRAKLI EPREU2G', stok: '10 03313' }
+    ]},
+    { kullanim: 'GÜÇ KAYNAĞI', urunler: [
+      { urunAdi: 'GÜÇ KAYNAĞI LRS 350/24 24VDC 14,6AMP', stok: '10 06963' },
+      { urunAdi: 'SİGORTA A9F74106 1*6', stok: '10 01421' }
+    ]},
+  ];
+
+  function getMalzemeRows() {
+    const rows = [];
+    let prices = {}, stokMap = {};
+    try { prices  = JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}'); } catch(e) {}
+    try { stokMap = JSON.parse(localStorage.getItem('iolist_stok')     || '{}'); } catch(e) {}
+
+    function fiyatVeStok(grupAdi, model) {
+      const key = grupAdi + '|' + model;
+      return { stok: stokMap[key] || '', birimFiyat: parseFloat(prices[key]) || 0 };
+    }
+    function addRow(grupAdi, model, urunAdi, kullanim) {
+      const { stok, birimFiyat } = fiyatVeStok(grupAdi, model);
+      rows.push({ stok, urunAdi, birimFiyat, adet: 0, model, grupAdi, kullanim: kullanim || '' });
+    }
+
+    // Motorlar
+    document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(row => {
+      const adiSelect = row.querySelector('.motor-adi-select');
+      const korumaBtn = row.querySelector('[data-koruma-type]');
+      const gucSelect = row.querySelector('select.guc-select-all');
+      const motorAdi  = adiSelect ? adiSelect.value : '';
+      if (!motorAdi) return;
+      const korumaType = korumaBtn ? korumaBtn.dataset.korumaType : 'kontaktor';
+      const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
+      const akim = guc * 2;
+      const kisa = motorAdi.replace(/\s*Motoru\s*$/i, '');
+      if (korumaType === 'kontaktor') {
+        const mksModel = state.saltGrubu === 'Schneider'
+          ? (gv2meData.find(d => akim <= d.max) || {}).model || ''
+          : (siemens3RV2Data.find(d => akim <= d.max) || {}).model || '';
+        addRow(state.saltGrubu === 'Schneider' ? 'MKŞ — Schneider GV2ME' : 'MKŞ — Siemens 3RV2', mksModel, getMKSLabel(akim), kisa);
+        let ktModel = '', ktGrup = '';
+        if (state.saltGrubu === 'Schneider') {
+          ktGrup = 'Kontaktör — Schneider LC1';
+          ktModel = akim <= 3 ? 'LC1K0610M7' : akim <= 6 ? 'LC1K0910M7' : akim <= 10 ? 'LC1D16M7' : 'LC1D25M7';
+        } else {
+          ktGrup = 'Kontaktör — Siemens 3RT2 (Motor)';
+          ktModel = akim <= 3 ? '3RT2015-1AP01' : akim <= 6 ? '3RT2016-1AP01' : akim <= 10 ? '3RT2018-1AP01' : '3RT2026-1AP01';
+        }
+        addRow(ktGrup, ktModel, getKontaktorLabel(akim), kisa);
+        addRow('Yardımcı Kontak', state.saltGrubu === 'Schneider' ? 'GVAE11' : '3RV2901-1E', getYardimciKontakLabel(), kisa);
+      } else {
+        const invItem = vfdElData.find(d => guc <= d.maxKw);
+        addRow('İnvertör — Delta VFD-EL', invItem ? invItem.model : '', getInvertorLabel(guc), kisa);
+        const sigItem = invertorSigortaData.find(d => guc <= d.maxKw);
+        const sigModel = sigItem ? (state.saltGrubu === 'Schneider' ? sigItem.schnModel : sigItem.sieModel) : '';
+        addRow(state.saltGrubu === 'Schneider' ? 'Sigorta 1P — Schneider iC60N (İnvertör)' : 'Sigorta — Siemens 5SL4', sigModel, getInvertorSigortaLabel(guc), kisa);
+      }
+    });
+
+    // Rezistanslar (tank)
+    const tankIsimleri = getTankIsimleri(state.tankSayisi);
+    for (let t = 1; t <= state.tankSayisi; t++) {
+      document.querySelectorAll(`#rez-tbody-${t} tr[id^="rez-row-"]`).forEach(row => {
+        const gucSelect = row.querySelector('select.guc-select-all');
+        const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
+        if (!guc) return;
+        const kullanim = tankIsimleri[t-1] + ' REZİSTANS';
+        const sigItem = (() => {
+          const g = guc;
+          if (state.saltGrubu === 'Schneider') {
+            const m = g <= 1.5 ? 'A9F74306' : g <= 4.5 ? 'A9F74310' : g <= 8.25 ? 'A9F74316' : g <= 12 ? 'A9F74325' : g <= 15 ? 'A9F74332' : 'A9F74340';
+            return { grupAdi: 'Sigorta 3P — Schneider iC60N', model: m };
+          } else {
+            const m = g <= 1.5 ? '5SL4106-7' : g <= 4.5 ? '5SL4110-7' : g <= 8.25 ? '5SL4116-7' : g <= 12 ? '5SL4125-7' : g <= 15 ? '5SL4132-7' : '5SL4140-7';
+            return { grupAdi: 'Sigorta — Siemens 5SL4', model: m };
+          }
+        })();
+        addRow(sigItem.grupAdi, sigItem.model, getSigortaLabel(guc), kullanim);
+        const ktItem = (() => {
+          const g = guc;
+          if (state.saltGrubu === 'Schneider') {
+            const m = g <= 1.5 ? 'LC1K0610M7' : g <= 4.5 ? 'LC1K0910M7' : g <= 8.25 ? 'LC1D16M7' : g <= 12 ? 'LC1D25M7' : 'LC1D32M7';
+            return { grupAdi: 'Kontaktör — Schneider LC1', model: m };
+          } else {
+            const m = g <= 1.5 ? '3RT2015-1AM61' : g <= 4.5 ? '3RT2016-1AM61' : g <= 8.25 ? '3RT2018-1AM61' : g <= 12 ? '3RT2026-1AM61' : '3RT2034-1AM61';
+            return { grupAdi: 'Kontaktör — Siemens 3RT2 (Rezistans)', model: m };
+          }
+        })();
+        addRow(ktItem.grupAdi, ktItem.model, getRezKontaktorLabel(guc), kullanim);
+      });
+    }
+
+    // Kurutma
+    if (state.kurutmaUnitesi === 'VAR') {
+      document.querySelectorAll('#kur-tbody tr[id^="kur-row-"]').forEach(row => {
+        const gucSelect = row.querySelector('select.guc-select-all');
+        const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
+        if (!guc) return;
+        addRow('Sigorta 3P — Schneider iC60N', '', getSigortaLabel(guc), 'KURUTMA REZİSTANS');
+        addRow('Kontaktör — Schneider LC1', '', getRezKontaktorLabel(guc), 'KURUTMA REZİSTANS');
+      });
+    }
+
+    // RCCB
+    document.querySelectorAll('[id^="ka-tbody-"]').forEach(tb => {
+      tb.querySelectorAll('[data-rccb-akim]').forEach(sel => {
+        if (!sel.value) return;
+        const opt = sel.options[sel.selectedIndex];
+        if (!opt || !opt.textContent.trim()) return;
+        const grupAdi = state.saltGrubu === 'Schneider' ? 'RCCB (Kaçak Akım) — Schneider iID' : 'RCCB (Kaçak Akım) — Siemens 5SV3';
+        const a = parseInt(sel.value);
+        const model = state.saltGrubu === 'Schneider'
+          ? (a <= 16 ? 'A9R41416' : a <= 25 ? 'A9R41425' : a <= 40 ? 'A9R41440' : a <= 63 ? 'A9R41463' : a <= 80 ? 'A9R41480' : 'A9R414100')
+          : (a <= 16 ? '5SV3312-6' : a <= 25 ? '5SV3314-6' : a <= 40 ? '5SV3316-6' : a <= 63 ? '5SV3322-6' : a <= 80 ? '5SV3324-6' : '5SV3326-6');
+        addRow(grupAdi, model, opt.textContent.trim(), 'KAÇAK AKIM');
+      });
+    });
+
+    // TMŞ
+    const tmsSel = document.getElementById('tms-select');
+    if (tmsSel && tmsSel.value) {
+      const data = state.saltGrubu === 'Schneider' ? tmsDataSchneider : tmsDataSiemens;
+      const found = data.find(d => String(d.akim) === String(tmsSel.value));
+      if (found) {
+        const grupAdi = state.saltGrubu === 'Schneider' ? 'TMŞ — Schneider Compact CVS' : 'TMŞ — Siemens SENTRON 3VA';
+        addRow(grupAdi, found.model, `TMŞ ${state.saltGrubu === 'Schneider' ? 'SCHNEİDER' : 'SİEMENS'} ${found.ad} (${found.akim}A)`, 'ANA ŞALTER');
+      }
+    }
+
+    // Adet birleştir
+    const merged = [];
+    rows.forEach(r => {
+      const key = r.grupAdi + '|' + r.model + '|' + r.urunAdi;
+      const ex = merged.find(m => m._key === key);
+      if (ex) { ex.adet++; } else { merged.push({ ...r, _key: key, adet: 1 }); }
+    });
+    return merged;
+  }
+
+  function renderMalzemeTable() {
+    const container = document.getElementById('malzeme-content');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const rows = getMalzemeRows();
+
+    const section = document.createElement('div');
+    section.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden';
+    const tableWrapper = document.createElement('div');
+    tableWrapper.className = 'overflow-x-auto';
+    const table = document.createElement('table');
+    table.className = 'w-full table-fixed';
+
+    const colgroup = document.createElement('colgroup');
+    ['13%', '12%', '32%', '13%', '9%', '21%'].forEach(w => {
+      const col = document.createElement('col'); col.style.width = w; colgroup.appendChild(col);
+    });
+    table.appendChild(colgroup);
+
+    const thead = document.createElement('thead');
+    const hRow = document.createElement('tr');
+    hRow.className = 'border-b border-slate-700/50 bg-slate-800/60';
+    [
+      { label: 'Kullanım Yeri',    color: '#f472b6' },
+      { label: 'Stok Kodu',        color: '#22d3ee' },
+      { label: 'Ürün Adı',         color: '#22d3ee' },
+      { label: 'Birim Fiyat (₺)',  color: '#22d3ee' },
+      { label: 'Adet',             color: '#22d3ee' },
+      { label: 'Toplam (₺)',       color: '#22d3ee' },
+    ].forEach(h => {
+      const th = document.createElement('th');
+      th.className = 'px-3 py-3 text-center text-xs font-semibold mono';
+      th.style.color = h.color;
+      th.textContent = h.label;
+      hRow.appendChild(th);
+    });
+    thead.appendChild(hRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    function makeRow(kullanımYeri, stok, urunAdi, birimFiyat, adet, showKullanim, rowspan) {
+      const tr = document.createElement('tr');
+      tr.className = 'border-t border-slate-700/30 hover:bg-slate-800/20 transition';
+      tr.style.height = '40px';
+
+      if (showKullanim !== false) {
+        const kTd = document.createElement('td');
+        if (rowspan > 1) kTd.setAttribute('rowspan', rowspan);
+        kTd.className = 'px-2 py-0 text-center align-middle text-xs mono font-semibold text-pink-300';
+        kTd.style.borderRight = '1px solid rgba(71,85,105,0.4)';
+        kTd.textContent = kullanımYeri || '—';
+        tr.appendChild(kTd);
+      }
+
+      // Stok
+      const stokTd = document.createElement('td');
+      stokTd.className = 'px-2 py-0 text-center align-middle';
+      const stokIn = document.createElement('input');
+      stokIn.type = 'text'; stokIn.value = stok || ''; stokIn.readOnly = true;
+      stokIn.className = 'w-full h-8 px-1 bg-transparent border-0 text-cyan-300 text-xs mono font-semibold focus:outline-none text-center';
+      stokIn.placeholder = '—';
+      stokTd.appendChild(stokIn); tr.appendChild(stokTd);
+
+      // Ürün Adı
+      const adiTd = document.createElement('td');
+      adiTd.className = 'px-3 py-0 text-xs text-slate-200 align-middle';
+      adiTd.textContent = urunAdi; tr.appendChild(adiTd);
+
+      // Birim Fiyat
+      const birimTd = document.createElement('td');
+      birimTd.className = 'px-2 py-0 text-center align-middle';
+      const birimIn = document.createElement('input');
+      birimIn.type = 'number'; birimIn.min = '0'; birimIn.step = '0.01';
+      birimIn.value = birimFiyat || ''; birimIn.placeholder = '0.00';
+      birimIn.className = 'birim-input w-full h-8 px-1 bg-slate-800 border border-slate-600 rounded text-slate-100 text-xs focus:border-yellow-500 focus:outline-none text-center';
+      birimTd.appendChild(birimIn); tr.appendChild(birimTd);
+
+      // Adet
+      const adetTd = document.createElement('td');
+      adetTd.className = 'px-2 py-0 text-center align-middle';
+      const adetIn = document.createElement('input');
+      adetIn.type = 'number'; adetIn.min = '0'; adetIn.value = adet || 1;
+      adetIn.className = 'adet-input w-full h-8 px-1 bg-slate-800 border border-slate-600 rounded text-slate-100 text-xs focus:border-cyan-500 focus:outline-none text-center';
+      adetTd.appendChild(adetIn); tr.appendChild(adetTd);
+
+      // Toplam
+      const topTd = document.createElement('td');
+      topTd.className = 'px-3 py-0 text-center align-middle';
+      const topSpan = document.createElement('span');
+      topSpan.className = 'toplam-span text-xs mono font-semibold text-emerald-400';
+      const refreshTop = () => {
+        const v = (parseFloat(birimIn.value) || 0) * (parseInt(adetIn.value) || 0);
+        topSpan.textContent = v > 0 ? v.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '—';
+        updateGrandTotal();
+      };
+      birimIn.addEventListener('input', refreshTop);
+      adetIn.addEventListener('input', refreshTop);
+      const initV = (parseFloat(birimFiyat) || 0) * (adet || 1);
+      topSpan.textContent = initV > 0 ? initV.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '—';
+      topTd.appendChild(topSpan); tr.appendChild(topTd);
+
+      return tr;
+    }
+
+    // Dinamik satırlar
+    if (rows.length === 0) {
+      const et = document.createElement('tr');
+      const ed = document.createElement('td');
+      ed.setAttribute('colspan', '6');
+      ed.className = 'px-4 py-8 text-center text-slate-500 mono text-sm';
+      ed.textContent = '// Otomasyon sayfasından motor ve rezistans ekleyiniz';
+      et.appendChild(ed); tbody.appendChild(et);
+    } else {
+      rows.forEach(r => tbody.appendChild(makeRow(r.kullanim, r.stok, r.urunAdi, r.birimFiyat, r.adet, true, 1)));
+    }
+
+    // Ayraç
+    const sepTr = document.createElement('tr');
+    const sepTd = document.createElement('td');
+    sepTd.setAttribute('colspan', '6'); sepTd.className = 'px-0 py-0';
+    const sepDiv = document.createElement('div');
+    sepDiv.className = 'h-px bg-gradient-to-r from-transparent via-pink-500/50 to-transparent my-0.5';
+    sepTd.appendChild(sepDiv); sepTr.appendChild(sepTd); tbody.appendChild(sepTr);
+
+    // Sabit kalemler (rowspan ile birleşik kullanım yeri)
+    SABIT_KALEMLER.forEach(kalem => {
+      kalem.urunler.forEach((urun, i) => {
+        tbody.appendChild(makeRow(
+          kalem.kullanim, urun.stok, urun.urunAdi, 0, 1,
+          i === 0,                // sadece ilk satırda kullanım yeri göster
+          kalem.urunler.length    // rowspan
+        ));
+      });
+    });
+
+    table.appendChild(tbody);
+    tableWrapper.appendChild(table);
+    section.appendChild(tableWrapper);
+    container.appendChild(section);
+
+    // Toplam bar
+    const totalBar = document.createElement('div');
+    totalBar.className = 'flex items-center justify-between px-5 py-3 bg-slate-900/60 border border-slate-700/50 rounded-lg mt-1';
+    const tLabel = document.createElement('span');
+    tLabel.className = 'text-sm font-semibold text-slate-300 mono';
+    tLabel.textContent = 'Toplam Pano Maliyeti';
+    const tVal = document.createElement('span');
+    tVal.id = 'malzeme-grand-total-val';
+    tVal.className = 'text-lg font-bold text-emerald-400 mono';
+    tVal.textContent = '—';
+    totalBar.appendChild(tLabel); totalBar.appendChild(tVal);
+    container.appendChild(totalBar);
+
+    lucide.createIcons();
+    updateGrandTotal();
+
+    function updateGrandTotal() {
+      let gt = 0;
+      container.querySelectorAll('tr').forEach(tr => {
+        const b = parseFloat(tr.querySelector('.birim-input')?.value) || 0;
+        const a = parseInt(tr.querySelector('.adet-input')?.value)   || 0;
+        gt += b * a;
+      });
+      const v = document.getElementById('malzeme-grand-total-val');
+      if (v) v.textContent = gt > 0 ? gt.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '—';
+    }
+  }
+  // ===== END MALZEME TABLOSU =====
+
+  function renderFiyatlarTable() {
+    const rows = [];
+
+    // Fiyatlar ve stok kodları localStorage'dan al
+    let prices = {}, stokMap = {};
+    try { prices  = JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}'); } catch(e) {}
+    try { stokMap = JSON.parse(localStorage.getItem('iolist_stok')     || '{}'); } catch(e) {}
+
+    function fiyatVeStok(grupAdi, model) {
+      const key = grupAdi + '|' + model;
+      return { stok: stokMap[key] || '', birimFiyat: parseFloat(prices[key]) || 0 };
+    }
+
+    function addRow(grupAdi, model, urunAdi) {
+      const { stok, birimFiyat } = fiyatVeStok(grupAdi, model);
+      rows.push({ stok, urunAdi, birimFiyat, adet: 0, model, grupAdi });
+    }
+
+    const tankIsimleri = getTankIsimleri(state.tankSayisi);
+
+    // --- Motorlar ---
+    document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(row => {
+      const adiSelect = row.querySelector('.motor-adi-select');
+      const korumaBtn = row.querySelector('[data-koruma-type]');
+      const gucSelect = row.querySelector('select.guc-select-all');
+      const motorAdi  = adiSelect ? adiSelect.value : '';
+      if (!motorAdi) return;
+      const korumaType = korumaBtn ? korumaBtn.dataset.korumaType : 'kontaktor';
+      const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
+      const akim = guc * 2;
+
+      if (korumaType === 'kontaktor') {
+        // MKŞ
+        const mksLabel = getMKSLabel(akim);
+        const mksModel = state.saltGrubu === 'Schneider'
+          ? (gv2meData.find(d => akim <= d.max) || {}).model || ''
+          : (siemens3RV2Data.find(d => akim <= d.max) || {}).model || '';
+        const mksGrup = state.saltGrubu === 'Schneider' ? 'MKŞ — Schneider GV2ME' : 'MKŞ — Siemens 3RV2';
+        addRow(mksGrup, mksModel, mksLabel);
+
+        // Kontaktör
+        const ktLabel = getKontaktorLabel(akim);
+        let ktModel = '', ktGrup = '';
+        if (state.saltGrubu === 'Schneider') {
+          ktGrup = 'Kontaktör — Schneider LC1';
+          ktModel = akim <= 3 ? 'LC1K0610M7' : akim <= 6 ? 'LC1K0910M7' : akim <= 10 ? 'LC1D16M7' : 'LC1D25M7';
+        } else {
+          ktGrup = 'Kontaktör — Siemens 3RT2 (Motor)';
+          ktModel = akim <= 3 ? '3RT2015-1AP01' : akim <= 6 ? '3RT2016-1AP01' : akim <= 10 ? '3RT2018-1AP01' : '3RT2026-1AP01';
+        }
+        addRow(ktGrup, ktModel, ktLabel);
+
+        // Yardımcı kontak
+        const ykModel = state.saltGrubu === 'Schneider' ? 'GVAE11' : '3RV2901-1E';
+        addRow('Yardımcı Kontak', ykModel, getYardimciKontakLabel());
+      } else {
+        // İnvertör
+        const invLabel = getInvertorLabel(guc);
+        const invItem  = vfdElData.find(d => guc <= d.maxKw);
+        addRow('İnvertör — Delta VFD-EL', invItem ? invItem.model : '', invLabel);
+
+        // Sigorta
+        const sigLabel = getInvertorSigortaLabel(guc);
+        const sigItem  = invertorSigortaData.find(d => guc <= d.maxKw);
+        const sigModel = sigItem ? (state.saltGrubu === 'Schneider' ? sigItem.schnModel : sigItem.sieModel) : '';
+        const sigGrup  = state.saltGrubu === 'Schneider' ? 'Sigorta 1P — Schneider iC60N (İnvertör)' : 'Sigorta — Siemens 5SL4';
+        addRow(sigGrup, sigModel, sigLabel);
+      }
+    });
+
+    // --- Rezistanslar (tank) ---
+    for (let t = 1; t <= state.tankSayisi; t++) {
+      document.querySelectorAll(`#rez-tbody-${t} tr[id^="rez-row-"]`).forEach(row => {
+        const gucSelect = row.querySelector('select.guc-select-all');
+        const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
+        if (!guc) return;
+        const sigLabel = getSigortaLabel(guc);
+        const ktLabel  = getRezKontaktorLabel(guc);
+        const sigItem  = (() => {
+          const g = guc;
+          if (state.saltGrubu === 'Schneider') {
+            const m = g <= 1.5 ? 'A9F74306' : g <= 4.5 ? 'A9F74310' : g <= 8.25 ? 'A9F74316' : g <= 12 ? 'A9F74325' : g <= 15 ? 'A9F74332' : 'A9F74340';
+            return { grupAdi: 'Sigorta 3P — Schneider iC60N', model: m };
+          } else {
+            const m = g <= 1.5 ? '5SL4106-7' : g <= 4.5 ? '5SL4110-7' : g <= 8.25 ? '5SL4116-7' : g <= 12 ? '5SL4125-7' : g <= 15 ? '5SL4132-7' : '5SL4140-7';
+            return { grupAdi: 'Sigorta — Siemens 5SL4', model: m };
+          }
+        })();
+        addRow(sigItem.grupAdi, sigItem.model, sigLabel);
+        const ktItem = (() => {
+          const g = guc;
+          if (state.saltGrubu === 'Schneider') {
+            const m = g <= 1.5 ? 'LC1K0610M7' : g <= 4.5 ? 'LC1K0910M7' : g <= 8.25 ? 'LC1D16M7' : g <= 12 ? 'LC1D25M7' : 'LC1D32M7';
+            return { grupAdi: 'Kontaktör — Schneider LC1', model: m };
+          } else {
+            const m = g <= 1.5 ? '3RT2015-1AM61' : g <= 4.5 ? '3RT2016-1AM61' : g <= 8.25 ? '3RT2018-1AM61' : g <= 12 ? '3RT2026-1AM61' : '3RT2034-1AM61';
+            return { grupAdi: 'Kontaktör — Siemens 3RT2 (Rezistans)', model: m };
+          }
+        })();
+        addRow(ktItem.grupAdi, ktItem.model, ktLabel);
+      });
+    }
+
+    // --- Kurutma Rezistansları ---
+    if (state.kurutmaUnitesi === 'VAR') {
+      document.querySelectorAll('#kur-tbody tr[id^="kur-row-"]').forEach(row => {
+        const gucSelect = row.querySelector('select.guc-select-all');
+        const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
+        if (!guc) return;
+        addRow('Sigorta 3P — Schneider iC60N', '', getSigortaLabel(guc));
+        addRow('Kontaktör — Schneider LC1', '', getRezKontaktorLabel(guc));
+      });
+    }
+
+    // --- RCCB (Kaçak Akım) ---
+    document.querySelectorAll('[id^="ka-tbody-"]').forEach(tbody => {
+      tbody.querySelectorAll('[data-rccb-akim]').forEach(sel => {
+        if (!sel.value) return;
+        const opt = sel.options[sel.selectedIndex];
+        if (!opt || !opt.textContent.trim()) return;
+        const grupAdi = state.saltGrubu === 'Schneider' ? 'RCCB (Kaçak Akım) — Schneider iID' : 'RCCB (Kaçak Akım) — Siemens 5SV3';
+        const model = (() => {
+          const a = parseInt(sel.value);
+          if (state.saltGrubu === 'Schneider') {
+            return a <= 16 ? 'A9R41416' : a <= 25 ? 'A9R41425' : a <= 40 ? 'A9R41440' : a <= 63 ? 'A9R41463' : a <= 80 ? 'A9R41480' : 'A9R414100';
+          } else {
+            return a <= 16 ? '5SV3312-6' : a <= 25 ? '5SV3314-6' : a <= 40 ? '5SV3316-6' : a <= 63 ? '5SV3322-6' : a <= 80 ? '5SV3324-6' : '5SV3326-6';
+          }
+        })();
+        addRow(grupAdi, model, opt.textContent.trim());
+      });
+    });
+
+    // --- TMŞ ---
+    const tmsSel = document.getElementById('tms-select');
+    if (tmsSel && tmsSel.value) {
+      const data = state.saltGrubu === 'Schneider' ? tmsDataSchneider : tmsDataSiemens;
+      const found = data.find(d => String(d.akim) === String(tmsSel.value));
+      if (found) {
+        const grupAdi = state.saltGrubu === 'Schneider' ? 'TMŞ — Schneider Compact CVS' : 'TMŞ — Siemens SENTRON 3VA';
+        addRow(grupAdi, found.model, `TMŞ ${state.saltGrubu === 'Schneider' ? 'SCHNEİDER' : 'SİEMENS'} ${found.ad} (${found.akim}A)`);
+      }
+    }
+
+    // Benzersiz satırları say ve adet birleştir
+    const merged = [];
+    rows.forEach(r => {
+      const key = r.grupAdi + '|' + r.model + '|' + r.urunAdi;
+      const ex = merged.find(m => m._key === key);
+      if (ex) { ex.adet++; }
+      else { merged.push({ ...r, _key: key, adet: 1 }); }
+    });
+
+    return merged;
+  }
+
+  function renderMalzemeTable() {
+    const container = document.getElementById('malzeme-content');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const rows = getMalzemeRows();
+
+    const section = document.createElement('div');
+    section.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden';
+
+    const tableWrapper = document.createElement('div');
+    tableWrapper.className = 'overflow-x-auto';
+
+    const table = document.createElement('table');
+    table.className = 'w-full table-fixed';
+
+    const colgroup = document.createElement('colgroup');
+    ['13%', '44%', '14%', '10%', '19%'].forEach(w => {
+      const col = document.createElement('col'); col.style.width = w; colgroup.appendChild(col);
+    });
+    table.appendChild(colgroup);
+
+    const thead = document.createElement('thead');
+    const hRow = document.createElement('tr');
+    hRow.className = 'border-b border-slate-700/50 bg-slate-800/60';
+    [
+      { label: 'Stok Kodu',    color: '#22d3ee' },
+      { label: 'Ürün Adı',     color: '#22d3ee' },
+      { label: 'Birim Fiyat (₺)', color: '#22d3ee' },
+      { label: 'Adet',         color: '#22d3ee' },
+      { label: 'Toplam (₺)',   color: '#22d3ee' },
+    ].forEach(h => {
+      const th = document.createElement('th');
+      th.className = 'px-3 py-3 text-center text-xs font-semibold mono';
+      th.style.color = h.color;
+      th.textContent = h.label;
+      hRow.appendChild(th);
+    });
+    thead.appendChild(hRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    let grandTotal = 0;
+
+    rows.forEach((r, idx) => {
+      const tr = document.createElement('tr');
+      tr.className = `border-t border-slate-700/30 transition ${idx % 2 === 0 ? '' : 'bg-slate-800/20'}`;
+      tr.style.height = '40px';
+
+      // Stok Kodu
+      const stokTd = document.createElement('td');
+      stokTd.className = 'px-3 py-0 text-center align-middle';
+      const stokInput = document.createElement('input');
+      stokInput.type = 'text';
+      stokInput.value = r.stok;
+      stokInput.readOnly = true;
+      stokInput.className = 'w-full h-8 px-2 bg-transparent border-0 text-cyan-300 text-xs mono font-semibold focus:outline-none text-center';
+      stokInput.placeholder = '—';
+      stokTd.appendChild(stokInput);
+      tr.appendChild(stokTd);
+
+      // Ürün Adı
+      const adiTd = document.createElement('td');
+      adiTd.className = 'px-3 py-0 text-xs text-slate-200 align-middle';
+      adiTd.textContent = r.urunAdi;
+      tr.appendChild(adiTd);
+
+      // Birim Fiyat
+      const birimTd = document.createElement('td');
+      birimTd.className = 'px-3 py-0 text-center align-middle';
+      const birimInput = document.createElement('input');
+      birimInput.type = 'number';
+      birimInput.min = '0';
+      birimInput.step = '0.01';
+      birimInput.value = r.birimFiyat || '';
+      birimInput.className = 'w-full h-8 px-2 bg-slate-800 border border-slate-600 rounded text-slate-100 text-xs focus:border-yellow-500 focus:outline-none text-center';
+      birimInput.placeholder = '0.00';
+      birimTd.appendChild(birimInput);
+      tr.appendChild(birimTd);
+
+      // Adet
+      const adetTd = document.createElement('td');
+      adetTd.className = 'px-3 py-0 text-center align-middle';
+      const adetInput = document.createElement('input');
+      adetInput.type = 'number';
+      adetInput.min = '0';
+      adetInput.value = r.adet;
+      adetInput.className = 'w-full h-8 px-2 bg-slate-800 border border-slate-600 rounded text-slate-100 text-xs focus:border-cyan-500 focus:outline-none text-center';
+      adetTd.appendChild(adetInput);
+      tr.appendChild(adetTd);
+
+      // Toplam
+      const toplamTd = document.createElement('td');
+      toplamTd.className = 'px-3 py-0 text-center align-middle';
+      const toplamSpan = document.createElement('span');
+      toplamSpan.className = 'text-xs mono font-semibold text-emerald-400';
+      const updateToplam = () => {
+        const bp = parseFloat(birimInput.value) || 0;
+        const ad = parseInt(adetInput.value)    || 0;
+        const top = bp * ad;
+        grandTotal = 0; // yeniden hesap için
+        toplamSpan.textContent = top > 0 ? top.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '—';
+        updateGrandTotal();
+      };
+      birimInput.addEventListener('input', updateToplam);
+      adetInput.addEventListener('input', updateToplam);
+      const initTop = (r.birimFiyat || 0) * r.adet;
+      grandTotal += initTop;
+      toplamSpan.textContent = initTop > 0 ? initTop.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '—';
+      toplamTd.appendChild(toplamSpan);
+      tr.appendChild(toplamTd);
+
+      tbody.appendChild(tr);
+    });
+
+    if (rows.length === 0) {
+      const emptyTr = document.createElement('tr');
+      const emptyTd = document.createElement('td');
+      emptyTd.setAttribute('colspan', '5');
+      emptyTd.className = 'px-4 py-10 text-center text-slate-500 mono text-sm';
+      emptyTd.textContent = '// Otomasyon sayfasından motor ve rezistans ekleyiniz';
+      emptyTr.appendChild(emptyTd);
+      tbody.appendChild(emptyTr);
+    }
+
+    table.appendChild(tbody);
+    tableWrapper.appendChild(table);
+    section.appendChild(tableWrapper);
+    container.appendChild(section);
+
+    // Toplam Pano Maliyeti satırı
+    const totalBar = document.createElement('div');
+    totalBar.id = 'malzeme-grand-total-bar';
+    totalBar.className = 'flex items-center justify-between px-5 py-3 bg-slate-900/60 border border-slate-700/50 rounded-lg mt-1';
+    const totalLabel = document.createElement('span');
+    totalLabel.className = 'text-sm font-semibold text-slate-300 mono';
+    totalLabel.textContent = 'Toplam Pano Maliyeti';
+    const totalValue = document.createElement('span');
+    totalValue.id = 'malzeme-grand-total-val';
+    totalValue.className = 'text-lg font-bold text-emerald-400 mono';
+    totalValue.textContent = grandTotal > 0
+      ? grandTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺'
+      : '—';
+    totalBar.appendChild(totalLabel);
+    totalBar.appendChild(totalValue);
+    container.appendChild(totalBar);
+
+    lucide.createIcons();
+
+    function updateGrandTotal() {
+      let gt = 0;
+      container.querySelectorAll('tbody tr').forEach(tr => {
+        const birim = parseFloat(tr.querySelectorAll('input')[1]?.value) || 0;
+        const adet  = parseInt(tr.querySelectorAll('input')[2]?.value)  || 0;
+        gt += birim * adet;
+      });
+      const val = document.getElementById('malzeme-grand-total-val');
+      if (val) val.textContent = gt > 0 ? gt.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺' : '—';
+    }
+    // grand total fonksiyonunu satırlara bağla (kapanım)
+    tbody.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', updateGrandTotal);
+    });
+  }
+  // ===== END MALZEME TABLOSU =====
+
   function renderFiyatlarTable() {
     const container = document.getElementById('fiyatlar-content');
     if (!container) return;
@@ -3042,6 +3702,13 @@
     return section;
   }
 
+  function getTankIsimleri(sayi) {
+    if (sayi === 1) return ['YIKAMA TANKI'];
+    if (sayi === 2) return ['YIKAMA TANKI', 'DURULAMA TANKI'];
+    if (sayi === 3) return ['ÖN YIKAMA TANKI', 'YIKAMA TANKI', 'DURULAMA TANKI'];
+    return              ['ÖN YIKAMA TANKI', 'YIKAMA TANKI', 'ÖN DURULAMA TANKI', 'DURULAMA TANKI'];
+  }
+
   function getPLCGirisRows() {
     const rows = [];
 
@@ -3052,6 +3719,12 @@
         { giris: 'I0.2', girisKomutu: 'FAZ SIRA RÖLESİ FAZ BİLGİSİ', cikis: '', cikisKomutu: '' },
         { giris: 'I0.3', girisKomutu: 'START BUTONU',               cikis: '', cikisKomutu: '' },
         { giris: 'I0.4', girisKomutu: 'STOP BUTONU',                cikis: '', cikisKomutu: '' }
+      );
+    } else if (state.makineTipi === 'Konveyör') {
+      rows.push(
+        { giris: 'I0.0', girisKomutu: 'ACİL STOP (OMRON SI0)',         cikis: '', cikisKomutu: '' },
+        { giris: 'I0.1', girisKomutu: 'KAPAK KAPANDI BİLGİSİ (OMRON SO3)', cikis: '', cikisKomutu: '' },
+        { giris: 'I0.2', girisKomutu: 'FAZ SIRA RÖLESİ FAZ BİLGİSİ', cikis: '', cikisKomutu: '' }
       );
     }
 
@@ -3064,6 +3737,11 @@
     function pushRow(komutu) {
       rows.push({ giris: ioAddr(ioIndex), girisKomutu: komutu, cikis: '', cikisKomutu: '' });
       ioIndex++;
+    }
+
+    // RFID bilgisi (Konveyör)
+    if (state.makineTipi === 'Konveyör' && state.isinBariyeri === 'VAR') {
+      pushRow('RFID KAPAK AÇILDI BİLGİSİ');
     }
 
     const motorRows = document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]');
@@ -3079,18 +3757,35 @@
     });
 
     // Isıtıcılar kaçak akım
-    if (state.makineTipi === 'Kabinli') {
-      pushRow('ISITICILАR KAÇAK AKIM ATTI BİLGİSİ');
-    }
+    pushRow('ISITICILАR KAÇAK AKIM ATTI BİLGİSİ');
 
-    // Tank isimleri — tablodaki kurala göre (tank sayısına bağlı)
-    function getTankIsimleri(sayi) {
-      if (sayi === 1) return ['YIKAMA TANKI'];
-      if (sayi === 2) return ['YIKAMA TANKI', 'DURULAMA TANKI'];
-      if (sayi === 3) return ['ÖN YIKAMA TANKI', 'YIKAMA TANKI', 'DURULAMA TANKI'];
-      return              ['ÖN YIKAMA TANKI', 'YIKAMA TANKI', 'ÖN DURULAMA TANKI', 'DURULAMA TANKI'];
-    }
     const tankIsimleri = getTankIsimleri(state.tankSayisi);
+
+    if (state.makineTipi === 'Konveyör') {
+      // Seviye sensörleri
+      for (let t = 0; t < state.tankSayisi; t++) {
+        pushRow(`${tankIsimleri[t]} ALT SEVİYE`);
+        if (state.otomatikDolum === 'VAR') {
+          pushRow(`${tankIsimleri[t]} ÜST SEVİYE`);
+        }
+      }
+      // Otomatik Dolum Switchbox
+      if (state.otomatikDolum === 'VAR') {
+        for (let t = 0; t < state.tankSayisi; t++) {
+          pushRow(`${tankIsimleri[t]} OTOMATİK DOLUM SWİTCHBOX AÇIK`);
+          pushRow(`${tankIsimleri[t]} OTOMATİK DOLUM SWİTCHBOX KAPALI`);
+        }
+      }
+      // Hava & Su
+      pushRow('HAVA BİLGİSİ');
+      if (state.otomatikDolum === 'VAR') {
+        pushRow('SU BİLGİSİ');
+      }
+      // Yedek
+      pushRow('YEDEK');
+      pushRow('YEDEK');
+      pushRow('YEDEK');
+    }
 
     if (state.makineTipi === 'Kabinli') {
       // 1. Alt Seviye / Üst Seviye
@@ -3160,6 +3855,76 @@
       pushCikis(`${temizAd} ${eylem}`);
     });
 
+    if (state.makineTipi === 'Kabinli') {
+      const tankIsimleri = getTankIsimleri(state.tankSayisi);
+
+      // Rezistans çalıştır
+      for (let t = 0; t < state.tankSayisi; t++) {
+        pushCikis(`${tankIsimleri[t]} REZİSTANSLARI ÇALIŞTIR`);
+      }
+
+      // Sabit 3 çıkış (OMRON sinyal)
+      pushCikis('REDÜKTÖR TEST BİLGİSİ (OMRON SI5)');
+      pushCikis('YIKAMA BİTTİ BİLGİSİ (OMRON SI11)');
+      pushCikis('REDÜKTÖR ÇALIŞ BİLGİSİ (OMRON SI13)');
+
+      // Otomatik dolum vanası — her tank için sadece AÇ
+      if (state.otomatikDolum === 'VAR') {
+        for (let t = 0; t < state.tankSayisi; t++) {
+          pushCikis(`${tankIsimleri[t]} OTOMATİK DOLUM VANASI VALFİ AÇ`);
+        }
+      }
+
+      // Tahliye pistonu AÇ / KAPAT — her tank için
+      for (let t = 0; t < state.tankSayisi; t++) {
+        pushCikis(`${tankIsimleri[t]} TAHLİYE PİSTONU VALFİ AÇ`);
+        pushCikis(`${tankIsimleri[t]} TAHLİYE PİSTONU VALFİ KAPAT`);
+      }
+
+      // Tepe Lambası
+      if (state.tepeLambasi === 'VAR') {
+        pushCikis('KIRMIZI LAMBA');
+        pushCikis('SARI LAMBA');
+        pushCikis('YEŞİL LAMBA');
+      }
+
+      // Yedek
+      pushCikis('YEDEK');
+      pushCikis('YEDEK');
+      pushCikis('YEDEK');
+    } else if (state.makineTipi === 'Konveyör') {
+      const tankIsimleri = getTankIsimleri(state.tankSayisi);
+
+      // Rezistans çalıştır
+      for (let t = 0; t < state.tankSayisi; t++) {
+        pushCikis(`${tankIsimleri[t]} REZİSTANSLARI ÇALIŞTIR`);
+      }
+
+      // Sabit 3 çıkış (OMRON sinyal)
+      pushCikis('REDÜKTÖR TEST BİLGİSİ (OMRON SI5)');
+      pushCikis('YIKAMA BİTTİ BİLGİSİ (OMRON SI11)');
+      pushCikis('REDÜKTÖR ÇALIŞ BİLGİSİ (OMRON SI13)');
+
+      // Otomatik dolum vanası — her tank için sadece AÇ
+      if (state.otomatikDolum === 'VAR') {
+        for (let t = 0; t < state.tankSayisi; t++) {
+          pushCikis(`${tankIsimleri[t]} OTOMATİK DOLUM VANASI VALFİ AÇ`);
+        }
+      }
+
+      // Tepe Lambası
+      if (state.tepeLambasi === 'VAR') {
+        pushCikis('KIRMIZI LAMBA');
+        pushCikis('SARI LAMBA');
+        pushCikis('YEŞİL LAMBA');
+      }
+
+      // Yedek
+      pushCikis('YEDEK');
+      pushCikis('YEDEK');
+      pushCikis('YEDEK');
+    }
+
     return cikisRows;
   }
 
@@ -3206,6 +3971,7 @@
       if (target === 'fiyatlar') renderFiyatlarTable();
       if (target === 'standart') renderStandartMakineler();
       if (target === 'io') renderIOPage();
+      if (target === 'malzeme') renderMalzemeTable();
     });
   });
 
@@ -3228,6 +3994,12 @@
   btnMakineTipi.addEventListener('click', () => {
     state.makineTipi = state.makineTipi === 'Kabinli' ? 'Konveyör' : 'Kabinli';
     valMakineTipi.textContent = state.makineTipi;
+    // Işın Bariyeri ↔ RFID buton etiketi ve sıfırlama
+    const labelIsin = document.getElementById('label-isin-bariyeri');
+    if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
+    state.isinBariyeri = 'YOK';
+    valIsinBariyeri.textContent = 'YOK';
+    valIsinBariyeri.style.color = '';
     renderSensorTable();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
@@ -3303,6 +4075,157 @@
 
   document.getElementById('btn-fiyat-guncelle').addEventListener('click', saveFiyatlar);
 
+  // ===== KAYDET / YÜKLE =====
+  function buildSaveData() {
+    const motorData = [];
+    document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(row => {
+      const adiSelect  = row.querySelector('.motor-adi-select');
+      const kodInput   = row.querySelector('.motor-kod-input');
+      const gucSelect  = row.querySelector('select.guc-select-all');
+      const korumaBtn  = row.querySelector('[data-koruma-type]');
+      motorData.push({
+        id: row.dataset.motorId,
+        grubu: row.dataset.grubu,
+        adi: adiSelect ? adiSelect.value : '',
+        kod: kodInput ? kodInput.value : '',
+        guc: gucSelect ? gucSelect.value : '',
+        korumaType: korumaBtn ? korumaBtn.dataset.korumaType : 'kontaktor'
+      });
+    });
+
+    const rezData = {};
+    for (let t = 1; t <= state.tankSayisi; t++) {
+      rezData[t] = [];
+      document.querySelectorAll(`#rez-tbody-${t} tr[id^="rez-row-"]`).forEach(row => {
+        const gucSelect = row.querySelector('select.guc-select-all');
+        rezData[t].push({ id: row.id.replace('rez-row-', ''), guc: gucSelect ? gucSelect.value : '' });
+      });
+    }
+
+    const kurData = [];
+    document.querySelectorAll('#kur-tbody tr[id^="kur-row-"]').forEach(row => {
+      const gucSelect = row.querySelector('select.guc-select-all');
+      kurData.push({ id: row.id.replace('kur-row-', ''), guc: gucSelect ? gucSelect.value : '' });
+    });
+
+    return { state: { ...state }, motorData, rezData, kurData };
+  }
+
+  function doKaydet(filename) {
+    const data = buildSaveData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  let lastFileName = 'io-konfigürasyon.json';
+
+  document.getElementById('btn-kaydet').addEventListener('click', () => {
+    doKaydet(lastFileName);
+  });
+
+  document.getElementById('btn-farkli-kaydet').addEventListener('click', () => {
+    const name = prompt('Dosya adını girin:', lastFileName);
+    if (!name) return;
+    lastFileName = name.endsWith('.json') ? name : name + '.json';
+    doKaydet(lastFileName);
+  });
+
+  document.getElementById('btn-yukle').addEventListener('click', () => {
+    document.getElementById('input-yukle').click();
+  });
+
+  document.getElementById('input-yukle').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    lastFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        // State yükle
+        Object.assign(state, data.state);
+
+        // UI değerlerini güncelle
+        document.getElementById('val-makine-tipi').textContent = state.makineTipi;
+        document.getElementById('val-tank-sayisi').textContent = state.tankSayisi;
+        document.getElementById('val-otomatik-dolum').textContent = state.otomatikDolum;
+        document.getElementById('val-salt-grubu').textContent = state.saltGrubu;
+        document.getElementById('val-tepe-lambasi').textContent = state.tepeLambasi;
+        document.getElementById('val-kurutma-unitesi').textContent = state.kurutmaUnitesi;
+        valIsinBariyeri.textContent = state.isinBariyeri;
+        valIsinBariyeri.style.color = state.isinBariyeri === 'VAR' ? '#e879f9' : '';
+        const labelIsin = document.getElementById('label-isin-bariyeri');
+        if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
+
+        // Motorları temizle ve yeniden ekle
+        document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
+        if (data.motorData) {
+          data.motorData.forEach(m => {
+            const motorId = m.id || Date.now();
+            state.motors.push({ id: motorId });
+            const newRow = createMotorRow(motorId);
+            motorTbody.insertBefore(newRow, document.getElementById('motor-add-row'));
+            // Değerleri ata
+            const grubuBtn = newRow.querySelector('.motor-grubu-cell');
+            newRow.dataset.grubu = m.grubu || '';
+            if (grubuBtn) grubuBtn.textContent = m.grubu || 'Seç';
+            const adiSelect = newRow.querySelector('.motor-adi-select');
+            if (adiSelect && m.grubu && motorAdiOptions[m.grubu]) {
+              adiSelect.innerHTML = '<option value="">Seç...</option>';
+              motorAdiOptions[m.grubu].forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.adi; opt.dataset.kod = item.kod; opt.textContent = item.adi;
+                adiSelect.appendChild(opt);
+              });
+              adiSelect.value = m.adi || '';
+            }
+            const kodInput = newRow.querySelector('.motor-kod-input');
+            if (kodInput) kodInput.value = m.kod || '';
+            const gucSelect = newRow.querySelector('select.guc-select-all');
+            if (gucSelect) { gucSelect.value = m.guc || ''; gucSelect.dispatchEvent(new Event('change')); }
+            const korumaBtn = newRow.querySelector('[data-koruma-type]');
+            if (korumaBtn && m.korumaType) {
+              korumaBtn.dataset.korumaType = m.korumaType;
+              korumaBtn.textContent = m.korumaType === 'invertor' ? 'İnvertör/Sigorta' : 'MKŞ/Kontaktör';
+            }
+            if (newRow.updateDriveComponents) newRow.updateDriveComponents();
+          });
+        }
+
+        renderRezistansTable();
+        renderKurutmaTable();
+        renderKacakAkimTable();
+        renderTmsTable();
+        renderSensorTable();
+        lucide.createIcons();
+        if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
+      } catch(err) {
+        alert('Dosya yüklenirken hata oluştu: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+  document.getElementById('btn-disari-aktar').addEventListener('click', () => {
+    const data = buildSaveData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'io-export-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById('btn-kullanici-giris').addEventListener('click', () => {
+    alert('Kullanıcı giriş modülü yakında eklenecek.');
+  });
+
+  // ===== END KAYDET / YÜKLE =====
+
   // Initialize icons
   lucide.createIcons();
   renderRezistansTable();
@@ -3310,6 +4233,7 @@
   renderKacakAkimTable();
   renderTmsTable();
   renderSensorTable();
+  renderMalzemeTable();
 
   renderIOPage();
 
