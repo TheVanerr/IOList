@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="tr" class="h-full">
  <head>
   <meta charset="UTF-8">
@@ -196,6 +196,15 @@
        <div class="label-tag mono mb-0.5 text-[10px]">Kurutma Ünitesi</div>
        <div id="val-kurutma-unitesi" class="text-base font-bold value-tag">VAR</div>
       </button>
+      <!-- Işın Bariyeri --> <button id="btn-isin-bariyeri" class="option-btn rounded-lg p-3 text-left">
+       <div class="flex items-center justify-between mb-2">
+        <div class="w-7 h-7 rounded-md bg-fuchsia-500/20 flex items-center justify-center border border-fuchsia-500/40">
+         <i data-lucide="scan-line" class="w-3.5 h-3.5 text-fuchsia-400"></i>
+        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
+       </div>
+       <div class="label-tag mono mb-0.5 text-[10px]">Işın Bariyeri</div>
+       <div id="val-isin-bariyeri" class="text-base font-bold value-tag">YOK</div>
+      </button>
      </div>
      <div class="mt-2">
       <div class="flex items-center justify-between gap-2 mb-3">
@@ -262,7 +271,7 @@
      </div>
      <div id="sensor-container"></div>
     </section><!-- IO PAGE -->
-    <section id="page-io" class="page flex-col gap-6 max-w-5xl mx-auto">
+    <section id="page-io" class="page flex-col gap-6 w-full">
      <div>
       <div class="flex items-center gap-2 mb-1">
        <i data-lucide="circuit-board" class="w-4 h-4 text-purple-400"></i> <span class="label-tag mono">Step 03 / IO List</span>
@@ -271,10 +280,7 @@
       <p class="text-slate-400 text-sm mt-1">Dijital ve analog IO noktaları burada listelenecek.</p>
       <div class="header-line mt-4"></div>
      </div>
-     <div class="placeholder-card rounded-xl p-10 text-center">
-      <i data-lucide="list" class="w-12 h-12 text-slate-600 mx-auto mb-3"></i>
-      <p class="text-slate-500 mono text-sm">// IO listesi arayüzü hazırlanacak</p>
-     </div>
+     <div id="io-content"></div>
     </section><!-- MALZEME PAGE -->
     <section id="page-malzeme" class="page flex-col gap-6 max-w-5xl mx-auto">
      <div>
@@ -333,6 +339,7 @@
     saltGrubu: 'Schneider',
     tepeLambasi: 'VAR',
     kurutmaUnitesi: 'VAR',
+    isinBariyeri: 'YOK',
     motors: [],
     rezistanslar: {},
     kurutmaRezistanslar: [],
@@ -522,6 +529,7 @@
       } else {
         kodInput.value = '';
       }
+      if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
     });
     
     adiCell.appendChild(adiSelect);
@@ -577,6 +585,7 @@
         korumaBtn.dataset.korumaType = 'kontaktor';
       }
       updateDriveComponents();
+      if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
     });
     korumaCell.appendChild(korumaBtn);
     row.appendChild(korumaCell);
@@ -641,6 +650,7 @@
       row.remove();
       state.motors = state.motors.filter(m => m.id !== motorId);
       updateMakineGucu();
+      if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
     });
     islemCell.appendChild(silBtn);
     row.appendChild(islemCell);
@@ -2910,6 +2920,278 @@
   }
   // ===== END STANDART MAKİNELER =====
 
+  // ===== IO TABLOLARI =====
+  const SAFETY_PLC_ROWS = [
+    { giris: 'SI0',  girisKomutu: 'ACİL STOP',                                                                         cikis: 'SO0', cikisKomutu: 'KAPAK AÇ' },
+    { giris: 'SI1',  girisKomutu: 'ACİL STOP',                                                                         cikis: 'SO1', cikisKomutu: 'KAPAK KAPAT' },
+    { giris: 'SI2',  girisKomutu: 'KAPAK AÇ BUTONU',                                                                  cikis: 'SO2', cikisKomutu: 'REDÜKTÖR RUN' },
+    { giris: 'SI3',  girisKomutu: 'KAPAK KAPAT BUTONU',                                                               cikis: 'SO3', cikisKomutu: 'KAPAK KAPANDI BİLGİSİ <span style="color:#f97316">(OMRON I0.1)</span>' },
+    { giris: 'SI4',  girisKomutu: 'BARİYER',                                                                           cikis: 'SO4', cikisKomutu: 'ANA VALF' },
+    { giris: 'SI5',  girisKomutu: 'TEST <span style="color:#f97316">(OMRON Q1.2)</span>',                           cikis: 'SO5', cikisKomutu: 'RESET BUTONU LAMBASI' },
+    { giris: 'SI6',  girisKomutu: 'KAPI SW 1 NO',                                                                     cikis: 'SO6', cikisKomutu: 'ACİL STOP BİLGİSİ <span style="color:#f97316">(OMRON I0.0)</span>' },
+    { giris: 'SI7',  girisKomutu: 'KAPI SW 1 NC',                                                                     cikis: '',    cikisKomutu: '' },
+    { giris: 'SI8',  girisKomutu: 'KAPI SW 2 NO',                                                                     cikis: '',    cikisKomutu: '' },
+    { giris: 'SI9',  girisKomutu: 'KAPI SW 2 NC',                                                                     cikis: '',    cikisKomutu: '' },
+    { giris: 'SI10', girisKomutu: 'BASINÇ ŞALTERİ',                                                                   cikis: '',    cikisKomutu: '' },
+    { giris: 'SI11', girisKomutu: 'YIKAMA BİTTİ BİLGİSİ <span style="color:#f97316">(OMRON Q1.3)</span>',  cikis: '',    cikisKomutu: '' },
+    { giris: 'SI12', girisKomutu: 'RESET BUTONU',                                                                     cikis: '',    cikisKomutu: '' },
+    { giris: 'SI13', girisKomutu: 'REDÜKTÖR ÇALIŞ <span style="color:#f97316">(OMRON Q1.4)</span>',              cikis: '',    cikisKomutu: '' },
+  ];
+
+  function buildIOTable(title, accentColor, iconName, rows) {
+    const section = document.createElement('div');
+    section.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden mb-4';
+
+    // Başlık çubuğu
+    const bar = document.createElement('div');
+    bar.className = 'flex items-center gap-2 px-4 py-2.5 bg-slate-800/60 border-b border-slate-700/50';
+    const barIcon = document.createElement('i');
+    barIcon.setAttribute('data-lucide', iconName);
+    barIcon.className = 'w-4 h-4';
+    barIcon.style.color = accentColor;
+    const barLabel = document.createElement('span');
+    barLabel.className = 'text-sm font-bold mono tracking-wider uppercase';
+    barLabel.style.color = accentColor;
+    barLabel.textContent = title;
+    bar.appendChild(barIcon);
+    bar.appendChild(barLabel);
+    section.appendChild(bar);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'overflow-x-auto';
+    const table = document.createElement('table');
+    table.className = 'w-full table-fixed';
+
+    const colgroup = document.createElement('colgroup');
+    ['8%', '32%', '8%', '8%', '44%'].forEach(w => {
+      const col = document.createElement('col');
+      col.style.width = w;
+      colgroup.appendChild(col);
+    });
+    table.appendChild(colgroup);
+
+    // Thead
+    const thead = document.createElement('thead');
+    const hRow = document.createElement('tr');
+    hRow.className = 'border-b border-slate-700/50 bg-slate-800/40';
+    ['GİRİŞ', 'GİRİŞ KOMUTU', 'ROLE', 'ÇIKIŞ', 'ÇIKIŞ KOMUTU'].forEach(h => {
+      const th = document.createElement('th');
+      th.className = 'px-3 py-3 text-center text-xs font-bold mono';
+      th.style.color = accentColor;
+      th.textContent = h;
+      hRow.appendChild(th);
+    });
+    thead.appendChild(hRow);
+    table.appendChild(thead);
+
+    // Tbody
+    const tbody = document.createElement('tbody');
+    if (rows && rows.length > 0) {
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-t border-slate-700/50 hover:bg-slate-800/30 transition';
+        tr.style.height = '40px';
+
+        // GİRİŞ
+        const girisTd = document.createElement('td');
+        girisTd.className = 'px-3 py-0 text-xs mono font-bold align-middle text-center';
+        girisTd.style.color = accentColor;
+        girisTd.textContent = r.giris || '';
+        tr.appendChild(girisTd);
+
+        // GİRİŞ KOMUTU
+        const girisKomutuTd = document.createElement('td');
+        girisKomutuTd.className = 'px-3 py-0 text-xs mono font-semibold align-middle text-center text-slate-200';
+        girisKomutuTd.innerHTML = r.girisKomutu || '';
+        tr.appendChild(girisKomutuTd);
+
+        // ROLE — boş (ayarlanacak)
+        const roleTd = document.createElement('td');
+        roleTd.className = 'px-3 py-0 text-xs mono font-bold align-middle text-center text-slate-500';
+        roleTd.textContent = '';
+        tr.appendChild(roleTd);
+
+        // ÇIKIŞ
+        const cikisTd = document.createElement('td');
+        cikisTd.className = 'px-3 py-0 text-xs mono font-bold align-middle text-center';
+        cikisTd.style.color = r.cikis ? accentColor : '';
+        cikisTd.textContent = r.cikis || '';
+        tr.appendChild(cikisTd);
+
+        // ÇIKIŞ KOMUTU
+        const cikisKomutuTd = document.createElement('td');
+        cikisKomutuTd.className = 'px-3 py-0 text-xs mono font-semibold align-middle text-center text-slate-200';
+        cikisKomutuTd.innerHTML = r.cikisKomutu || '';
+        tr.appendChild(cikisKomutuTd);
+
+        tbody.appendChild(tr);
+      });
+    } else {
+      const emptyRow = document.createElement('tr');
+      const emptyTd = document.createElement('td');
+      emptyTd.setAttribute('colspan', '5');
+      emptyTd.className = 'px-4 py-10 text-center text-slate-600 mono text-sm';
+      emptyTd.textContent = '// IO listesi seçim sayfasından çekilecek';
+      emptyRow.appendChild(emptyTd);
+      tbody.appendChild(emptyRow);
+    }
+    table.appendChild(tbody);
+
+    wrapper.appendChild(table);
+    section.appendChild(wrapper);
+    return section;
+  }
+
+  function getPLCGirisRows() {
+    const rows = [];
+
+    if (state.makineTipi === 'Kabinli') {
+      rows.push(
+        { giris: 'I0.0', girisKomutu: 'ACİL STOP BUTONU',          cikis: '', cikisKomutu: '' },
+        { giris: 'I0.1', girisKomutu: 'KAPAK SWİTCHİ',             cikis: '', cikisKomutu: '' },
+        { giris: 'I0.2', girisKomutu: 'FAZ SIRA RÖLESİ FAZ BİLGİSİ', cikis: '', cikisKomutu: '' },
+        { giris: 'I0.3', girisKomutu: 'START BUTONU',               cikis: '', cikisKomutu: '' },
+        { giris: 'I0.4', girisKomutu: 'STOP BUTONU',                cikis: '', cikisKomutu: '' }
+      );
+    }
+
+    // Motor tablosundan motor adlarını ve koruma tipini oku
+    let ioIndex = rows.length;
+
+    function ioAddr(idx) {
+      return `I${Math.floor(idx / 8)}.${idx % 8}`;
+    }
+    function pushRow(komutu) {
+      rows.push({ giris: ioAddr(ioIndex), girisKomutu: komutu, cikis: '', cikisKomutu: '' });
+      ioIndex++;
+    }
+
+    const motorRows = document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]');
+    motorRows.forEach(row => {
+      const adiSelect = row.querySelector('.motor-adi-select');
+      const korumaBtn = row.querySelector('[data-koruma-type]');
+      const motorAdi = adiSelect ? adiSelect.value : '';
+      if (!motorAdi) return;
+      const korumaType = korumaBtn ? korumaBtn.dataset.korumaType : 'kontaktor';
+      const hataTuru = korumaType === 'invertor' ? 'İNVERTÖR ARIZA' : 'MKŞ HATA';
+      const temizAd = motorAdi.replace(/\s*Motoru\s*$/i, '').toUpperCase();
+      pushRow(`${temizAd} ${hataTuru}`);
+    });
+
+    // Isıtıcılar kaçak akım
+    if (state.makineTipi === 'Kabinli') {
+      pushRow('ISITICILАR KAÇAK AKIM ATTI BİLGİSİ');
+    }
+
+    // Tank isimleri — tablodaki kurala göre (tank sayısına bağlı)
+    function getTankIsimleri(sayi) {
+      if (sayi === 1) return ['YIKAMA TANKI'];
+      if (sayi === 2) return ['YIKAMA TANKI', 'DURULAMA TANKI'];
+      if (sayi === 3) return ['ÖN YIKAMA TANKI', 'YIKAMA TANKI', 'DURULAMA TANKI'];
+      return              ['ÖN YIKAMA TANKI', 'YIKAMA TANKI', 'ÖN DURULAMA TANKI', 'DURULAMA TANKI'];
+    }
+    const tankIsimleri = getTankIsimleri(state.tankSayisi);
+
+    if (state.makineTipi === 'Kabinli') {
+      // 1. Alt Seviye / Üst Seviye
+      for (let t = 0; t < state.tankSayisi; t++) {
+        pushRow(`${tankIsimleri[t]} ALT SEVİYE`);
+        if (state.otomatikDolum === 'VAR') {
+          pushRow(`${tankIsimleri[t]} ÜST SEVİYE`);
+        }
+      }
+
+      // 2. Otomatik Dolum Switchbox
+      if (state.otomatikDolum === 'VAR') {
+        for (let t = 0; t < state.tankSayisi; t++) {
+          pushRow(`${tankIsimleri[t]} OTOMATİK DOLUM SWİTCHBOX AÇIK`);
+          pushRow(`${tankIsimleri[t]} OTOMATİK DOLUM SWİTCHBOX KAPALI`);
+        }
+      }
+
+      // 3. Tahliye Pistonu — her tank için
+      for (let t = 0; t < state.tankSayisi; t++) {
+        pushRow(`${tankIsimleri[t]} TAHLİYE PİSTONU AÇIK`);
+        pushRow(`${tankIsimleri[t]} TAHLİYE PİSTONU KAPALI`);
+      }
+
+      // 4. Sabit giriş bilgileri
+      pushRow('POZİSYON DURDURMA SWİTCHİ');
+      if (state.isinBariyeri === 'YOK') {
+        pushRow('EL KORUMA SENSÖRÜ BİLGİSİ');
+      }
+      pushRow('HAVA BİLGİSİ');
+
+      // 5. Su Bilgisi (otomatik dolum varsa)
+      if (state.otomatikDolum === 'VAR') {
+        pushRow('SU BİLGİSİ');
+      }
+
+      // 6. Yedek
+      pushRow('YEDEK');
+      pushRow('YEDEK');
+      pushRow('YEDEK');
+    }
+
+    return rows;
+  }
+
+  function getPLCCikisRows() {
+    const cikisRows = [];
+    let qIndex = 0;
+
+    function qAddr(idx) {
+      return `Q${Math.floor(idx / 8)}.${idx % 8}`;
+    }
+    function pushCikis(komutu) {
+      cikisRows.push({ cikis: qAddr(qIndex), cikisKomutu: komutu });
+      qIndex++;
+    }
+
+    const motorRows = document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]');
+    motorRows.forEach(row => {
+      const adiSelect = row.querySelector('.motor-adi-select');
+      const korumaBtn = row.querySelector('[data-koruma-type]');
+      const motorAdi = adiSelect ? adiSelect.value : '';
+      if (!motorAdi) return;
+      const korumaType = korumaBtn ? korumaBtn.dataset.korumaType : 'kontaktor';
+      const eylem = korumaType === 'invertor' ? 'RUN' : 'ÇALIŞTİR';
+      const temizAd = motorAdi.replace(/\s*Motoru\s*$/i, '').toUpperCase();
+      pushCikis(`${temizAd} ${eylem}`);
+    });
+
+    return cikisRows;
+  }
+
+  function mergePLCRows(girisRows, cikisRows) {
+    const len = Math.max(girisRows.length, cikisRows.length);
+    const merged = [];
+    for (let i = 0; i < len; i++) {
+      const g = girisRows[i]  || { giris: '', girisKomutu: '' };
+      const c = cikisRows[i] || { cikis: '',  cikisKomutu: '' };
+      merged.push({ giris: g.giris, girisKomutu: g.girisKomutu, cikis: c.cikis, cikisKomutu: c.cikisKomutu });
+    }
+    return merged;
+  }
+
+  function renderIOPage() {
+    const container = document.getElementById('io-content');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // PLC Tablosu
+    const plcRows = mergePLCRows(getPLCGirisRows(), getPLCCikisRows());
+    container.appendChild(buildIOTable('PLC', '#fbbf24', 'circuit-board', plcRows));
+
+    // Safety PLC Tablosu — yalnızca Işın Bariyeri VAR ve Makine Tipi Kabinli ise
+    if (state.isinBariyeri === 'VAR' && state.makineTipi === 'Kabinli') {
+      container.appendChild(buildIOTable('SAFETY PLC', '#f43f5e', 'shield-check', SAFETY_PLC_ROWS));
+    }
+
+    lucide.createIcons();
+  }
+  // ===== END IO TABLOLARI =====
+
   // Navigation
   const navButtons = document.querySelectorAll('.nav-btn');
   const pages = document.querySelectorAll('.page');
@@ -2923,6 +3205,7 @@
       document.getElementById(`page-${target}`).classList.add('active');
       if (target === 'fiyatlar') renderFiyatlarTable();
       if (target === 'standart') renderStandartMakineler();
+      if (target === 'io') renderIOPage();
     });
   });
 
@@ -2946,6 +3229,7 @@
     state.makineTipi = state.makineTipi === 'Kabinli' ? 'Konveyör' : 'Kabinli';
     valMakineTipi.textContent = state.makineTipi;
     renderSensorTable();
+    if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
 
   btnTankSayisi.addEventListener('click', () => {
@@ -2954,12 +3238,14 @@
     renderRezistansTable();
     renderKacakAkimTable();
     renderSensorTable();
+    if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
 
   btnOtomatikDolum.addEventListener('click', () => {
     state.otomatikDolum = state.otomatikDolum === 'VAR' ? 'YOK' : 'VAR';
     valOtomatikDolum.textContent = state.otomatikDolum;
     renderSensorTable();
+    if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
 
   btnSaltGrubu.addEventListener('click', () => {
@@ -2997,6 +3283,15 @@
     renderKacakAkimTable();
   });
 
+  const btnIsinBariyeri = document.getElementById('btn-isin-bariyeri');
+  const valIsinBariyeri = document.getElementById('val-isin-bariyeri');
+  btnIsinBariyeri.addEventListener('click', () => {
+    state.isinBariyeri = state.isinBariyeri === 'VAR' ? 'YOK' : 'VAR';
+    valIsinBariyeri.textContent = state.isinBariyeri;
+    valIsinBariyeri.style.color = state.isinBariyeri === 'VAR' ? '#e879f9' : '';
+    if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
+  });
+
   // Motor ekleme
   btnAddMotor.addEventListener('click', () => {
     const motorId = Date.now();
@@ -3015,6 +3310,8 @@
   renderKacakAkimTable();
   renderTmsTable();
   renderSensorTable();
+
+  renderIOPage();
 
   // Initialize Element SDK
   if (window.elementSdk) {
