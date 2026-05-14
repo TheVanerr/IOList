@@ -132,6 +132,9 @@
        <button id="btn-yukle" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-amber-500 text-slate-300 hover:text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="folder-open" class="w-3.5 h-3.5"></i> Yükle
        </button>
+       <button id="btn-yeni-form" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-rose-500 text-slate-300 hover:text-rose-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="file" class="w-3.5 h-3.5"></i> Yeni Form
+       </button>
        <button id="btn-disari-aktar" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-violet-500 text-slate-300 hover:text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i> Dışarı Aktar
        </button>
@@ -140,7 +143,8 @@
        </button>
        <input type="file" id="input-yukle" accept=".json" class="hidden">
        <input type="file" id="input-iceri-aktar" accept=".json" class="hidden">
-       <span id="active-project-name" class="hidden text-xs mono text-cyan-400 border border-cyan-700/40 bg-cyan-900/20 rounded px-2 py-1 max-w-[200px] truncate" title=""></span>
+       <span id="active-project-name" class="hidden text-xs mono text-cyan-400 border border-cyan-700/40 bg-cyan-900/20 rounded px-2 py-1 max-w-[200px] truncate cursor-pointer select-none" title="Çift tıklayarak yeniden adlandır"
+        ondblclick="openRenameModal()"></span>
       </div>
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
@@ -4392,6 +4396,56 @@
     document.title = currentProjectName ? currentProjectName + ' — IO Konfig.' : 'Pano IO Konfigüratör';
   }
 
+  function resetToNewForm() {
+    // State varsayılan değerlere döndür
+    state.makineTipi = 'Kabinli';
+    state.tankSayisi = 1;
+    state.otomatikDolum = 'VAR';
+    state.saltGrubu = 'Schneider';
+    state.tepeLambasi = 'VAR';
+    state.kurutmaUnitesi = 'VAR';
+    state.isinBariyeri = 'YOK';
+    state.motors = [];
+    state.rezistanslar = {};
+    state.kurutmaRezistanslar = [];
+    state.kacakAkim = {};
+    state.ekSensorlar = [];
+    state.ekValfler = [];
+    state.ekSwitchboxlar = [];
+    currentProjectName = null;
+    updateProjectNameUI();
+
+    // UI değerlerini sıfırla
+    document.getElementById('val-makine-tipi').textContent = 'Kabinli';
+    document.getElementById('val-tank-sayisi').textContent = '1';
+    document.getElementById('val-otomatik-dolum').textContent = 'VAR';
+    document.getElementById('val-salt-grubu').textContent = 'Schneider';
+    document.getElementById('val-tepe-lambasi').textContent = 'VAR';
+    document.getElementById('val-kurutma-unitesi').textContent = 'VAR';
+    const valIsinB = document.getElementById('val-isin-bariyeri');
+    if (valIsinB) { valIsinB.textContent = 'YOK'; valIsinB.style.color = ''; }
+    document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
+    renderRezistansTable();
+    renderKurutmaTable();
+    renderKacakAkimTable();
+    renderTmsTable();
+    renderSensorTable();
+    if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
+    lucide.createIcons();
+  }
+
+  document.getElementById('btn-yeni-form').addEventListener('click', () => {
+    if (currentProjectName && sb && currentUser) {
+      if (confirm('Mevcut form "' + currentProjectName + '" buluta kaydedilsin mi?')) {
+        saveToCloud(currentProjectName).then(() => resetToNewForm());
+      } else {
+        resetToNewForm();
+      }
+    } else {
+      resetToNewForm();
+    }
+  });
+
   document.getElementById('btn-kaydet').addEventListener('click', () => {
     if (!sb || !currentUser) { document.getElementById('modal-auth').classList.remove('hidden'); return; }
     if (currentProjectName) {
@@ -4560,15 +4614,23 @@
       data.forEach(p => {
         const date = new Date(p.updated_at).toLocaleString('tr-TR');
         const row = document.createElement('div');
-        row.className = 'flex items-center justify-between px-4 py-3 border-b border-slate-700/40 hover:bg-slate-800/40 transition';
-        row.innerHTML = `<div><p class="text-sm font-semibold text-slate-200 mono">${p.name}</p><p class="text-xs text-slate-500 mono mt-0.5">${date}</p></div><div class="flex gap-2"><button class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs mono font-semibold transition" data-load-id="${p.id}">Yükle</button><button class="px-2.5 py-1.5 rounded-lg bg-red-900/60 hover:bg-red-700 text-red-300 text-xs mono transition" data-del-id="${p.id}">Sil</button></div>`;
+        row.className = 'flex items-center justify-between px-4 py-3 border-b border-slate-700/40 hover:bg-slate-800/40 transition gap-3';
+        row.innerHTML = `
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-slate-200 mono truncate">${p.name}</p>
+            <p class="text-xs text-slate-500 mono mt-0.5">${date}</p>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs mono font-semibold transition" data-load-id="${p.id}"><i data-lucide="folder-open" class="w-3 h-3 inline -mt-0.5 mr-1"></i>Yükle</button>
+            <button class="px-2.5 py-1.5 rounded-lg bg-red-900/60 hover:bg-red-700 text-red-300 text-xs mono transition" data-del-id="${p.id}" data-del-name="${p.name}"><i data-lucide="trash-2" class="w-3 h-3 inline -mt-0.5"></i></button>
+          </div>`;
         listEl.appendChild(row);
       });
       listEl.querySelectorAll('[data-load-id]').forEach(btn => {
         btn.addEventListener('click', () => cloudLoadProject(btn.dataset.loadId, modal));
       });
       listEl.querySelectorAll('[data-del-id]').forEach(btn => {
-        btn.addEventListener('click', () => cloudDeleteProject(btn.dataset.delId, btn.parentElement.parentElement));
+        btn.addEventListener('click', () => openDeleteConfirmModal(btn.dataset.delId, btn.dataset.delName, btn.closest('div.flex.items-center')));
       });
     }
     modal.classList.remove('hidden');
@@ -4579,18 +4641,35 @@
     const { data, error } = await sb.from('projects').select('data, name').eq('id', id).single();
     if (error || !data) { showToast('Yüklenemedi', 'error'); return; }
     try {
-      lastFileName = data.name.endsWith('.json') ? data.name : data.name + '.json';
+      currentProjectName = data.name;
+      updateProjectNameUI();
       await applyProjectData(data.data);
       modal.classList.add('hidden');
-      showToast('Proje yüklendi ✓');
+      showToast('"' + data.name + '" yüklendi ✓');
     } catch(err) { showToast('Yükleme hatası: ' + err.message, 'error'); }
   }
 
+  let _pendingDelete = null;
+  function openDeleteConfirmModal(id, name, rowEl) {
+    _pendingDelete = { id, name, rowEl };
+    const label = document.getElementById('del-confirm-label');
+    if (label) label.textContent = '"' + name + '" projesini silmek için proje adını yazın:';
+    const inp = document.getElementById('del-confirm-input');
+    if (inp) inp.value = '';
+    document.getElementById('modal-delete-confirm').classList.remove('hidden');
+    lucide.createIcons();
+    setTimeout(() => { if (inp) inp.focus(); }, 60);
+  }
+
   async function cloudDeleteProject(id, rowEl) {
-    if (!confirm('Bu projeyi silmek istiyor musunuz?')) return;
     const { error } = await sb.from('projects').delete().eq('id', id);
     if (error) showToast('Silinemedi: ' + error.message, 'error');
-    else { rowEl.remove(); showToast('Proje silindi'); }
+    else {
+      rowEl.remove();
+      if (currentProjectName === _pendingDelete?.name) { currentProjectName = null; updateProjectNameUI(); }
+      showToast('Proje silindi');
+    }
+    _pendingDelete = null;
   }
 
   // Auth state
@@ -4656,6 +4735,44 @@
   window.closeSaveAsModalIfBackdrop = function(e) {
     if (e.target === e.currentTarget) window.closeModal('modal-save-as');
   };
+  window.closeDeleteConfirmModalIfBackdrop = function(e) {
+    if (e.target === e.currentTarget) { _pendingDelete = null; window.closeModal('modal-delete-confirm'); }
+  };
+  window.doDeleteConfirm = async function() {
+    if (!_pendingDelete) return;
+    const inp = document.getElementById('del-confirm-input');
+    const typed = inp ? inp.value.trim() : '';
+    if (typed !== _pendingDelete.name) {
+      if (inp) { inp.style.borderColor = '#ef4444'; inp.focus(); setTimeout(() => { inp.style.borderColor = ''; }, 1500); }
+      showToast('Proje adı eşleşmiyor', 'error');
+      return;
+    }
+    window.closeModal('modal-delete-confirm');
+    await cloudDeleteProject(_pendingDelete.id, _pendingDelete.rowEl);
+  };
+  window.openRenameModal = function() {
+    if (!currentProjectName) return;
+    const inp = document.getElementById('rename-modal-input');
+    if (inp) inp.value = currentProjectName;
+    document.getElementById('modal-rename').classList.remove('hidden');
+    lucide.createIcons();
+    setTimeout(() => { if (inp) { inp.focus(); inp.select(); } }, 60);
+  };
+  window.doRename = async function() {
+    const inp = document.getElementById('rename-modal-input');
+    const newName = inp ? inp.value.trim() : '';
+    if (!newName || newName === currentProjectName) { window.closeModal('modal-rename'); return; }
+    if (!sb || !currentUser) { window.closeModal('modal-rename'); return; }
+    // Eski kaydı güncelle (name alanını değiştir)
+    const { data: ex } = await sb.from('projects').select('id').eq('user_id', currentUser.id).eq('name', currentProjectName).maybeSingle();
+    if (ex) {
+      await sb.from('projects').update({ name: newName, updated_at: new Date().toISOString() }).eq('id', ex.id);
+    }
+    currentProjectName = newName;
+    updateProjectNameUI();
+    window.closeModal('modal-rename');
+    showToast('Proje yeniden adlandırıldı ✓');
+  };
   window.openSaveAsModal = function(defaultName) {
     const input = document.getElementById('save-as-name-input');
     if (input) input.value = defaultName || '';
@@ -4688,7 +4805,14 @@
 
   // ESC ile tüm modalleri kapat
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { window.closeModal('modal-auth'); window.closeModal('modal-cloud'); window.closeModal('modal-save-as'); }
+    if (e.key === 'Escape') {
+      window.closeModal('modal-auth');
+      window.closeModal('modal-cloud');
+      window.closeModal('modal-save-as');
+      window.closeModal('modal-delete-confirm');
+      window.closeModal('modal-rename');
+      _pendingDelete = null;
+    }
   });
 
   // Initialize Element SDK (optional — only available on hosting platform)
@@ -4706,27 +4830,6 @@
 
 <!-- Toast -->
 <div id="app-toast" class="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-lg text-sm font-semibold mono shadow-xl pointer-events-none opacity-0 bg-emerald-600 text-white" style="transition: opacity 0.3s;"></div>
-
-<!-- Save As Modal -->
-<div id="modal-save-as" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeSaveAsModalIfBackdrop(event)">
-  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-sm mx-4">
-    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
-      <h2 class="text-sm font-bold mono text-slate-200">Projeyi Kaydet</h2>
-      <button onclick="closeModal('modal-save-as')" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
-    </div>
-    <div class="px-6 py-6 flex flex-col gap-4">
-      <div>
-        <label class="block text-xs text-slate-400 mono mb-1.5">Proje Adı</label>
-        <input id="save-as-name-input" type="text" placeholder="Örn: Line-1 Tuz Makinesi"
-               class="w-full h-10 px-3 bg-slate-800 border border-slate-600 rounded-lg text-slate-100 text-sm mono focus:border-cyan-500 focus:outline-none"
-               onkeydown="if(event.key==='Enter') doSaveAs()">
-      </div>
-      <button onclick="doSaveAs()" class="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold mono transition flex items-center justify-center gap-2">
-        <i data-lucide="save" class="w-4 h-4"></i> Kaydet
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- Save As Modal -->
 <div id="modal-save-as" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeSaveAsModalIfBackdrop(event)">
@@ -4768,12 +4871,49 @@
 
 <!-- Cloud Projects Modal -->
 <div id="modal-cloud" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeCloudModalIfBackdrop(event)">
-  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md mx-4">
+  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-2xl mx-4">
     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
-      <h2 class="text-sm font-bold mono text-slate-200">☁ Bulut Projelerim</h2>
+      <h2 class="text-sm font-bold mono text-slate-200">&#9729; Bulut Projelerim</h2>
       <button onclick="closeModal('modal-cloud')" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
     </div>
-    <div id="cloud-project-list" class="max-h-96 overflow-y-auto"></div>
+    <div id="cloud-project-list" class="max-h-[28rem] overflow-y-auto"></div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="modal-delete-confirm" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeDeleteConfirmModalIfBackdrop(event)">
+  <div class="bg-slate-900 border border-red-800/60 rounded-xl shadow-2xl w-full max-w-sm mx-4">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+      <h2 class="text-sm font-bold mono text-red-400">Projeyi Sil</h2>
+      <button onclick="_pendingDelete=null; closeModal('modal-delete-confirm')" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="px-6 py-6 flex flex-col gap-4">
+      <p id="del-confirm-label" class="text-xs text-slate-400 mono"></p>
+      <input id="del-confirm-input" type="text" placeholder="Proje adını buraya yazın"
+             class="w-full h-10 px-3 bg-slate-800 border border-slate-600 rounded-lg text-slate-100 text-sm mono focus:border-red-500 focus:outline-none"
+             onkeydown="if(event.key==='Enter') doDeleteConfirm()">
+      <button onclick="doDeleteConfirm()" class="w-full py-2.5 rounded-lg bg-red-700 hover:bg-red-600 text-white text-sm font-semibold mono transition flex items-center justify-center gap-2">
+        <i data-lucide="trash-2" class="w-4 h-4"></i> Sil
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Rename Modal -->
+<div id="modal-rename" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="if(event.target===event.currentTarget) closeModal('modal-rename')">
+  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-sm mx-4">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+      <h2 class="text-sm font-bold mono text-slate-200">Projeyi Yeniden Adlandır</h2>
+      <button onclick="closeModal('modal-rename')" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="px-6 py-6 flex flex-col gap-4">
+      <input id="rename-modal-input" type="text" placeholder="Yeni proje adı"
+             class="w-full h-10 px-3 bg-slate-800 border border-slate-600 rounded-lg text-slate-100 text-sm mono focus:border-cyan-500 focus:outline-none"
+             onkeydown="if(event.key==='Enter') doRename()">
+      <button onclick="doRename()" class="w-full py-2.5 rounded-lg bg-cyan-700 hover:bg-cyan-600 text-white text-sm font-semibold mono transition flex items-center justify-center gap-2">
+        <i data-lucide="pencil" class="w-4 h-4"></i> Yeniden Adlandır
+      </button>
+    </div>
   </div>
 </div>
 
