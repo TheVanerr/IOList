@@ -22,19 +22,6 @@
     color: #e2e8f0;
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
-  /* Header butonları — ikon + metin dikey ortalama garantisi */
-  #btn-fiyat-katalog-supabase,
-  #btn-fiyat-duzenle,
-  #btn-standart-json-supabase,
-  #btn-standart-duzenle,
-  #btn-bulut-yukle,
-  #btn-kullanici-giris { line-height: 1; height: 34px; box-sizing: border-box; }
-  #btn-fiyat-katalog-supabase svg,
-  #btn-fiyat-duzenle svg,
-  #btn-standart-json-supabase svg,
-  #btn-standart-duzenle svg,
-  #btn-bulut-yukle svg,
-  #btn-kullanici-giris svg { display: block; flex-shrink: 0; }
   .page { display: none; }
   .page.active { display: flex; }
   .nav-btn {
@@ -216,17 +203,17 @@
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
      <div class="flex items-center gap-1.5">
-      <button id="btn-fiyat-katalog-supabase" class="hidden shrink-0 px-3 rounded-lg bg-slate-800 border border-amber-700/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 transition text-xs font-semibold mono inline-flex items-center justify-center gap-1.5">
-       <i data-lucide="cloud-upload" class="w-3.5 h-3.5 shrink-0"></i><span>Katalog → Supabase</span>
+      <button id="btn-fiyat-katalog-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-amber-700/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> Katalog → Supabase
       </button>
-      <button id="btn-fiyat-duzenle" class="hidden shrink-0 px-3 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono inline-flex items-center justify-center gap-1.5">
-       <i data-lucide="pencil" class="w-3.5 h-3.5 shrink-0"></i><span>Düzenle</span>
+      <button id="btn-fiyat-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
       </button>
-      <button id="btn-standart-json-supabase" class="hidden shrink-0 px-3 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono inline-flex items-center justify-center gap-1.5">
-       <i data-lucide="cloud-upload" class="w-3.5 h-3.5 shrink-0"></i><span>JSON → Supabase</span>
+      <button id="btn-standart-json-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> JSON → Supabase
       </button>
-      <button id="btn-standart-duzenle" class="hidden shrink-0 px-3 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono inline-flex items-center justify-center gap-1.5">
-       <i data-lucide="pencil" class="w-3.5 h-3.5 shrink-0"></i><span>Düzenle</span>
+      <button id="btn-standart-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
       </button>
       <button id="btn-bulut-yukle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="cloud" class="w-3.5 h-3.5"></i> Projelerim
@@ -4911,7 +4898,7 @@
     const btn = document.getElementById('btn-fiyat-duzenle');
     if (btn) {
       btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Kaydet';
-      btn.className = 'shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono transition';
+      btn.className = 'shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono flex items-center gap-1.5 transition';
       btn.onclick = () => exitFiyatEditMode(true);
     }
     renderFiyatlarTable();
@@ -4953,7 +4940,7 @@
     const btn = document.getElementById('btn-fiyat-duzenle');
     if (btn) {
       btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenle';
-      btn.className = 'shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono';
+      btn.className = 'shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono flex items-center gap-1.5';
       btn.onclick = () => openFiyatEditModal();
     }
     renderFiyatlarTable();
