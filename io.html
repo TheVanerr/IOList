@@ -3172,6 +3172,9 @@
     { grup: 'KBN Serisi',  renk: '#a78bfa', modeller: ['KBN 1B 1650', 'KBN 1B 1850', 'KBN 1B 2050', 'KBN 2B 1650', 'KBN 2B 1850', 'KBN 2B 2050'] },
     { grup: 'PYT Serisi',  renk: '#fb923c', modeller: ['PYT 40', 'PYT 90', 'PYT 750', 'PYT 800'] },
     { grup: 'MST Serisi',  renk: '#f43f5e', modeller: ['MST PRO 02', 'MST LVB 60', 'MST LVB 100'] },
+    { grup: 'ULT Serisi',  renk: '#f59e0b', modeller: ['ULT M40 1B', 'ULT M60 1B', 'ULT M80 1B', 'ULT M100 1B', 'ULT M140 1B', 'ULT M200 1B L', 'ULT M300 1B L', 'ULT M400 1B L', 'ULT M800 1B L'] },
+    { grup: 'KNV Serisi',  renk: '#818cf8', modeller: ['KNV 60 4250 1B', 'KNV 60 6000 2B'] },
+    { grup: 'RTS Serisi',  renk: '#f87171', modeller: ['RTS 346 2B', 'RTS 346 4B'] },
   ];
 
   // Her model için malzeme satırları buraya eklenecek.
@@ -3199,6 +3202,19 @@
     'MST PRO 02':     [],
     'MST LVB 60':     [],
     'MST LVB 100':    [],
+    'ULT M40 1B':     [],
+    'ULT M60 1B':     [],
+    'ULT M80 1B':     [],
+    'ULT M100 1B':    [],
+    'ULT M140 1B':    [],
+    'ULT M200 1B L':  [],
+    'ULT M300 1B L':  [],
+    'ULT M400 1B L':  [],
+    'ULT M800 1B L':  [],
+    'KNV 60 4250 1B': [],
+    'KNV 60 6000 2B': [],
+    'RTS 346 2B':     [],
+    'RTS 346 4B':     [],
   };
 
   function getModelGrupRenk(model) {
@@ -3556,9 +3572,9 @@
     selHeader.appendChild(selTitle);
     selectorSection.appendChild(selHeader);
 
-    // selRow: select | bilgi kartları | opsiyonlar (ml-auto ile sağda)
+    // selRow: tam genişlik, iki satır — üst: select + bilgi kartları, alt: opsiyon butonları
     const selRow = document.createElement('div');
-    selRow.className = 'flex flex-wrap items-center gap-4 w-full';
+    selRow.className = 'flex flex-col gap-3 w-full';
 
     const select = document.createElement('select');
     select.id = 'standart-model-select';
@@ -3582,19 +3598,25 @@
       select.appendChild(optgroup);
     });
 
-    selRow.appendChild(select);
+    // Üst satır: select + bilgi kartları
+    const topRow = document.createElement('div');
+    topRow.className = 'flex flex-wrap items-center gap-4';
+
+    topRow.appendChild(select);
 
     // === LYM BİLGİ KARTLARI (select'in hemen sağında) ===
     const lymInfoSection = document.createElement('div');
     lymInfoSection.id = 'lym-info-section';
     lymInfoSection.className = 'flex flex-wrap items-center gap-2';
     lymInfoSection.style.display = 'none';
-    selRow.appendChild(lymInfoSection);
+    topRow.appendChild(lymInfoSection);
 
-    // === LYM OPSİYONLAR (ml-auto ile sağa dayalı) ===
+    selRow.appendChild(topRow);
+
+    // === LYM OPSİYONLAR — 2. satır (tam genişlik, gözle görülür kap) ===
     const lymOptionsRow = document.createElement('div');
     lymOptionsRow.id = 'lym-options-row';
-    lymOptionsRow.className = 'flex flex-wrap gap-2 ml-auto';
+    lymOptionsRow.className = 'flex flex-wrap gap-3 p-3 rounded-xl border border-slate-700/50 bg-slate-800/30';
     lymOptionsRow.style.display = 'none';
 
     const lymState = {
@@ -3751,7 +3773,7 @@
       const col = optColors[key];
       const wrap = document.createElement('button');
       wrap.className = 'option-btn rounded-lg p-3 text-left flex-shrink-0';
-      wrap.style.minWidth = '110px';
+      wrap.style.minWidth = '130px';
 
       const topRow = document.createElement('div');
       topRow.className = 'flex items-center justify-between mb-2';
