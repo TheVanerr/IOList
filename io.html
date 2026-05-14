@@ -3965,6 +3965,8 @@
           pushRow(`${tankIsimleri[t]} ÜST SEVİYE`);
         }
       }
+      // Ek Sensörler (seviye sensörlerinin altına)
+      state.ekSensorlar.forEach(s => { if (!s.ad) return; pushRow([s.grup, s.ad].filter(Boolean).join(' ').toUpperCase()); });
       // Otomatik Dolum Switchbox
       if (state.otomatikDolum === 'VAR') {
         for (let t = 0; t < state.tankSayisi; t++) {
@@ -3972,6 +3974,8 @@
           pushRow(`${tankIsimleri[t]} OTOMATİK DOLUM SWİTCHBOX KAPALI`);
         }
       }
+      // Ek Switchboxlar (switchboxların altına)
+      state.ekSwitchboxlar.forEach(sb => { if (!sb.ad) return; const l = [sb.grup, sb.ad].filter(Boolean).join(' ').toUpperCase(); pushRow(`${l} AÇIK`); pushRow(`${l} KAPALI`); });
       // Hava & Su
       pushRow('HAVA BİLGİSİ');
       if (state.otomatikDolum === 'VAR') {
@@ -3991,6 +3995,8 @@
           pushRow(`${tankIsimleri[t]} ÜST SEVİYE`);
         }
       }
+      // Ek Sensörler (seviye sensörlerinin altına)
+      state.ekSensorlar.forEach(s => { if (!s.ad) return; pushRow([s.grup, s.ad].filter(Boolean).join(' ').toUpperCase()); });
 
       // 2. Otomatik Dolum Switchbox
       if (state.otomatikDolum === 'VAR') {
@@ -4005,6 +4011,8 @@
         pushRow(`${tankIsimleri[t]} TAHLİYE PİSTONU AÇIK`);
         pushRow(`${tankIsimleri[t]} TAHLİYE PİSTONU KAPALI`);
       }
+      // Ek Switchboxlar (switchboxların altına)
+      state.ekSwitchboxlar.forEach(sb => { if (!sb.ad) return; const l = [sb.grup, sb.ad].filter(Boolean).join(' ').toUpperCase(); pushRow(`${l} AÇIK`); pushRow(`${l} KAPALI`); });
 
       // 4. Sabit giriş bilgileri
       pushRow('POZİSYON DURDURMA SWİTCHİ');
@@ -4023,20 +4031,6 @@
       pushRow('YEDEK');
       pushRow('YEDEK');
     }
-
-    // Ek Sensörler
-    state.ekSensorlar.forEach(s => {
-      if (!s.ad) return;
-      pushRow([s.grup, s.ad].filter(Boolean).join(' ').toUpperCase());
-    });
-
-    // Ek Switchboxlar
-    state.ekSwitchboxlar.forEach(sb => {
-      if (!sb.ad) return;
-      const label = [sb.grup, sb.ad].filter(Boolean).join(' ').toUpperCase();
-      pushRow(`${label} AÇIK`);
-      pushRow(`${label} KAPALI`);
-    });
 
     return rows;
   }
@@ -4090,6 +4084,8 @@
         pushCikis(`${tankIsimleri[t]} TAHLİYE PİSTONU VALFİ AÇ`);
         pushCikis(`${tankIsimleri[t]} TAHLİYE PİSTONU VALFİ KAPAT`);
       }
+      // Ek Valfler (valf çıkışlarının altına)
+      state.ekValfler.forEach(v => { if (!v.ad) return; const l = [v.grup, v.ad].filter(Boolean).join(' ').toUpperCase(); pushCikis(`${l} AÇIK`); if (v.tip === 'cift') pushCikis(`${l} KAPAT`); });
 
       // Tepe Lambası
       if (state.tepeLambasi === 'VAR') {
@@ -4121,6 +4117,8 @@
           pushCikis(`${tankIsimleri[t]} OTOMATİK DOLUM VANASI VALFİ AÇ`);
         }
       }
+      // Ek Valfler (valf çıkışlarının altına)
+      state.ekValfler.forEach(v => { if (!v.ad) return; const l = [v.grup, v.ad].filter(Boolean).join(' ').toUpperCase(); pushCikis(`${l} AÇIK`); if (v.tip === 'cift') pushCikis(`${l} KAPAT`); });
 
       // Tepe Lambası
       if (state.tepeLambasi === 'VAR') {
@@ -4134,14 +4132,6 @@
       pushCikis('YEDEK');
       pushCikis('YEDEK');
     }
-
-    // Ek Valfler
-    state.ekValfler.forEach(v => {
-      if (!v.ad) return;
-      const label = [v.grup, v.ad].filter(Boolean).join(' ').toUpperCase();
-      pushCikis(`${label} AÇIK`);
-      if (v.tip === 'cift') pushCikis(`${label} KAPAT`);
-    });
 
     return cikisRows;
   }
@@ -4626,28 +4616,6 @@
     });
   }
 
-  // Auth modal
-  const _authModal = document.getElementById('modal-auth');
-  document.getElementById('modal-auth-close').addEventListener('click', () => _authModal.classList.add('hidden'));
-  _authModal.addEventListener('click', e => { if (e.target === _authModal) _authModal.classList.add('hidden'); });
-
-  // Google OAuth butonu
-  document.getElementById('btn-google-giris').addEventListener('click', async () => {
-    if (!sb) { showToast('Bulut bağlantısı aktif değil.', 'error'); return; }
-    const { error } = await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href }
-    });
-    if (error) showToast('Google girişi başarısız: ' + error.message, 'error');
-  });
-
-  // Cloud modal
-  const _cloudModal = document.getElementById('modal-cloud');
-  document.getElementById('modal-cloud-close').addEventListener('click', () => _cloudModal.classList.add('hidden'));
-  _cloudModal.addEventListener('click', e => { if (e.target === _cloudModal) _cloudModal.classList.add('hidden'); });
-
-  // Email/şifre formu kaldırıldı — sadece Google OAuth
-
   // Projelerim
   document.getElementById('btn-bulut-yukle').addEventListener('click', () => loadCloudProjects());
 
@@ -4673,7 +4641,7 @@
 
   // Initialize icons
   lucide.createIcons();
-  // window.load bekle — CDN scriptleri (lucide vb.) tam yüklensin
+  // Modal HTML elemanları </script>'ten sonra tanımlı olduğu için hepsi window.load içinde bağlanır
   window.addEventListener('load', () => {
     lucide.createIcons();
     renderRezistansTable();
@@ -4683,6 +4651,27 @@
     renderSensorTable();
     renderMalzemeTable();
     renderIOPage();
+
+    // Auth Modal — DOM'da </script>'ten sonra tanımlı, burada bağla
+    const _authModal = document.getElementById('modal-auth');
+    if (_authModal) {
+      document.getElementById('modal-auth-close').addEventListener('click', () => _authModal.classList.add('hidden'));
+      _authModal.addEventListener('click', e => { if (e.target === _authModal) _authModal.classList.add('hidden'); });
+    }
+    const googleBtn = document.getElementById('btn-google-giris');
+    if (googleBtn) {
+      googleBtn.addEventListener('click', async () => {
+        if (!sb) { showToast('Bulut bağlantısı aktif değil.', 'error'); return; }
+        const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+        if (error) showToast('Google girişi başarısız: ' + error.message, 'error');
+      });
+    }
+    // Cloud Modal
+    const _cloudModal = document.getElementById('modal-cloud');
+    if (_cloudModal) {
+      document.getElementById('modal-cloud-close').addEventListener('click', () => _cloudModal.classList.add('hidden'));
+      _cloudModal.addEventListener('click', e => { if (e.target === _cloudModal) _cloudModal.classList.add('hidden'); });
+    }
   });
 
   // Initialize Element SDK (optional — only available on hosting platform)
