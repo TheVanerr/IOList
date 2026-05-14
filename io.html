@@ -4643,7 +4643,7 @@
   });
   // ===== END SUPABASE =====
 
-  // Sayfa bölümleri script etiketinden önce tanımlı — senkron başlat, herhangi bir event bekleme
+  // Sayfa bölümleri script etiketinden önce tanımlı — senkron başlat
   lucide.createIcons();
   renderRezistansTable();
   renderKurutmaTable();
@@ -4653,28 +4653,35 @@
   renderMalzemeTable();
   renderIOPage();
 
-  // Modallar </script>'ten SONRA tanımlı. DOMContentLoaded kullan:
-  // window.load'dan farklı olarak Cloudflare'in CF-iframe'inin yüklenmesini BEKLEMEZ.
-  document.addEventListener('DOMContentLoaded', () => {
-    const _authModal = document.getElementById('modal-auth');
-    if (_authModal) {
-      document.getElementById('modal-auth-close').addEventListener('click', () => _authModal.classList.add('hidden'));
-      _authModal.addEventListener('click', e => { if (e.target === _authModal) _authModal.classList.add('hidden'); });
+  // Event delegation — document her zaman var, timing sorunu yok.
+  // Modal elementleri (</script>'ten sonra) var olup olmadığına bakmaksızın çalışır.
+  document.addEventListener('click', e => {
+    // Auth modal kapat (X veya arka plan)
+    if (e.target.closest('#modal-auth-close') || e.target.id === 'modal-auth') {
+      const m = document.getElementById('modal-auth');
+      if (m) m.classList.add('hidden');
     }
-    const googleBtn = document.getElementById('btn-google-giris');
-    if (googleBtn) {
-      googleBtn.addEventListener('click', async () => {
-        if (!sb) { showToast('Bulut bağlantısı aktif değil.', 'error'); return; }
-        const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
-        if (error) showToast('Google girişi başarısız: ' + error.message, 'error');
+    // Cloud modal kapat
+    if (e.target.closest('#modal-cloud-close') || e.target.id === 'modal-cloud') {
+      const m = document.getElementById('modal-cloud');
+      if (m) m.classList.add('hidden');
+    }
+    // Google ile Giriş Yap
+    if (e.target.closest('#btn-google-giris')) {
+      if (!sb) { showToast('Bulut bağlantısı aktif değil.', 'error'); return; }
+      sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } })
+        .then(({ error }) => { if (error) showToast('Google girişi başarısız: ' + error.message, 'error'); });
+    }
+  });
+
+  // ESC ile açık modalı kapat
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      ['modal-auth', 'modal-cloud'].forEach(id => {
+        const m = document.getElementById(id);
+        if (m) m.classList.add('hidden');
       });
     }
-    const _cloudModal = document.getElementById('modal-cloud');
-    if (_cloudModal) {
-      document.getElementById('modal-cloud-close').addEventListener('click', () => _cloudModal.classList.add('hidden'));
-      _cloudModal.addEventListener('click', e => { if (e.target === _cloudModal) _cloudModal.classList.add('hidden'); });
-    }
-    lucide.createIcons();
   });
 
   // Initialize Element SDK (optional — only available on hosting platform)
