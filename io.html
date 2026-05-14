@@ -203,6 +203,12 @@
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
      <div class="flex items-center gap-1.5">
+      <button id="btn-fiyat-katalog-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-amber-700/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> Katalog → Supabase
+      </button>
+      <button id="btn-fiyat-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
+      </button>
       <button id="btn-standart-json-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> JSON → Supabase
       </button>
@@ -521,6 +527,26 @@
      <button data-page="secim" class="nav-btn active px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> <span>Seçim</span> </button> <button data-page="otomasyon" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="cpu" class="w-4 h-4"></i> <span>Otomasyon</span> </button> <button data-page="io" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="circuit-board" class="w-4 h-4"></i> <span>IO</span> </button> <button data-page="malzeme" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="package" class="w-4 h-4"></i> <span>Malzeme</span> </button> <button data-page="fiyatlar" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="tag" class="w-4 h-4"></i> <span>Fiyatlar</span> </button> <button data-page="standart" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="layout-template" class="w-4 h-4"></i> <span>Standart</span> </button>
     </div>
    </nav>
+  </div>
+  <!-- Fiyatlar Katalog Düzenleme Şifre Modalı -->
+  <div id="fiyat-edit-modal" class="fixed inset-0 z-[200] flex items-center justify-center hidden">
+   <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeFiyatEditModal()"></div>
+   <div class="relative bg-slate-900 border border-amber-500/40 rounded-2xl p-6 w-80 shadow-2xl shadow-black/60">
+    <div class="flex items-center gap-2 mb-1">
+     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+     <span class="text-sm font-bold mono text-amber-400 uppercase tracking-wider">Katalog Düzenleme Kilidi</span>
+    </div>
+    <p class="text-xs text-slate-500 mb-4 mono mt-1">Fiyatlar kataloğunu düzenlemek için şifreyi girin.</p>
+    <input id="fiyat-edit-pw" type="password" placeholder="Şifre"
+     class="w-full px-3 py-2.5 bg-slate-800 border border-slate-600 rounded-xl text-white text-sm mono focus:border-amber-500 focus:outline-none mb-1"
+     onkeydown="if(event.key==='Enter') submitFiyatEditPw()">
+    <p id="fiyat-edit-pw-err" class="text-xs text-red-400 mb-3 h-4"></p>
+    <div class="flex gap-2 mt-1">
+     <button onclick="closeFiyatEditModal()" class="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-xs text-slate-300 hover:bg-slate-700 mono transition">İptal</button>
+     <button onclick="submitFiyatEditPw()" class="flex-1 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs text-white font-bold mono transition">Onayla</button>
+    </div>
+   </div>
+  </div>
   <!-- Standart Düzenleme Şifre Modalı -->
   <div id="standart-edit-modal" class="fixed inset-0 z-[200] flex items-center justify-center hidden">
    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeStandartEditModal()"></div>
@@ -2953,6 +2979,174 @@
     }
 
     container.innerHTML = '';
+
+    // ===== DÜZENLEME MODU =====
+    if (fiyatEditMode) {
+      const infoBar = document.createElement('div');
+      infoBar.className = 'flex items-center gap-2 px-3 py-2 mb-3 bg-amber-900/20 border border-amber-500/30 rounded-xl text-xs mono text-amber-400';
+      infoBar.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme modu aktif — değişiklikler "Kaydet & Çık"\'a basıldığında Supabase\'e yüklenir.';
+      container.appendChild(infoBar);
+
+      // Her grup için edit block
+      FIYAT_GRUPLARI.forEach((grup, gi) => {
+        const block = document.createElement('div');
+        block.setAttribute('data-fiyat-grup-block', gi);
+        block.className = 'bg-slate-900/40 border border-amber-500/20 rounded-xl overflow-hidden mb-4';
+
+        // Grup header (editable)
+        const grupHead = document.createElement('div');
+        grupHead.className = 'px-4 py-2 bg-slate-800/60 border-b border-amber-500/20 flex items-center gap-2 flex-wrap';
+
+        const renkInp = document.createElement('input');
+        renkInp.type = 'color';
+        renkInp.value = grup.renk;
+        renkInp.className = 'fiyat-edit-grup-renk w-7 h-7 rounded cursor-pointer border border-slate-600 bg-transparent';
+        renkInp.title = 'Grup rengi';
+
+        const grupAdiInp = document.createElement('input');
+        grupAdiInp.type = 'text';
+        grupAdiInp.value = grup.grupAdi;
+        grupAdiInp.className = 'fiyat-edit-grup-adi flex-1 min-w-0 px-2 py-1 bg-slate-800 border border-slate-600 rounded text-xs mono font-bold text-slate-100 focus:border-amber-500 focus:outline-none';
+        grupAdiInp.style.color = grup.renk;
+        renkInp.addEventListener('input', () => { grupAdiInp.style.color = renkInp.value; });
+
+        const delGrupBtn = document.createElement('button');
+        delGrupBtn.className = 'ml-auto flex items-center gap-1 px-2 py-1 rounded bg-slate-800 border border-red-700/50 hover:border-red-400 text-red-400 text-xs mono transition';
+        delGrupBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Grubu Sil';
+        delGrupBtn.onclick = () => block.remove();
+
+        grupHead.appendChild(renkInp);
+        grupHead.appendChild(grupAdiInp);
+        grupHead.appendChild(delGrupBtn);
+        block.appendChild(grupHead);
+
+        // Tablo
+        const tbl = document.createElement('table');
+        tbl.className = 'w-full table-fixed';
+        const cg = document.createElement('colgroup');
+        ['5%','5%','30%','60%'].forEach(w => { const c = document.createElement('col'); c.style.width = w; cg.appendChild(c); });
+        tbl.appendChild(cg);
+
+        const thead = document.createElement('thead');
+        const hrow = document.createElement('tr');
+        hrow.className = 'bg-slate-800/50 border-b border-amber-500/20';
+        [{ label:'#', col:'#94a3b8' }, { label:'Sil', col:'#f87171' }, { label:'Model', col:'#f59e0b' }, { label:'Açıklama', col:'#e2e8f0' }].forEach(h => {
+          const th = document.createElement('th');
+          th.className = 'px-3 py-2 text-center text-xs font-bold mono';
+          th.style.color = h.col; th.textContent = h.label;
+          hrow.appendChild(th);
+        });
+        thead.appendChild(hrow);
+        tbl.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+
+        function makeEditRow(el, idx) {
+          const tr = document.createElement('tr');
+          tr.setAttribute('data-fiyat-edit-row', idx);
+          tr.className = 'border-t border-slate-700/30';
+          tr.style.height = '38px';
+
+          const noTd = document.createElement('td');
+          noTd.className = 'px-2 py-0 text-center text-xs mono text-slate-500 align-middle';
+          noTd.textContent = String(idx + 1).padStart(2, '0');
+          tr.appendChild(noTd);
+
+          const delTd = document.createElement('td');
+          delTd.className = 'px-1 py-0 text-center align-middle';
+          const delBtn = document.createElement('button');
+          delBtn.className = 'w-6 h-6 flex items-center justify-center rounded border border-red-700/50 hover:border-red-400 text-red-400 hover:bg-red-900/20 transition';
+          delBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+          delBtn.title = 'Satırı sil';
+          delBtn.onclick = () => { tr.remove(); tbody.querySelectorAll('[data-fiyat-edit-row]').forEach((r, i) => { r.querySelector('td:first-child').textContent = String(i+1).padStart(2,'0'); }); };
+          delTd.appendChild(delBtn);
+          tr.appendChild(delTd);
+
+          const modelTd = document.createElement('td');
+          modelTd.className = 'px-2 py-0 align-middle';
+          const modelInp = document.createElement('input');
+          modelInp.type = 'text';
+          modelInp.value = el.model;
+          modelInp.className = 'fiyat-edit-model w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs mono font-semibold text-amber-300 focus:border-amber-500 focus:outline-none';
+          modelInp.placeholder = 'Model kodu…';
+          modelTd.appendChild(modelInp);
+          tr.appendChild(modelTd);
+
+          const aciTd = document.createElement('td');
+          aciTd.className = 'px-2 py-0 align-middle';
+          const aciInp = document.createElement('input');
+          aciInp.type = 'text';
+          aciInp.value = el.aciklama;
+          aciInp.className = 'fiyat-edit-aciklama w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200 focus:border-amber-500 focus:outline-none';
+          aciInp.placeholder = 'Açıklama…';
+          aciTd.appendChild(aciInp);
+          tr.appendChild(aciTd);
+
+          return tr;
+        }
+
+        grup.elemanlar.forEach((el, idx) => tbody.appendChild(makeEditRow(el, idx)));
+        tbl.appendChild(tbody);
+        block.appendChild(tbl);
+
+        // Satır ekle butonu
+        const addRowBar = document.createElement('div');
+        addRowBar.className = 'px-3 py-2 border-t border-slate-700/30 flex justify-start';
+        const addRowBtn = document.createElement('button');
+        addRowBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-amber-500 text-amber-400 hover:bg-amber-900/20 text-xs mono transition';
+        addRowBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Satır Ekle';
+        addRowBtn.onclick = () => {
+          const idx = tbody.querySelectorAll('[data-fiyat-edit-row]').length;
+          const newTr = makeEditRow({ model: '', aciklama: '' }, idx);
+          tbody.appendChild(newTr);
+          newTr.querySelector('.fiyat-edit-model')?.focus();
+        };
+        addRowBar.appendChild(addRowBtn);
+        block.appendChild(addRowBar);
+        container.appendChild(block);
+      });
+
+      // Yeni grup ekle
+      const newGrupBar = document.createElement('div');
+      newGrupBar.className = 'flex items-center gap-2 mb-4 px-1';
+      const newGrupInp = document.createElement('input');
+      newGrupInp.type = 'text';
+      newGrupInp.placeholder = 'Yeni grup adı (ör: Kontaktör — Schneider LC1)';
+      newGrupInp.className = 'flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded-xl text-xs mono font-bold text-slate-100 focus:border-amber-500 focus:outline-none';
+      const newGrupBtn = document.createElement('button');
+      newGrupBtn.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 border border-slate-600 hover:border-amber-400 text-amber-400 hover:bg-amber-900/20 text-xs mono font-bold transition whitespace-nowrap';
+      newGrupBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Grup Ekle';
+      newGrupBtn.onclick = () => {
+        const ad = newGrupInp.value.trim();
+        if (!ad) return;
+        FIYAT_GRUPLARI.push({ grupAdi: ad, renk: '#94a3b8', elemanlar: [] });
+        newGrupInp.value = '';
+        renderFiyatlarTable();
+      };
+      newGrupInp.onkeydown = e => { if (e.key === 'Enter') newGrupBtn.click(); };
+      newGrupBar.appendChild(newGrupInp);
+      newGrupBar.appendChild(newGrupBtn);
+      container.appendChild(newGrupBar);
+
+      // Alt aksiyon barı
+      const actionBar = document.createElement('div');
+      actionBar.className = 'flex justify-end gap-2 pb-4';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 hover:bg-slate-700 text-xs text-slate-300 mono transition';
+      cancelBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> İptal';
+      cancelBtn.onclick = () => exitFiyatEditMode(false);
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 border border-emerald-500/50 text-xs text-white font-bold mono transition';
+      saveBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Kaydet & Çık';
+      saveBtn.onclick = () => exitFiyatEditMode(true);
+      actionBar.appendChild(cancelBtn);
+      actionBar.appendChild(saveBtn);
+      container.appendChild(actionBar);
+      lucide.createIcons();
+      return;
+    }
+    // ===== END DÜZENLEME MODU =====
+
     let savedPrices = {};
     try { savedPrices = JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}'); } catch(e) {}
 
@@ -4469,10 +4663,17 @@
       document.getElementById(`page-${target}`).classList.add('active');
       // Standart sayfasına özel admin butonlarını göster/gizle
       const isStandart = target === 'standart';
+      const isFiyatlar = target === 'fiyatlar';
       const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
       const duzenleBtn = document.getElementById('btn-standart-duzenle');
+      const fiyatDuzenleBtn = document.getElementById('btn-fiyat-duzenle');
+      const fiyatKatalogBtn = document.getElementById('btn-fiyat-katalog-supabase');
       if (jsonSupabaseBtn) jsonSupabaseBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
       if (duzenleBtn) duzenleBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
+      if (fiyatDuzenleBtn) fiyatDuzenleBtn.classList.toggle('hidden', !(isFiyatlar && isAdmin()));
+      if (fiyatKatalogBtn) fiyatKatalogBtn.classList.toggle('hidden', !(isFiyatlar && isAdmin()));
+      // Sayfa değişince fiyat edit modunu çık
+      if (!isFiyatlar && fiyatEditMode) { fiyatEditMode = false; }
       if (target === 'secim') { renderRezistansTable(); renderKurutmaTable(); renderKacakAkimTable(); renderTmsTable(); }
       if (target === 'otomasyon') renderSensorTable();
       if (target === 'fiyatlar') renderFiyatlarTable(); // async — katalog Supabase'den yüklenir
@@ -4739,6 +4940,133 @@
   let standartEditMode = false;
   let standartEditAccentColor = '#22d3ee';
 
+  // ===== FİYATLAR KATALOG DÜZENLEME =====
+  let fiyatEditMode = false;
+
+  function openFiyatEditModal() {
+    const modal = document.getElementById('fiyat-edit-modal');
+    modal.classList.remove('hidden');
+    const inp = document.getElementById('fiyat-edit-pw');
+    inp.value = '';
+    document.getElementById('fiyat-edit-pw-err').textContent = '';
+    setTimeout(() => inp.focus(), 60);
+  }
+
+  function closeFiyatEditModal() {
+    document.getElementById('fiyat-edit-modal').classList.add('hidden');
+  }
+
+  function submitFiyatEditPw() {
+    const pw = document.getElementById('fiyat-edit-pw').value;
+    if (pw === '112263') {
+      closeFiyatEditModal();
+      enterFiyatEditMode();
+    } else {
+      document.getElementById('fiyat-edit-pw-err').textContent = 'Şifre hatalı.';
+      document.getElementById('fiyat-edit-pw').select();
+    }
+  }
+
+  function enterFiyatEditMode() {
+    fiyatEditMode = true;
+    const btn = document.getElementById('btn-fiyat-duzenle');
+    if (btn) {
+      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Kaydet';
+      btn.className = 'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono transition';
+      btn.onclick = () => exitFiyatEditMode(true);
+    }
+    renderFiyatlarTable();
+  }
+
+  async function exitFiyatEditMode(save) {
+    if (save) {
+      const groups = collectFiyatKatalogData();
+      if (groups !== null) {
+        FIYAT_GRUPLARI = groups;
+        await saveKatalogToSupabase(groups);
+      }
+    }
+    fiyatEditMode = false;
+    const btn = document.getElementById('btn-fiyat-duzenle');
+    if (btn) {
+      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenle';
+      btn.className = 'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono';
+      btn.onclick = () => openFiyatEditModal();
+    }
+    renderFiyatlarTable();
+  }
+
+  function collectFiyatKatalogData() {
+    const container = document.getElementById('fiyatlar-content');
+    if (!container) return null;
+    const groups = [];
+    container.querySelectorAll('[data-fiyat-grup-block]').forEach(block => {
+      const grupAdiInp = block.querySelector('.fiyat-edit-grup-adi');
+      const grupRenkInp = block.querySelector('.fiyat-edit-grup-renk');
+      const grupAdi = grupAdiInp ? grupAdiInp.value.trim() : '';
+      const renk = grupRenkInp ? grupRenkInp.value : '#94a3b8';
+      if (!grupAdi) return;
+      const elemanlar = [];
+      block.querySelectorAll('[data-fiyat-edit-row]').forEach(tr => {
+        const model = tr.querySelector('.fiyat-edit-model')?.value?.trim() || '';
+        const aciklama = tr.querySelector('.fiyat-edit-aciklama')?.value?.trim() || '';
+        if (model) elemanlar.push({ model, aciklama });
+      });
+      groups.push({ grupAdi, renk, elemanlar });
+    });
+    return groups;
+  }
+
+  async function saveKatalogToSupabase(groups) {
+    if (!sb) { console.warn('Supabase yok'); return; }
+    const rows = [];
+    groups.forEach((g, gi) => {
+      g.elemanlar.forEach((el, ei) => {
+        rows.push({
+          grup_sira: gi,
+          grup_adi: g.grupAdi,
+          grup_renk: g.renk,
+          model_sira: ei,
+          model: el.model,
+          aciklama: el.aciklama
+        });
+      });
+    });
+    try {
+      const { error: delErr } = await sb.from('urun_katalogu').delete().neq('id', 0);
+      if (delErr) throw delErr;
+      if (rows.length > 0) {
+        const { error: insErr } = await sb.from('urun_katalogu').insert(rows);
+        if (insErr) throw insErr;
+      }
+      console.log(`Katalog kaydedildi: ${rows.length} ürün, ${groups.length} grup`);
+    } catch(e) {
+      console.error('Katalog kaydetme hatası:', e);
+      alert('❌ Katalog kaydedilemedi: ' + (e.message || JSON.stringify(e)));
+    }
+  }
+
+  async function uploadKatalogToSupabase() {
+    if (!sb) { alert('Supabase bağlantısı yok.'); return; }
+    if (FIYAT_GRUPLARI.length === 0) {
+      alert('Katalog boş — önce Fiyatlar sayfasını açın.'); return;
+    }
+    const btn = document.getElementById('btn-fiyat-katalog-supabase');
+    if (btn) { btn.textContent = 'Yükleniyor…'; btn.disabled = true; }
+    try {
+      await saveKatalogToSupabase(FIYAT_GRUPLARI);
+      const total = FIYAT_GRUPLARI.reduce((s, g) => s + g.elemanlar.length, 0);
+      alert(`✅ ${total} ürün, ${FIYAT_GRUPLARI.length} grup Supabase'e yüklendi.`);
+    } finally {
+      if (btn) {
+        btn.innerHTML = '<i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> Katalog → Supabase';
+        btn.disabled = false;
+        lucide.createIcons();
+      }
+    }
+  }
+  // ===== END FİYATLAR KATALOG DÜZENLEME =====
+
   function openStandartEditModal() {
     const modal = document.getElementById('standart-edit-modal');
     modal.classList.remove('hidden');
@@ -4999,8 +5327,10 @@
     const bulutBtn = document.getElementById('btn-bulut-yukle');
     const standartDuzenleBtn = document.getElementById('btn-standart-duzenle');
     const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
-    // Standart sayfası şu an aktif mi?
+    const fiyatDuzenleBtn = document.getElementById('btn-fiyat-duzenle');
+    const fiyatKatalogBtn = document.getElementById('btn-fiyat-katalog-supabase');
     const standartAktif = document.querySelector('[data-page="standart"]')?.classList.contains('active');
+    const fiyatlarAktif = document.querySelector('[data-page="fiyatlar"]')?.classList.contains('active');
     if (currentUser) {
       const email = currentUser.email || '';
       const short = email.length > 18 ? email.slice(0, 15) + '…' : email;
@@ -5015,9 +5345,19 @@
         }
         standartDuzenleBtn.classList.toggle('hidden', !standartAktif);
         standartDuzenleBtn.onclick = () => openStandartEditModal();
+        if (fiyatDuzenleBtn) {
+          fiyatDuzenleBtn.classList.toggle('hidden', !fiyatlarAktif);
+          fiyatDuzenleBtn.onclick = () => openFiyatEditModal();
+        }
+        if (fiyatKatalogBtn) {
+          fiyatKatalogBtn.classList.toggle('hidden', !fiyatlarAktif);
+          fiyatKatalogBtn.onclick = () => uploadKatalogToSupabase();
+        }
       } else {
         if (jsonSupabaseBtn) jsonSupabaseBtn.classList.add('hidden');
         standartDuzenleBtn.classList.add('hidden');
+        if (fiyatDuzenleBtn) fiyatDuzenleBtn.classList.add('hidden');
+        if (fiyatKatalogBtn) fiyatKatalogBtn.classList.add('hidden');
       }
     } else {
       girisBtn.innerHTML = `<i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş`;
@@ -5025,6 +5365,8 @@
       bulutBtn.classList.add('hidden');
       standartDuzenleBtn.classList.add('hidden');
       if (jsonSupabaseBtn) jsonSupabaseBtn.classList.add('hidden');
+      if (fiyatDuzenleBtn) fiyatDuzenleBtn.classList.add('hidden');
+      if (fiyatKatalogBtn) fiyatKatalogBtn.classList.add('hidden');
     }
     lucide.createIcons();
   }
