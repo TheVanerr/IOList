@@ -2269,236 +2269,31 @@
   // ===== END EK OTOMASYON TABLOLARI =====
 
   // ===== FİYATLAR TABLOSU =====
-  const FIYAT_GRUPLARI = [
-    { grupAdi: 'MKŞ — Schneider GV2ME', renk: '#22d3ee', elemanlar: [
-      { model: 'GV2ME02',  aciklama: 'Motor Koruma Şalteri 0.16A – 0.25A'  },
-      { model: 'GV2ME03',  aciklama: 'Motor Koruma Şalteri 0.25A – 0.40A'  },
-      { model: 'GV2ME04',  aciklama: 'Motor Koruma Şalteri 0.40A – 0.63A'  },
-      { model: 'GV2ME05',  aciklama: 'Motor Koruma Şalteri 0.63A – 1.00A'  },
-      { model: 'GV2ME06',  aciklama: 'Motor Koruma Şalteri 1.00A – 1.60A'  },
-      { model: 'GV2ME07',  aciklama: 'Motor Koruma Şalteri 1.60A – 2.50A'  },
-      { model: 'GV2ME08',  aciklama: 'Motor Koruma Şalteri 2.50A – 4.00A'  },
-      { model: 'GV2ME10',  aciklama: 'Motor Koruma Şalteri 4.00A – 6.30A'  },
-      { model: 'GV2ME14',  aciklama: 'Motor Koruma Şalteri 6.00A – 10.00A' },
-      { model: 'GV2ME16',  aciklama: 'Motor Koruma Şalteri 9.00A – 14.00A' },
-      { model: 'GV2ME20',  aciklama: 'Motor Koruma Şalteri 13.00A – 18.00A'},
-      { model: 'GV2ME21',  aciklama: 'Motor Koruma Şalteri 17.00A – 23.00A'},
-      { model: 'GV2ME22',  aciklama: 'Motor Koruma Şalteri 20.00A – 25.00A'},
-      { model: 'GV2ME32',  aciklama: 'Motor Koruma Şalteri 24.00A – 32.00A'},
-    ]},
-    { grupAdi: 'MKŞ — Siemens 3RV2', renk: '#22d3ee', elemanlar: [
-      { model: '3RV2011-0CA10', aciklama: 'Motor Koruma Şalteri 0.18A – 0.25A'  },
-      { model: '3RV2011-0EA10', aciklama: 'Motor Koruma Şalteri 0.28A – 0.40A'  },
-      { model: '3RV2011-0GA10', aciklama: 'Motor Koruma Şalteri 0.45A – 0.63A'  },
-      { model: '3RV2011-0JA10', aciklama: 'Motor Koruma Şalteri 0.70A – 1.00A'  },
-      { model: '3RV2011-1AA10', aciklama: 'Motor Koruma Şalteri 1.10A – 1.60A'  },
-      { model: '3RV2011-1CA10', aciklama: 'Motor Koruma Şalteri 1.80A – 2.50A'  },
-      { model: '3RV2011-1EA10', aciklama: 'Motor Koruma Şalteri 2.80A – 4.00A'  },
-      { model: '3RV2011-1GA10', aciklama: 'Motor Koruma Şalteri 4.50A – 6.30A'  },
-      { model: '3RV2011-1JA10', aciklama: 'Motor Koruma Şalteri 7.00A – 10.00A' },
-      { model: '3RV2021-4AA10', aciklama: 'Motor Koruma Şalteri 11.00A – 16.00A'},
-      { model: '3RV2021-4BA10', aciklama: 'Motor Koruma Şalteri 14.00A – 20.00A'},
-      { model: '3RV2021-4CA10', aciklama: 'Motor Koruma Şalteri 17.00A – 25.00A'},
-      { model: '3RV2031-4EA10', aciklama: 'Motor Koruma Şalteri 22.00A – 32.00A'},
-    ]},
-    { grupAdi: 'Kontaktör — Schneider LC1', renk: '#34d399', elemanlar: [
-      { model: 'LC1K0610M7', aciklama: 'Kontaktör 6A 220V AC' },
-      { model: 'LC1K0910M7', aciklama: 'Kontaktör 9A 220V AC' },
-      { model: 'LC1D16M7',   aciklama: 'Kontaktör 16A 220V AC' },
-      { model: 'LC1D25M7',   aciklama: 'Kontaktör 25A 220V AC' },
-      { model: 'LC1D32M7',   aciklama: 'Kontaktör 32A 220V AC' },
-    ]},
-    { grupAdi: 'Kontaktör — Siemens 3RT2 (Motor)', renk: '#34d399', elemanlar: [
-      { model: '3RT2015-1AP01', aciklama: 'Kontaktör 7A 220V AC' },
-      { model: '3RT2016-1AP01', aciklama: 'Kontaktör 9A 220V AC' },
-      { model: '3RT2018-1AP01', aciklama: 'Kontaktör 16A 220V AC' },
-      { model: '3RT2026-1AP01', aciklama: 'Kontaktör 25A 220V AC' },
-    ]},
-    { grupAdi: 'Kontaktör — Siemens 3RT2 (Rezistans)', renk: '#34d399', elemanlar: [
-      { model: '3RT2015-1AM61', aciklama: 'Kontaktör 7A 220V AC' },
-      { model: '3RT2016-1AM61', aciklama: 'Kontaktör 9A 220V AC' },
-      { model: '3RT2018-1AM61', aciklama: 'Kontaktör 16A 220V AC' },
-      { model: '3RT2026-1AM61', aciklama: 'Kontaktör 25A 220V AC' },
-      { model: '3RT2034-1AM61', aciklama: 'Kontaktör 32A 220V AC' },
-    ]},
-    { grupAdi: 'Yardımcı Kontak', renk: '#a78bfa', elemanlar: [
-      { model: 'GVAE11',     aciklama: 'Schneider — GV2ME Serisi Yardımcı Kontak' },
-      { model: '3RV2901-1E', aciklama: 'Siemens — 3RV2 Serisi Yardımcı Kontak'   },
-    ]},
-    { grupAdi: 'Sigorta 3P — Schneider iC60N', renk: '#f97316', elemanlar: [
-      { model: 'A9F74306', aciklama: '3P 6A  — Rezistans Koruma' },
-      { model: 'A9F74310', aciklama: '3P 10A — Rezistans Koruma' },
-      { model: 'A9F74316', aciklama: '3P 16A — Rezistans Koruma' },
-      { model: 'A9F74325', aciklama: '3P 25A — Rezistans Koruma' },
-      { model: 'A9F74332', aciklama: '3P 32A — Rezistans Koruma' },
-      { model: 'A9F74340', aciklama: '3P 40A — Rezistans Koruma' },
-    ]},
-    { grupAdi: 'Sigorta 1P — Schneider iC60N (İnvertör)', renk: '#f97316', elemanlar: [
-      { model: 'A9F74106', aciklama: '1P 6A'  },
-      { model: 'A9F74110', aciklama: '1P 10A' },
-      { model: 'A9F74116', aciklama: '1P 16A' },
-      { model: 'A9F74125', aciklama: '1P 25A' },
-      { model: 'A9F74132', aciklama: '1P 32A' },
-      { model: 'A9F74140', aciklama: '1P 40A' },
-      { model: 'A9F74150', aciklama: '1P 50A' },
-      { model: 'A9F74163', aciklama: '1P 63A' },
-    ]},
-    { grupAdi: 'Sigorta — Siemens 5SL4', renk: '#f97316', elemanlar: [
-      { model: '5SL4106-7', aciklama: '6A'   },
-      { model: '5SL4110-7', aciklama: '10A'  },
-      { model: '5SL4116-7', aciklama: '16A'  },
-      { model: '5SL4125-7', aciklama: '25A'  },
-      { model: '5SL4132-7', aciklama: '32A'  },
-      { model: '5SL4140-7', aciklama: '40A'  },
-      { model: '5SL4150-7', aciklama: '50A'  },
-      { model: '5SL4163-7', aciklama: '63A'  },
-    ]},
-    { grupAdi: 'RCCB (Kaçak Akım) — Schneider iID', renk: '#f43f5e', elemanlar: [
-      { model: 'A9R41416',  aciklama: '2P 16A  30mA' },
-      { model: 'A9R41425',  aciklama: '2P 25A  30mA' },
-      { model: 'A9R41440',  aciklama: '2P 40A  30mA' },
-      { model: 'A9R41463',  aciklama: '2P 63A  30mA' },
-      { model: 'A9R41480',  aciklama: '2P 80A  30mA' },
-      { model: 'A9R414100', aciklama: '2P 100A 30mA' },
-    ]},
-    { grupAdi: 'RCCB (Kaçak Akım) — Siemens 5SV3', renk: '#f43f5e', elemanlar: [
-      { model: '5SV3312-6', aciklama: '2P 16A  30mA' },
-      { model: '5SV3314-6', aciklama: '2P 25A  30mA' },
-      { model: '5SV3316-6', aciklama: '2P 40A  30mA' },
-      { model: '5SV3322-6', aciklama: '2P 63A  30mA' },
-      { model: '5SV3324-6', aciklama: '2P 80A  30mA' },
-      { model: '5SV3326-6', aciklama: '2P 100A 30mA' },
-    ]},
-    { grupAdi: 'İnvertör — Delta VFD-EL', renk: '#60a5fa', elemanlar: [
-      { model: 'VFD002EL21W-1', aciklama: '0.20kW  1.6A'  },
-      { model: 'VFD004EL21W-1', aciklama: '0.40kW  2.5A'  },
-      { model: 'VFD007EL21W-1', aciklama: '0.75kW  5.0A'  },
-      { model: 'VFD015EL21W-1', aciklama: '1.50kW  7.0A'  },
-      { model: 'VFD022EL21W-1', aciklama: '2.20kW  11.0A' },
-      { model: 'VFD037EL21W-1', aciklama: '3.70kW  16.0A' },
-      { model: 'VFD055EL21W-1', aciklama: '5.50kW  24.0A' },
-      { model: 'VFD075EL21W-1', aciklama: '7.50kW  33.0A' },
-      { model: 'VFD110EL43A-1', aciklama: '11.0kW  25.0A' },
-      { model: 'VFD150EL43A-1', aciklama: '15.0kW  32.0A' },
-      { model: 'VFD185EL43A-1', aciklama: '18.5kW  38.0A' },
-      { model: 'VFD220EL43A-1', aciklama: '22.0kW  45.0A' },
-    ]},
-    { grupAdi: 'TMŞ — Schneider Compact CVS', renk: '#a78bfa', elemanlar: [
-      { model: 'LV510337', aciklama: 'CVS100F TM100D 3P3D 100A' },
-      { model: 'LV510405', aciklama: 'CVS160F TM160D 3P3D 160A' },
-      { model: 'LV521001', aciklama: 'CVS250F TM250D 3P3D 250A' },
-      { model: 'LV540306', aciklama: 'CVS400F TM400D 3P3D 400A' },
-      { model: 'LV540316', aciklama: 'CVS630F TM630D 3P3D 630A' },
-    ]},
-    { grupAdi: 'TMŞ — Siemens SENTRON 3VA', renk: '#a78bfa', elemanlar: [
-      { model: '3VA1110-4ED32-0AA0', aciklama: '3VA1 100A TM210 3P' },
-      { model: '3VA1116-4ED32-0AA0', aciklama: '3VA1 160A TM210 3P' },
-      { model: '3VA1225-4ED32-0AA0', aciklama: '3VA1 250A TM210 3P' },
-      { model: '3VA2340-5ED32-0AA0', aciklama: '3VA2 400A TM220 3P' },
-      { model: '3VA2363-5ED32-0AA0', aciklama: '3VA2 630A TM220 3P' },
-    ]},
-    { grupAdi: 'TMŞ Kolu — Schneider', renk: '#a78bfa', elemanlar: [
-      { model: 'LV510394', aciklama: 'CVS100-160 Kapı Kolonu (Siyah)'    },
-      { model: 'LV521326', aciklama: 'CVS250 Kapı Kolonu (Siyah)'         },
-      { model: 'LV540491', aciklama: 'CVS400-630 Kapı Kolonu (Siyah)'     },
-      { model: 'LV540492', aciklama: 'CVS400-630 Kapı Kolonu (Kırmızı)'  },
-    ]},
-    { grupAdi: 'TMŞ Kolu — Siemens', renk: '#a78bfa', elemanlar: [
-      { model: '3VA9977-0PK20', aciklama: '3VA1 Serisi Kapı Kolonu' },
-      { model: '3VA9988-0PK20', aciklama: '3VA2 Serisi Kapı Kolonu' },
-    ]},
-    { grupAdi: 'NSX Devre Kesici Kolu — Schneider', renk: '#a78bfa', elemanlar: [
-      { model: 'LV429338', aciklama: 'NSX 100-250A Döner Kapı Kolu' },
-      { model: 'LV429339', aciklama: 'NSX 100-250A Uzun Döner Kapı Kolu' },
-    ]},
-    { grupAdi: 'MKŞ — Schneider GV2MF', renk: '#22d3ee', elemanlar: [
-      { model: 'GV2MF02',  aciklama: 'Motor Koruma Şalteri 0.16A – 0.25A'  },
-      { model: 'GV2MF03',  aciklama: 'Motor Koruma Şalteri 0.25A – 0.40A'  },
-      { model: 'GV2MF04',  aciklama: 'Motor Koruma Şalteri 0.40A – 0.63A'  },
-      { model: 'GV2MF05',  aciklama: 'Motor Koruma Şalteri 0.63A – 1.00A'  },
-      { model: 'GV2MF06',  aciklama: 'Motor Koruma Şalteri 1.00A – 1.60A'  },
-      { model: 'GV2MF07',  aciklama: 'Motor Koruma Şalteri 1.60A – 2.50A'  },
-      { model: 'GV2MF08',  aciklama: 'Motor Koruma Şalteri 2.50A – 4.00A'  },
-      { model: 'GV2MF10',  aciklama: 'Motor Koruma Şalteri 4.00A – 6.30A'  },
-      { model: 'GV2MF14',  aciklama: 'Motor Koruma Şalteri 6.00A – 10.00A' },
-      { model: 'GV2MF16',  aciklama: 'Motor Koruma Şalteri 9.00A – 14.00A' },
-      { model: 'GV2MF20',  aciklama: 'Motor Koruma Şalteri 13.00A – 18.00A'},
-      { model: 'GV2MF21',  aciklama: 'Motor Koruma Şalteri 17.00A – 23.00A'},
-      { model: 'GV2MF22',  aciklama: 'Motor Koruma Şalteri 20.00A – 25.00A'},
-      { model: 'GV2MF32',  aciklama: 'Motor Koruma Şalteri 24.00A – 32.00A'},
-    ]},
-    { grupAdi: 'İnvertör — Delta VFD-EL (3-Faz Giriş)', renk: '#60a5fa', elemanlar: [
-      { model: 'VFD004EL23W-1', aciklama: '0.40kW  2.5A  (3-Faz Giriş)' },
-      { model: 'VFD007EL23W-1', aciklama: '0.75kW  5.0A  (3-Faz Giriş)' },
-      { model: 'VFD015EL23W-1', aciklama: '1.50kW  7.0A  (3-Faz Giriş)' },
-      { model: 'VFD022EL23W-1', aciklama: '2.20kW  11.0A (3-Faz Giriş)' },
-    ]},
-    { grupAdi: 'Faz Koruma Rölesi — Entes', renk: '#fb923c', elemanlar: [
-      { model: 'MKS-03', aciklama: 'Faz Koruma Rölesi 3-Faz 380V (Faz Sırası + Kesme)' },
-      { model: 'MKS-05', aciklama: 'Faz & Gerilim Koruma Rölesi 380V' },
-      { model: 'MR-C3',  aciklama: 'Çok Fonksiyonlu Faz Koruma Rölesi 380V' },
-    ]},
-    { grupAdi: 'Kumanda Butonu', renk: '#fbbf24', elemanlar: [
-      { model: 'B100DY', aciklama: 'Start Butonu — Sarı Çıkık Kafa' },
-      { model: 'B100DM', aciklama: 'Reset / Mavi Butonu — Mavi Çıkık Kafa' },
-      { model: 'B100DK', aciklama: 'Stop Butonu — Siyah Çıkık Kafa' },
-      { model: 'B200FE', aciklama: 'Acil Stop Butonu — Mantarlı Kırmızı' },
-    ]},
-    { grupAdi: 'Kontak Blok & Sinyal Lamba', renk: '#fbbf24', elemanlar: [
-      { model: 'Kontak Blok NO B1',     aciklama: 'Normalde Açık (NO) Kontak Blok' },
-      { model: 'Kontak Blok NC B2',     aciklama: 'Normalde Kapalı (NC) Kontak Blok' },
-      { model: 'B7 8 LED LI BLOK MAVİ', aciklama: 'Sinyal Lamba Mavi LED 12-30V AC/DC' },
-    ]},
-    { grupAdi: 'Tepe Lambası', renk: '#fbbf24', elemanlar: [
-      { model: '1004905', aciklama: 'Tepe Lambası 3 Renkli (Yeşil / Sarı / Kırmızı)' },
-    ]},
-    { grupAdi: 'Pano Aydınlatma & Priz', renk: '#94a3b8', elemanlar: [
-      { model: 'CT-2467',  aciklama: 'Pano Lambası' },
-      { model: '851012',   aciklama: 'Anahtar Ani Hareketi 1NA+1NK' },
-      { model: 'EPREU2G',  aciklama: 'Priz Raya Montaj Topraklı' },
-    ]},
-    { grupAdi: 'Yaprak Röle & Soket', renk: '#a3e635', elemanlar: [
-      { model: 'APF30324-VDS-KK', aciklama: 'Yaprak Röle Soket 1C/O 24VDC' },
-      { model: 'TCC 6.4/51 OR',   aciklama: 'Weidmüller Röle Köprüsü (24 ds)' },
-    ]},
-    { grupAdi: 'Güç Kaynağı — Mean Well LRS', renk: '#67e8f9', elemanlar: [
-      { model: 'LRS-350-24', aciklama: 'Güç Kaynağı 350W  24VDC 14.6A' },
-      { model: 'LRS-200-24', aciklama: 'Güç Kaynağı 200W  24VDC  8.8A' },
-      { model: 'LRS-100-24', aciklama: 'Güç Kaynağı 100W  24VDC  4.5A' },
-      { model: 'LRS-50-24',  aciklama: 'Güç Kaynağı  50W  24VDC  2.2A' },
-    ]},
-    { grupAdi: 'Güvenlik Rölesi — Omron G9SX', renk: '#f0abfc', elemanlar: [
-      { model: 'G9SX-GS226-T15-RC DC24', aciklama: 'Safety Relay 2 NO + 1 NC Çıkış' },
-      { model: 'G9SX-NSA222-T15 DC24',   aciklama: 'Safety Relay 2 NO + 2 NC Çıkış' },
-      { model: 'G9SP-N20S',              aciklama: 'Güvenlik Kontrolcüsü 20 Güvenlik Girişi' },
-    ]},
-    { grupAdi: 'PLC CPU — Siemens SIMATIC S7-1200', renk: '#86efac', elemanlar: [
-      { model: '6ES7215-1AG40-0XB0', aciklama: 'CPU 1215C DC/DC/DC  14DI / 10DO / 2AI / 2AO' },
-      { model: '6ES7214-1AG40-0XB0', aciklama: 'CPU 1214C DC/DC/DC  14DI / 10DO / 2AI'       },
-      { model: '6ES7212-1AE40-0XB0', aciklama: 'CPU 1212C DC/DC/DC   8DI /  6DO / 2AI'       },
-    ]},
-    { grupAdi: 'PLC Genişletme Modül — Siemens S7-1200', renk: '#86efac', elemanlar: [
-      { model: '6ES7223-1BL32-0XB0', aciklama: 'SM 1223 DC/DC  16DI / 16DO' },
-      { model: '6ES7223-1BH32-0XB0', aciklama: 'SM 1223 DC/DC   8DI /  8DO' },
-      { model: '6ES7231-5QF32-0XB0', aciklama: 'SM 1231 TC   4× Termokupl Analog Giriş' },
-      { model: '6ES7221-1BF32-0XB0', aciklama: 'SM 1221 DC   8DI' },
-      { model: '6ES7222-1BF32-0XB0', aciklama: 'SM 1222 DC   8DO' },
-    ]},
-    { grupAdi: 'PLC — Delta DVP Serisi', renk: '#86efac', elemanlar: [
-      { model: 'DVP14SS211R', aciklama: 'DVP-14SS RS-485   8DI /  6DO (Röle)' },
-      { model: 'DVP16SP11R',  aciklama: 'DVP-16SP          8DI /  8DO (Röle)' },
-      { model: 'DVP32ES200R', aciklama: 'DVP-32P          16DI / 16DO (Röle)' },
-      { model: 'DVP04TC-S',   aciklama: 'DVP TC Modül 4-Kanal Termokupl Analog Giriş' },
-    ]},
-    { grupAdi: 'HMI / Operatör Paneli', renk: '#86efac', elemanlar: [
-      { model: '6AV2123-2JB03-0XB0', aciklama: 'Siemens KTP900 BASIC 9" TFT Dokunmatik Panel' },
-      { model: 'DOP-107BV',          aciklama: 'Delta DOP-107BV 7" TFT Dokunmatik Panel'      },
-    ]},
-    { grupAdi: 'Bara — GWEST', renk: '#94a3b8', elemanlar: [
-      { model: 'GWEST 4×7MM', aciklama: 'Bara 4×7 mm (Adet)' },
-      { model: 'GWEST 2×7MM', aciklama: 'Bara 2×7 mm (Adet)' },
-    ]},
-  ];
+  // Ürün kataloğu Supabase'deki 'urun_katalogu' tablosundan yüklenir.
+  // urun_katalogu.sql ile tablo oluşturulup populate edilmelidir.
+  let FIYAT_GRUPLARI = [];
+
+  async function loadUrunKatalogu() {
+    if (!sb) return;
+    const { data, error } = await sb
+      .from('urun_katalogu')
+      .select('grup_sira,grup_adi,grup_renk,model_sira,model,aciklama')
+      .order('grup_sira', { ascending: true })
+      .order('model_sira', { ascending: true });
+    if (error || !data || data.length === 0) {
+      console.warn('Ürün kataloğu yüklenemedi:', error?.message);
+      return;
+    }
+    const grupMap = new Map();
+    data.forEach(r => {
+      if (!grupMap.has(r.grup_sira)) {
+        grupMap.set(r.grup_sira, { grupAdi: r.grup_adi, renk: r.grup_renk, elemanlar: [] });
+      }
+      grupMap.get(r.grup_sira).elemanlar.push({ model: r.model, aciklama: r.aciklama });
+    });
+    FIYAT_GRUPLARI = [...grupMap.values()];
+  }
+
 
   // ===== MALZEME TABLOSU =====
   const SABIT_KALEMLER = [
@@ -3143,11 +2938,21 @@
   }
   // ===== END MALZEME TABLOSU =====
 
-  function renderFiyatlarTable() {
+  async function renderFiyatlarTable() {
     const container = document.getElementById('fiyatlar-content');
     if (!container) return;
-    container.innerHTML = '';
 
+    // Katalog boşsa Supabase'den yükle
+    if (FIYAT_GRUPLARI.length === 0) {
+      container.innerHTML = '<div class="text-center text-slate-500 py-16 mono text-sm">// Ürün kataloğu yükleniyor…</div>';
+      await loadUrunKatalogu();
+      if (FIYAT_GRUPLARI.length === 0) {
+        container.innerHTML = '<div class="text-center text-red-400 py-16 mono text-sm">// Ürün kataloğu yüklenemedi — Supabase bağlantısını kontrol edin.</div>';
+        return;
+      }
+    }
+
+    container.innerHTML = '';
     let savedPrices = {};
     try { savedPrices = JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}'); } catch(e) {}
 
@@ -4670,7 +4475,7 @@
       if (duzenleBtn) duzenleBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
       if (target === 'secim') { renderRezistansTable(); renderKurutmaTable(); renderKacakAkimTable(); renderTmsTable(); }
       if (target === 'otomasyon') renderSensorTable();
-      if (target === 'fiyatlar') renderFiyatlarTable();
+      if (target === 'fiyatlar') renderFiyatlarTable(); // async — katalog Supabase'den yüklenir
       if (target === 'standart') renderStandartMakineler();
       if (target === 'io') renderIOPage();
       if (target === 'malzeme') renderMalzemeTable();
