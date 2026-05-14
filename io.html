@@ -203,16 +203,16 @@
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
      <div class="flex items-center gap-1.5">
-      <button id="btn-fiyat-katalog-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-amber-700/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+      <button id="btn-fiyat-katalog-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-amber-700/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 transition text-xs font-semibold mono inline-flex items-center gap-1.5">
        <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> Katalog → Supabase
       </button>
-      <button id="btn-fiyat-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+      <button id="btn-fiyat-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono inline-flex items-center gap-1.5">
        <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
       </button>
-      <button id="btn-standart-json-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+      <button id="btn-standart-json-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono inline-flex items-center gap-1.5">
        <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> JSON → Supabase
       </button>
-      <button id="btn-standart-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+      <button id="btn-standart-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono inline-flex items-center gap-1.5">
        <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
       </button>
       <button id="btn-bulut-yukle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
@@ -500,13 +500,8 @@
     </section><!-- FİYATLAR PAGE -->
     <section id="page-fiyatlar" class="page flex-col gap-6 w-full">
      <div>
-      <div class="flex items-center justify-between gap-2 mb-1">
-       <div class="flex items-center gap-2">
-        <i data-lucide="tag" class="w-4 h-4 text-yellow-400"></i> <span class="label-tag mono">Step 05 / Prices</span>
-       </div>
-       <button id="btn-fiyat-guncelle" class="px-4 py-2 rounded-lg bg-yellow-500/15 border border-yellow-500/60 hover:bg-yellow-500/30 hover:border-yellow-400 text-yellow-300 hover:text-yellow-200 transition-all text-sm font-semibold flex items-center gap-2 shadow-lg shadow-yellow-900/20">
-        <i data-lucide="save" class="w-4 h-4"></i> Kaydet
-       </button>
+      <div class="flex items-center gap-2 mb-1">
+       <i data-lucide="tag" class="w-4 h-4 text-yellow-400"></i> <span class="label-tag mono">Step 05 / Prices</span>
       </div>
       <div class="header-line mt-4"></div>
      </div>
@@ -2980,145 +2975,202 @@
 
     container.innerHTML = '';
 
-    // ===== DÜZENLEME MODU =====
-    if (fiyatEditMode) {
+    let savedPrices = {};
+    let savedStok = {};
+    let savedDolfin = {};
+    try { savedPrices = JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}'); } catch(e) {}
+    try { savedStok   = JSON.parse(localStorage.getItem('iolist_stok')    || '{}'); } catch(e) {}
+    try { savedDolfin = JSON.parse(localStorage.getItem('iolist_dolfin')  || '{}'); } catch(e) {}
+
+    const isEdit = fiyatEditMode;
+
+    if (isEdit) {
       const infoBar = document.createElement('div');
       infoBar.className = 'flex items-center gap-2 px-3 py-2 mb-3 bg-amber-900/20 border border-amber-500/30 rounded-xl text-xs mono text-amber-400';
-      infoBar.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme modu aktif — değişiklikler "Kaydet & Çık"\'a basıldığında Supabase\'e yüklenir.';
+      infoBar.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme modu aktif — "Kaydet & Çık"a basınca veriler Supabase\'e yüklenir.';
       container.appendChild(infoBar);
+    }
 
-      // Her grup için edit block
-      FIYAT_GRUPLARI.forEach((grup, gi) => {
-        const block = document.createElement('div');
-        block.setAttribute('data-fiyat-grup-block', gi);
-        block.className = 'bg-slate-900/40 border border-amber-500/20 rounded-xl overflow-hidden mb-4';
+    FIYAT_GRUPLARI.forEach((grup, gi) => {
+      const section = document.createElement('div');
+      section.setAttribute('data-fiyat-grup-block', gi);
+      section.className = 'bg-slate-900/40 border ' + (isEdit ? 'border-amber-500/25' : 'border-slate-700/50') + ' rounded-lg overflow-hidden mb-4';
 
-        // Grup header (editable)
-        const grupHead = document.createElement('div');
-        grupHead.className = 'px-4 py-2 bg-slate-800/60 border-b border-amber-500/20 flex items-center gap-2 flex-wrap';
+      // Grup header
+      const header = document.createElement('div');
+      header.className = 'px-4 py-2 bg-slate-800/60 border-b ' + (isEdit ? 'border-amber-500/20' : 'border-slate-700/50') + ' flex items-center gap-2 flex-wrap';
 
+      if (isEdit) {
         const renkInp = document.createElement('input');
         renkInp.type = 'color';
         renkInp.value = grup.renk;
         renkInp.className = 'fiyat-edit-grup-renk w-7 h-7 rounded cursor-pointer border border-slate-600 bg-transparent';
         renkInp.title = 'Grup rengi';
-
         const grupAdiInp = document.createElement('input');
         grupAdiInp.type = 'text';
         grupAdiInp.value = grup.grupAdi;
-        grupAdiInp.className = 'fiyat-edit-grup-adi flex-1 min-w-0 px-2 py-1 bg-slate-800 border border-slate-600 rounded text-xs mono font-bold text-slate-100 focus:border-amber-500 focus:outline-none';
+        grupAdiInp.className = 'fiyat-edit-grup-adi flex-1 min-w-0 px-2 py-1 bg-slate-800 border border-slate-600 rounded text-xs mono font-bold focus:border-amber-500 focus:outline-none';
         grupAdiInp.style.color = grup.renk;
         renkInp.addEventListener('input', () => { grupAdiInp.style.color = renkInp.value; });
-
         const delGrupBtn = document.createElement('button');
         delGrupBtn.className = 'ml-auto flex items-center gap-1 px-2 py-1 rounded bg-slate-800 border border-red-700/50 hover:border-red-400 text-red-400 text-xs mono transition';
         delGrupBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Grubu Sil';
-        delGrupBtn.onclick = () => block.remove();
+        delGrupBtn.onclick = () => section.remove();
+        header.appendChild(renkInp);
+        header.appendChild(grupAdiInp);
+        header.appendChild(delGrupBtn);
+      } else {
+        const headerLabel = document.createElement('span');
+        headerLabel.className = 'text-sm font-semibold mono';
+        headerLabel.style.color = grup.renk;
+        headerLabel.textContent = grup.grupAdi;
+        header.appendChild(headerLabel);
+      }
+      section.appendChild(header);
 
-        grupHead.appendChild(renkInp);
-        grupHead.appendChild(grupAdiInp);
-        grupHead.appendChild(delGrupBtn);
-        block.appendChild(grupHead);
+      const tableWrap = document.createElement('div');
+      tableWrap.className = 'overflow-x-auto';
+      const table = document.createElement('table');
+      table.className = 'w-full table-fixed';
+      const colgroup = document.createElement('colgroup');
+      // #(4%) | Model(13%) | Açıklama(34%) | Stok Kodu(13%) | Dolfin Kodu(13%) | Fiyat(17%) | [Sil(6%) edit only]
+      const cols = isEdit ? ['3%','12%','30%','12%','12%','15%','6%'] : ['4%','13%','35%','13%','13%','22%'];
+      cols.forEach(w => { const c = document.createElement('col'); c.style.width = w; colgroup.appendChild(c); });
+      table.appendChild(colgroup);
 
-        // Tablo
-        const tbl = document.createElement('table');
-        tbl.className = 'w-full table-fixed';
-        const cg = document.createElement('colgroup');
-        ['4%','4%','15%','35%','15%','27%'].forEach(w => { const c = document.createElement('col'); c.style.width = w; cg.appendChild(c); });
-        tbl.appendChild(cg);
+      const thead = document.createElement('thead');
+      const hRow = document.createElement('tr');
+      hRow.className = 'border-b border-slate-700/30 bg-slate-800/20';
+      const headers = ['#', 'Model', 'Açıklama', 'Stok Kodu', 'Dolfin Kodu', 'Birim Fiyat (€)'];
+      if (isEdit) headers.push('');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.className = 'px-2 py-2 text-center text-xs font-semibold mono text-slate-500';
+        th.textContent = h;
+        hRow.appendChild(th);
+      });
+      thead.appendChild(hRow);
+      table.appendChild(thead);
 
-        const thead = document.createElement('thead');
-        const hrow = document.createElement('tr');
-        hrow.className = 'bg-slate-800/50 border-b border-amber-500/20';
-        [{ label:'#', col:'#94a3b8' }, { label:'Sil', col:'#f87171' }, { label:'Model', col:'#f59e0b' }, { label:'Açıklama', col:'#e2e8f0' }, { label:'Stok Kodu', col:'#67e8f9' }, { label:'Fiyat (€)', col:'#fde047' }].forEach(h => {
-          const th = document.createElement('th');
-          th.className = 'px-3 py-2 text-center text-xs font-bold mono';
-          th.style.color = h.col; th.textContent = h.label;
-          hrow.appendChild(th);
-        });
-        thead.appendChild(hrow);
-        tbl.appendChild(thead);
+      const tbody = document.createElement('tbody');
 
-        const tbody = document.createElement('tbody');
+      function makeRow(el, idx) {
+        const key = grup.grupAdi + '|' + el.model;
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-fiyat-edit-row', idx);
+        tr.className = 'border-t border-slate-700/30 ' + (isEdit ? '' : 'hover:bg-slate-800/30') + ' transition';
+        tr.style.height = '38px';
 
-        function makeEditRow(el, idx, stokVal, fiyatVal) {
-          const tr = document.createElement('tr');
-          tr.setAttribute('data-fiyat-edit-row', idx);
-          tr.className = 'border-t border-slate-700/30';
-          tr.style.height = '38px';
+        // #
+        const noTd = document.createElement('td');
+        noTd.className = 'px-2 py-0 text-center text-xs mono text-slate-500 align-middle';
+        noTd.textContent = String(idx + 1).padStart(2, '0');
+        tr.appendChild(noTd);
 
-          const noTd = document.createElement('td');
-          noTd.className = 'px-2 py-0 text-center text-xs mono text-slate-500 align-middle';
-          noTd.textContent = String(idx + 1).padStart(2, '0');
-          tr.appendChild(noTd);
+        // Model
+        const modelTd = document.createElement('td');
+        modelTd.className = 'px-2 py-0 align-middle';
+        const modelInp = document.createElement('input');
+        modelInp.type = 'text';
+        modelInp.value = el.model;
+        modelInp.readOnly = !isEdit;
+        modelInp.className = isEdit
+          ? 'fiyat-edit-model w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs mono font-semibold text-amber-300 focus:border-amber-500 focus:outline-none'
+          : 'fiyat-edit-model w-full h-7 px-1 bg-transparent text-xs mono font-semibold text-center cursor-default select-text focus:outline-none';
+        if (!isEdit) modelInp.style.color = grup.renk;
+        modelInp.placeholder = 'Model…';
+        modelTd.appendChild(modelInp);
+        tr.appendChild(modelTd);
 
+        // Açıklama
+        const aciTd = document.createElement('td');
+        aciTd.className = 'px-2 py-0 align-middle';
+        const aciInp = document.createElement('input');
+        aciInp.type = 'text';
+        aciInp.value = el.aciklama;
+        aciInp.readOnly = !isEdit;
+        aciInp.className = isEdit
+          ? 'fiyat-edit-aciklama w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200 focus:border-amber-500 focus:outline-none'
+          : 'fiyat-edit-aciklama w-full h-7 px-1 bg-transparent text-xs text-slate-300 cursor-default select-text focus:outline-none';
+        aciInp.placeholder = 'Açıklama…';
+        aciTd.appendChild(aciInp);
+        tr.appendChild(aciTd);
+
+        // Stok Kodu
+        const stokTd = document.createElement('td');
+        stokTd.className = 'px-2 py-0 align-middle';
+        const stokInp = document.createElement('input');
+        stokInp.type = 'text';
+        stokInp.dataset.stokKey = key;
+        stokInp.value = el.stok || savedStok[key] || '';
+        stokInp.readOnly = !isEdit;
+        stokInp.className = isEdit
+          ? 'fiyat-edit-stok w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs mono font-semibold text-cyan-300 focus:border-cyan-500 focus:outline-none text-center'
+          : 'stok-input w-full h-7 px-1 bg-transparent text-xs mono font-semibold text-cyan-300/70 text-center cursor-default select-text focus:outline-none';
+        stokInp.placeholder = '—';
+        stokTd.appendChild(stokInp);
+        tr.appendChild(stokTd);
+
+        // Dolfin Kodu
+        const dolfinTd = document.createElement('td');
+        dolfinTd.className = 'px-2 py-0 align-middle';
+        const dolfinInp = document.createElement('input');
+        dolfinInp.type = 'text';
+        dolfinInp.dataset.dolfinKey = key;
+        dolfinInp.value = el.dolfin || savedDolfin[key] || '';
+        dolfinInp.readOnly = !isEdit;
+        dolfinInp.className = isEdit
+          ? 'fiyat-edit-dolfin w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs mono font-semibold text-violet-300 focus:border-violet-500 focus:outline-none text-center'
+          : 'dolfin-input w-full h-7 px-1 bg-transparent text-xs mono font-semibold text-violet-300/70 text-center cursor-default select-text focus:outline-none';
+        dolfinInp.placeholder = '—';
+        dolfinTd.appendChild(dolfinInp);
+        tr.appendChild(dolfinTd);
+
+        // Birim Fiyat
+        const fiyatTd = document.createElement('td');
+        fiyatTd.className = 'px-2 py-0 align-middle';
+        const fiyatInp = document.createElement('input');
+        fiyatInp.type = 'number';
+        fiyatInp.min = '0';
+        fiyatInp.step = '0.01';
+        fiyatInp.dataset.key = key;
+        fiyatInp.value = el.fiyat || savedPrices[key] || '';
+        fiyatInp.readOnly = !isEdit;
+        fiyatInp.className = isEdit
+          ? 'fiyat-edit-fiyat w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs text-yellow-300 focus:border-yellow-500 focus:outline-none text-center'
+          : 'fiyat-input w-full h-7 px-1 bg-transparent text-xs text-slate-400 text-center cursor-default select-text focus:outline-none';
+        fiyatInp.placeholder = '—';
+        fiyatTd.appendChild(fiyatInp);
+        tr.appendChild(fiyatTd);
+
+        // Sil butonu (sadece edit modda)
+        if (isEdit) {
           const delTd = document.createElement('td');
           delTd.className = 'px-1 py-0 text-center align-middle';
           const delBtn = document.createElement('button');
           delBtn.className = 'w-6 h-6 flex items-center justify-center rounded border border-red-700/50 hover:border-red-400 text-red-400 hover:bg-red-900/20 transition';
           delBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
           delBtn.title = 'Satırı sil';
-          delBtn.onclick = () => { tr.remove(); tbody.querySelectorAll('[data-fiyat-edit-row]').forEach((r, i) => { r.querySelector('td:first-child').textContent = String(i+1).padStart(2,'0'); }); };
+          delBtn.onclick = () => {
+            tr.remove();
+            tbody.querySelectorAll('[data-fiyat-edit-row]').forEach((r, i) => {
+              r.querySelector('td:first-child').textContent = String(i+1).padStart(2,'0');
+            });
+          };
           delTd.appendChild(delBtn);
           tr.appendChild(delTd);
-
-          const modelTd = document.createElement('td');
-          modelTd.className = 'px-2 py-0 align-middle';
-          const modelInp = document.createElement('input');
-          modelInp.type = 'text';
-          modelInp.value = el.model;
-          modelInp.className = 'fiyat-edit-model w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs mono font-semibold text-amber-300 focus:border-amber-500 focus:outline-none';
-          modelInp.placeholder = 'Model kodu…';
-          modelTd.appendChild(modelInp);
-          tr.appendChild(modelTd);
-
-          const aciTd = document.createElement('td');
-          aciTd.className = 'px-2 py-0 align-middle';
-          const aciInp = document.createElement('input');
-          aciInp.type = 'text';
-          aciInp.value = el.aciklama;
-          aciInp.className = 'fiyat-edit-aciklama w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs text-slate-200 focus:border-amber-500 focus:outline-none';
-          aciInp.placeholder = 'Açıklama…';
-          aciTd.appendChild(aciInp);
-          tr.appendChild(aciTd);
-
-          const stokTd = document.createElement('td');
-          stokTd.className = 'px-2 py-0 align-middle';
-          const stokInp = document.createElement('input');
-          stokInp.type = 'text';
-          stokInp.value = stokVal || '';
-          stokInp.className = 'fiyat-edit-stok w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs mono font-semibold text-cyan-300 focus:border-cyan-500 focus:outline-none text-center';
-          stokInp.placeholder = '—';
-          stokTd.appendChild(stokInp);
-          tr.appendChild(stokTd);
-
-          const fiyatTd = document.createElement('td');
-          fiyatTd.className = 'px-2 py-0 align-middle';
-          const fiyatInp = document.createElement('input');
-          fiyatInp.type = 'number';
-          fiyatInp.min = '0';
-          fiyatInp.step = '0.01';
-          fiyatInp.value = fiyatVal || '';
-          fiyatInp.className = 'fiyat-edit-fiyat w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs text-yellow-300 focus:border-yellow-500 focus:outline-none text-center';
-          fiyatInp.placeholder = '0.00';
-          fiyatTd.appendChild(fiyatInp);
-          tr.appendChild(fiyatTd);
-
-          return tr;
         }
 
-        let editSavedPrices = {};
-        let editSavedStok = {};
-        try { editSavedPrices = JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}'); } catch(e) {}
-        try { editSavedStok = JSON.parse(localStorage.getItem('iolist_stok') || '{}'); } catch(e) {}
-        grup.elemanlar.forEach((el, idx) => {
-          const key = grup.grupAdi + '|' + el.model;
-          tbody.appendChild(makeEditRow(el, idx, editSavedStok[key] || '', editSavedPrices[key] || ''));
-        });
-        tbl.appendChild(tbody);
-        block.appendChild(tbl);
+        return tr;
+      }
 
-        // Satır ekle butonu
+      grup.elemanlar.forEach((el, idx) => tbody.appendChild(makeRow(el, idx)));
+      table.appendChild(tbody);
+      tableWrap.appendChild(table);
+      section.appendChild(tableWrap);
+
+      // Satır ekle (sadece edit modda)
+      if (isEdit) {
         const addRowBar = document.createElement('div');
         addRowBar.className = 'px-3 py-2 border-t border-slate-700/30 flex justify-start';
         const addRowBtn = document.createElement('button');
@@ -3126,21 +3178,24 @@
         addRowBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Satır Ekle';
         addRowBtn.onclick = () => {
           const idx = tbody.querySelectorAll('[data-fiyat-edit-row]').length;
-          const newTr = makeEditRow({ model: '', aciklama: '' }, idx, '', '');
+          const newTr = makeRow({ model: '', aciklama: '', stok: '', dolfin: '', fiyat: '' }, idx);
           tbody.appendChild(newTr);
           newTr.querySelector('.fiyat-edit-model')?.focus();
         };
         addRowBar.appendChild(addRowBtn);
-        block.appendChild(addRowBar);
-        container.appendChild(block);
-      });
+        section.appendChild(addRowBar);
+      }
 
-      // Yeni grup ekle
+      container.appendChild(section);
+    });
+
+    // Edit modda: Yeni grup ekle + alt aksiyon barı
+    if (isEdit) {
       const newGrupBar = document.createElement('div');
       newGrupBar.className = 'flex items-center gap-2 mb-4 px-1';
       const newGrupInp = document.createElement('input');
       newGrupInp.type = 'text';
-      newGrupInp.placeholder = 'Yeni grup adı (ör: Kontaktör — Schneider LC1)';
+      newGrupInp.placeholder = 'Yeni grup adı…';
       newGrupInp.className = 'flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded-xl text-xs mono font-bold text-slate-100 focus:border-amber-500 focus:outline-none';
       const newGrupBtn = document.createElement('button');
       newGrupBtn.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 border border-slate-600 hover:border-amber-400 text-amber-400 hover:bg-amber-900/20 text-xs mono font-bold transition whitespace-nowrap';
@@ -3157,7 +3212,6 @@
       newGrupBar.appendChild(newGrupBtn);
       container.appendChild(newGrupBar);
 
-      // Alt aksiyon barı
       const actionBar = document.createElement('div');
       actionBar.className = 'flex justify-end gap-2 pb-4';
       const cancelBtn = document.createElement('button');
@@ -3171,187 +3225,36 @@
       actionBar.appendChild(cancelBtn);
       actionBar.appendChild(saveBtn);
       container.appendChild(actionBar);
-      lucide.createIcons();
-      return;
     }
-    // ===== END DÜZENLEME MODU =====
 
-    let savedPrices = {};
-    try { savedPrices = JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}'); } catch(e) {}
-
-    FIYAT_GRUPLARI.forEach(grup => {
-      const section = document.createElement('div');
-      section.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden mb-4';
-
-      const header = document.createElement('div');
-      header.className = 'px-4 py-2 bg-slate-800/60 border-b border-slate-700/50 flex items-center gap-2';
-      const headerLabel = document.createElement('span');
-      headerLabel.className = 'text-sm font-semibold mono';
-      headerLabel.style.color = grup.renk;
-      headerLabel.textContent = grup.grupAdi;
-      header.appendChild(headerLabel);
-      section.appendChild(header);
-
-      const tableWrap = document.createElement('div');
-      tableWrap.className = 'overflow-x-auto';
-      const table = document.createElement('table');
-      table.className = 'w-full table-fixed';
-      const colgroup = document.createElement('colgroup');
-      ['4%', '13%', '13%', '54%', '16%'].forEach(w => {
-        const col = document.createElement('col'); col.style.width = w; colgroup.appendChild(col);
-      });
-      table.appendChild(colgroup);
-
-      const thead = document.createElement('thead');
-      const hRow = document.createElement('tr');
-      hRow.className = 'border-b border-slate-700/30 bg-slate-800/20';
-      ['#', 'Stok Kodu', 'Model', 'Açıklama', 'Birim Fiyat (€)'].forEach(h => {
-        const th = document.createElement('th');
-        th.className = 'px-3 py-2 text-center text-xs font-semibold mono text-slate-500';
-        th.textContent = h;
-        hRow.appendChild(th);
-      });
-      thead.appendChild(hRow);
-      table.appendChild(thead);
-
-      let savedStok = {};
-      try { savedStok = JSON.parse(localStorage.getItem('iolist_stok') || '{}'); } catch(e) {}
-      const tbody = document.createElement('tbody');
-      grup.elemanlar.forEach((el, idx) => {
-        const key = grup.grupAdi + '|' + el.model;
-        const tr = document.createElement('tr');
-        tr.className = 'border-t border-slate-700/30 hover:bg-slate-800/30 transition';
-        tr.style.height = '40px';
-
-        const noTd = document.createElement('td');
-        noTd.className = 'px-2 py-0 text-center text-xs mono text-slate-500 align-middle';
-        noTd.textContent = String(idx + 1).padStart(2, '0');
-        tr.appendChild(noTd);
-
-        // Stok Kodu input
-        const stokTd = document.createElement('td');
-        stokTd.className = 'px-2 py-0 align-middle';
-        const stokInput = document.createElement('input');
-        stokInput.type = 'text';
-        stokInput.dataset.stokKey = key;
-        stokInput.className = 'stok-input w-full h-8 px-2 bg-transparent text-cyan-300/70 text-xs mono font-semibold text-center cursor-default select-none';
-        stokInput.placeholder = '—';
-        stokInput.value = savedStok[key] || '';
-        stokInput.readOnly = true;
-        stokTd.appendChild(stokInput);
-        tr.appendChild(stokTd);
-
-        const modelTd = document.createElement('td');
-        modelTd.className = 'px-3 py-0 text-xs mono font-semibold align-middle text-center';
-        modelTd.style.color = grup.renk;
-        modelTd.textContent = el.model;
-        tr.appendChild(modelTd);
-
-        const aciTd = document.createElement('td');
-        aciTd.className = 'px-3 py-0 text-xs text-slate-300 align-middle';
-        aciTd.textContent = el.aciklama;
-        tr.appendChild(aciTd);
-
-        const fiyatTd = document.createElement('td');
-        fiyatTd.className = 'px-2 py-0 align-middle';
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = '0';
-        input.step = '0.01';
-        input.dataset.key = key;
-        input.className = 'fiyat-input w-full h-8 px-2 bg-transparent text-slate-400 text-sm text-center cursor-default select-none';
-        input.placeholder = '—';
-        input.value = savedPrices[key] || '';
-        input.readOnly = true;
-        fiyatTd.appendChild(input);
-        tr.appendChild(fiyatTd);
-
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-      tableWrap.appendChild(table);
-      section.appendChild(tableWrap);
-      container.appendChild(section);
-    });
-
-    // Kullanıcı giriş yapmışsa Supabase'den fiyatları asenkron yükle, input'ları güncelle
-    if (sb && currentUser) {
+    // Supabase'den fiyat/stok/dolfin yükle ve DOM'u güncelle
+    if (!isEdit && sb && currentUser) {
       Promise.all([
         sb.from('prices').select('key,price').eq('user_id', currentUser.id),
         sb.from('stok_kodlari').select('key,stok_kodu').eq('user_id', currentUser.id)
       ]).then(([pRes, sRes]) => {
-        const cloudPrices = {};
-        if (!pRes.error && pRes.data) pRes.data.forEach(r => { cloudPrices[r.key] = r.price; });
-        const cloudStok = {};
-        if (!sRes.error && sRes.data) sRes.data.forEach(r => { cloudStok[r.key] = r.stok_kodu; });
-
-        container.querySelectorAll('input.fiyat-input').forEach(input => {
-          const k = input.dataset.key;
-          if (cloudPrices[k] !== undefined) input.value = cloudPrices[k];
-        });
-        container.querySelectorAll('input.stok-input').forEach(input => {
-          const k = input.dataset.stokKey;
-          if (cloudStok[k] !== undefined) input.value = cloudStok[k];
-        });
-
-        // localStorage cache'ini bulut verileriyle güncelle
-        const mergedP = {};
-        try { Object.assign(mergedP, JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}')); } catch(e) {}
-        Object.entries(cloudPrices).forEach(([k, v]) => { mergedP[k] = v; });
-        localStorage.setItem('iolist_fiyatlar', JSON.stringify(mergedP));
-        const mergedS = {};
-        try { Object.assign(mergedS, JSON.parse(localStorage.getItem('iolist_stok') || '{}')); } catch(e) {}
-        Object.entries(cloudStok).forEach(([k, v]) => { mergedS[k] = v; });
-        localStorage.setItem('iolist_stok', JSON.stringify(mergedS));
+        if (!pRes.error && pRes.data) {
+          pRes.data.forEach(r => {
+            const inp = container.querySelector(`input[data-key="${CSS.escape(r.key)}"]`);
+            if (inp) inp.value = r.price;
+          });
+          const mergedP = {}; try { Object.assign(mergedP, JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}')); } catch(e) {}
+          pRes.data.forEach(r => { mergedP[r.key] = r.price; });
+          localStorage.setItem('iolist_fiyatlar', JSON.stringify(mergedP));
+        }
+        if (!sRes.error && sRes.data) {
+          sRes.data.forEach(r => {
+            const inp = container.querySelector(`input[data-stok-key="${CSS.escape(r.key)}"]`);
+            if (inp) inp.value = r.stok_kodu;
+          });
+          const mergedS = {}; try { Object.assign(mergedS, JSON.parse(localStorage.getItem('iolist_stok') || '{}')); } catch(e) {}
+          sRes.data.forEach(r => { mergedS[r.key] = r.stok_kodu; });
+          localStorage.setItem('iolist_stok', JSON.stringify(mergedS));
+        }
       });
     }
 
     lucide.createIcons();
-  }
-
-  function saveFiyatlar() {
-    const container = document.getElementById('fiyatlar-content');
-    if (!container) return;
-    const prices = {};
-    container.querySelectorAll('input.fiyat-input').forEach(input => {
-      if (input.value !== '') prices[input.dataset.key] = input.value;
-    });
-    localStorage.setItem('iolist_fiyatlar', JSON.stringify(prices));
-    const stok = {};
-    container.querySelectorAll('input.stok-input').forEach(input => {
-      if (input.value !== '') stok[input.dataset.stokKey] = input.value;
-    });
-    localStorage.setItem('iolist_stok', JSON.stringify(stok));
-
-    // Supabase prices tablosuna da yaz (kullanıcı giriş yapmışsa)
-    if (sb && currentUser) {
-      const rows = Object.entries(prices).map(([k, v]) => ({
-        user_id: currentUser.id, key: k, price: parseFloat(v) || 0
-      }));
-      const stokRows = Object.entries(stok).map(([k, v]) => ({
-        user_id: currentUser.id, key: k, stok_kodu: v
-      }));
-      Promise.all([
-        rows.length ? sb.from('prices').upsert(rows, { onConflict: 'user_id,key' }) : Promise.resolve({ error: null }),
-        stokRows.length ? sb.from('stok_kodlari').upsert(stokRows, { onConflict: 'user_id,key' }) : Promise.resolve({ error: null })
-      ]).then(([pRes, sRes]) => {
-        if (pRes.error) console.warn('Fiyat bulut kaydet hata:', pRes.error.message);
-        if (sRes.error) console.warn('Stok bulut kaydet hata:', sRes.error.message);
-      });
-    }
-
-    const btn = document.getElementById('btn-fiyat-guncelle');
-    if (btn) {
-      const orig = btn.innerHTML;
-      btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Kaydedildi!';
-      btn.style.borderColor = '#22c55e'; btn.style.color = '#4ade80';
-      lucide.createIcons();
-      setTimeout(() => {
-        btn.innerHTML = orig;
-        btn.style.borderColor = ''; btn.style.color = '';
-        lucide.createIcons();
-      }, 1500);
-    }
   }
 
   // ===== END FİYATLAR =====
@@ -4806,8 +4709,6 @@
     lucide.createIcons();
   });
 
-  document.getElementById('btn-fiyat-guncelle').addEventListener('click', saveFiyatlar);
-
   // ===== KAYDET / YÜKLE =====
   function buildSaveData() {
     const motorData = [];
@@ -4997,7 +4898,7 @@
     const btn = document.getElementById('btn-fiyat-duzenle');
     if (btn) {
       btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Kaydet';
-      btn.className = 'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono transition';
+      btn.className = 'shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono transition';
       btn.onclick = () => exitFiyatEditMode(true);
     }
     renderFiyatlarTable();
@@ -5010,18 +4911,21 @@
         FIYAT_GRUPLARI = groups;
         await saveKatalogToSupabase(groups);
 
-        // Fiyat + stok değerlerini localStorage ve Supabase'e kaydet
+        // Fiyat + stok + dolfin değerlerini localStorage ve Supabase'e kaydet
         const prices = {};
         const stokMap = {};
+        const dolfinMap = {};
         groups.forEach(g => {
           g.elemanlar.forEach(el => {
             const key = g.grupAdi + '|' + el.model;
             if (el.fiyat !== '') prices[key] = el.fiyat;
             if (el.stok !== '') stokMap[key] = el.stok;
+            if (el.dolfin !== '') dolfinMap[key] = el.dolfin;
           });
         });
         localStorage.setItem('iolist_fiyatlar', JSON.stringify(prices));
         localStorage.setItem('iolist_stok', JSON.stringify(stokMap));
+        localStorage.setItem('iolist_dolfin', JSON.stringify(dolfinMap));
         if (sb && currentUser) {
           const priceRows = Object.entries(prices).map(([k, v]) => ({ user_id: currentUser.id, key: k, price: parseFloat(v) || 0 }));
           const stokRows  = Object.entries(stokMap).map(([k, v]) => ({ user_id: currentUser.id, key: k, stok_kodu: v }));
@@ -5036,7 +4940,7 @@
     const btn = document.getElementById('btn-fiyat-duzenle');
     if (btn) {
       btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenle';
-      btn.className = 'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono';
+      btn.className = 'shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono';
       btn.onclick = () => openFiyatEditModal();
     }
     renderFiyatlarTable();
@@ -5057,8 +4961,9 @@
         const model = tr.querySelector('.fiyat-edit-model')?.value?.trim() || '';
         const aciklama = tr.querySelector('.fiyat-edit-aciklama')?.value?.trim() || '';
         const stok = tr.querySelector('.fiyat-edit-stok')?.value?.trim() || '';
+        const dolfin = tr.querySelector('.fiyat-edit-dolfin')?.value?.trim() || '';
         const fiyat = tr.querySelector('.fiyat-edit-fiyat')?.value?.trim() || '';
-        if (model) elemanlar.push({ model, aciklama, stok, fiyat });
+        if (model) elemanlar.push({ model, aciklama, stok, dolfin, fiyat });
       });
       groups.push({ grupAdi, renk, elemanlar });
     });
