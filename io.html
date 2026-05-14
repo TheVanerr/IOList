@@ -203,6 +203,9 @@
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
      <div class="flex items-center gap-1.5">
+      <button id="btn-standart-json-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> JSON → Supabase
+      </button>
       <button id="btn-standart-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
       </button>
@@ -3881,15 +3884,6 @@
     selHeaderLeft.appendChild(selIcon);
     selHeaderLeft.appendChild(selTitle);
     selHeader.appendChild(selHeaderLeft);
-    if (isAdmin()) {
-      const uploadAllBtn = document.createElement('button');
-      uploadAllBtn.id = 'standart-upload-all-btn';
-      uploadAllBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-sky-600/40 hover:border-sky-400 text-sky-400 hover:bg-sky-900/20 text-xs font-semibold mono transition';
-      uploadAllBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> JSON → Supabase';
-      uploadAllBtn.title = 'standart.json içindeki tüm modelleri Supabase\'e yükle';
-      uploadAllBtn.onclick = () => uploadAllToSupabase();
-      selHeader.appendChild(uploadAllBtn);
-    }
     selectorSection.appendChild(selHeader);
 
     // selRow: tam genişlik, iki satır — üst: select + bilgi kartları, alt: opsiyon butonları
@@ -4668,6 +4662,12 @@
       btn.classList.add('active');
       pages.forEach(p => p.classList.remove('active'));
       document.getElementById(`page-${target}`).classList.add('active');
+      // Standart sayfasına özel admin butonlarını göster/gizle
+      const isStandart = target === 'standart';
+      const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
+      const duzenleBtn = document.getElementById('btn-standart-duzenle');
+      if (jsonSupabaseBtn) jsonSupabaseBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
+      if (duzenleBtn) duzenleBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
       if (target === 'secim') { renderRezistansTable(); renderKurutmaTable(); renderKacakAkimTable(); renderTmsTable(); }
       if (target === 'otomasyon') renderSensorTable();
       if (target === 'fiyatlar') renderFiyatlarTable();
@@ -5016,7 +5016,7 @@
     const toplamSatir = models.reduce((s, m) => s + (STANDART_MODEL_VERILERI[m]?.length || 0), 0);
     if (toplamSatir === 0) { alert('standart.json içinde yüklenecek veri bulunamadı.'); return; }
 
-    const btn = document.getElementById('standart-upload-all-btn');
+    const btn = document.getElementById('btn-standart-json-supabase');
     if (btn) { btn.textContent = 'Yükleniyor…'; btn.disabled = true; }
 
     try {
@@ -5052,8 +5052,9 @@
       alert('❌ Yükleme başarısız: ' + (e.message || JSON.stringify(e)));
     } finally {
       if (btn) {
-        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> JSON → Supabase';
+        btn.innerHTML = '<i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> JSON → Supabase';
         btn.disabled = false;
+        lucide.createIcons();
       }
     }
   }
@@ -5192,6 +5193,9 @@
     const girisBtn = document.getElementById('btn-kullanici-giris');
     const bulutBtn = document.getElementById('btn-bulut-yukle');
     const standartDuzenleBtn = document.getElementById('btn-standart-duzenle');
+    const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
+    // Standart sayfası şu an aktif mi?
+    const standartAktif = document.querySelector('[data-page="standart"]')?.classList.contains('active');
     if (currentUser) {
       const email = currentUser.email || '';
       const short = email.length > 18 ? email.slice(0, 15) + '…' : email;
@@ -5200,13 +5204,14 @@
       girisBtn.title = 'Çıkış yapmak için tıkla';
       bulutBtn.classList.remove('hidden');
       if (isAdmin()) {
-        standartDuzenleBtn.classList.remove('hidden');
-        standartDuzenleBtn.onclick = () => {
-          const standartNavBtn = document.querySelector('[data-page="standart"]');
-          if (standartNavBtn && !standartNavBtn.classList.contains('active')) standartNavBtn.click();
-          openStandartEditModal();
-        };
+        if (jsonSupabaseBtn) {
+          jsonSupabaseBtn.onclick = () => uploadAllToSupabase();
+          jsonSupabaseBtn.classList.toggle('hidden', !standartAktif);
+        }
+        standartDuzenleBtn.classList.toggle('hidden', !standartAktif);
+        standartDuzenleBtn.onclick = () => openStandartEditModal();
       } else {
+        if (jsonSupabaseBtn) jsonSupabaseBtn.classList.add('hidden');
         standartDuzenleBtn.classList.add('hidden');
       }
     } else {
@@ -5214,6 +5219,7 @@
       girisBtn.title = '';
       bulutBtn.classList.add('hidden');
       standartDuzenleBtn.classList.add('hidden');
+      if (jsonSupabaseBtn) jsonSupabaseBtn.classList.add('hidden');
     }
     lucide.createIcons();
   }
