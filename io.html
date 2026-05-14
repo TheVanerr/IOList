@@ -304,92 +304,96 @@
       <div class="header-line mt-4"></div>
      </div>
      <!-- PLC Konfigürasyon Kartları -->
-     <div class="flex flex-wrap gap-3 items-start">
+     <div class="flex flex-nowrap gap-3 items-stretch overflow-x-auto pb-1">
       <!-- IO Sayısı -->
-      <div class="rounded-xl border border-slate-700/60 bg-slate-800/40 p-3 flex-shrink-0" style="min-width:110px">
-       <div class="flex items-center gap-1.5 mb-2">
+      <div class="rounded-xl border border-slate-600/70 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col justify-between" style="min-width:140px">
+       <div class="flex items-center gap-2 mb-3">
         <div class="w-6 h-6 rounded-md bg-purple-500/20 flex items-center justify-center border border-purple-500/40">
          <i data-lucide="list-checks" class="w-3 h-3 text-purple-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">IO Sayısı</span>
        </div>
-       <div class="space-y-1">
-        <div class="flex items-center justify-between gap-3">
+       <div class="space-y-2">
+        <div class="flex items-center justify-between">
          <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">DI</span>
          <span id="plc-di-count" class="text-sm font-bold text-cyan-400 mono">0</span>
         </div>
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center justify-between">
          <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">DO</span>
          <span id="plc-do-count" class="text-sm font-bold text-emerald-400 mono">0</span>
+        </div>
+        <div class="flex items-center justify-between">
+         <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">AI</span>
+         <span id="plc-ai-count" class="text-sm font-bold text-violet-400 mono">0</span>
+        </div>
+        <div class="flex items-center justify-between">
+         <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">TC</span>
+         <span id="plc-tc-count" class="text-sm font-bold text-amber-400 mono">0</span>
         </div>
        </div>
       </div>
       <!-- Si PLC CPU -->
-      <div class="rounded-xl border border-blue-500/30 bg-slate-800/40 p-3 flex-shrink-0" style="min-width:155px">
-       <div class="flex items-center gap-1.5 mb-2">
+      <div class="rounded-xl border border-blue-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
+       <div class="flex items-center gap-2 mb-3">
         <div class="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
          <i data-lucide="cpu" class="w-3 h-3 text-blue-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">Si PLC CPU</span>
        </div>
-       <select id="sel-plc-cpu" class="w-full h-7 px-2 bg-slate-900 border border-slate-600 rounded text-slate-100 text-xs focus:border-blue-500 focus:outline-none cursor-pointer">
+       <select id="sel-plc-cpu" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-blue-500/30 rounded-lg text-slate-100 text-xs focus:border-blue-400 focus:outline-none cursor-pointer hover:border-blue-400/60 transition-colors">
         <option value="">-- Seçiniz --</option>
        </select>
       </div>
-      <!-- PLC Ek Modül -->
-      <div class="rounded-xl border border-emerald-500/30 bg-slate-800/40 p-3 flex-shrink-0" style="min-width:170px">
-       <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-1.5">
+      <!-- PLC Ek Modül (ana) -->
+      <div id="ek-modul-anchor" class="rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
+       <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
          <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
           <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
          </div>
          <span class="label-tag mono text-[10px]">PLC Ek Modül</span>
         </div>
-        <button onclick="addEkModul()" class="w-5 h-5 rounded bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/40 transition-colors" title="Ek Modül Ekle">
+        <button onclick="addEkModul()" class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/40 transition-colors" title="Ek Modül Ekle">
          <i data-lucide="plus" class="w-3 h-3 text-emerald-400"></i>
         </button>
        </div>
-       <div id="ek-modul-list" class="flex flex-col gap-1.5">
-        <div class="flex items-center gap-1">
-         <select class="ek-modul-sel flex-1 h-7 px-2 bg-slate-900 border border-slate-600 rounded text-slate-100 text-xs focus:border-emerald-500 focus:outline-none cursor-pointer">
-          <option value="">-- Seçiniz --</option>
-         </select>
-        </div>
-       </div>
+       <select class="ek-modul-sel mt-auto w-full h-8 px-2 bg-slate-900/80 border border-emerald-500/30 rounded-lg text-slate-100 text-xs focus:border-emerald-400 focus:outline-none cursor-pointer hover:border-emerald-400/60 transition-colors">
+        <option value="">-- Seçiniz --</option>
+       </select>
       </div>
       <!-- PLC TC Modül -->
-      <div class="rounded-xl border border-amber-500/30 bg-slate-800/40 p-3 flex-shrink-0" style="min-width:155px">
-       <div class="flex items-center gap-1.5 mb-2">
+      <div class="rounded-xl border border-amber-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
+       <div class="flex items-center gap-2 mb-3">
         <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
          <i data-lucide="thermometer" class="w-3 h-3 text-amber-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">PLC TC Modül</span>
        </div>
-       <select id="sel-plc-tc" class="w-full h-7 px-2 bg-slate-900 border border-slate-600 rounded text-slate-100 text-xs focus:border-amber-500 focus:outline-none cursor-pointer">
+       <select id="sel-plc-tc" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-amber-500/30 rounded-lg text-slate-100 text-xs focus:border-amber-400 focus:outline-none cursor-pointer hover:border-amber-400/60 transition-colors">
         <option value="">-- Seçiniz --</option>
        </select>
       </div>
       <!-- PLC Analog Modül -->
-      <div class="rounded-xl border border-violet-500/30 bg-slate-800/40 p-3 flex-shrink-0" style="min-width:155px">
-       <div class="flex items-center gap-1.5 mb-2">
+      <div class="rounded-xl border border-violet-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
+       <div class="flex items-center gap-2 mb-3">
         <div class="w-6 h-6 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40">
          <i data-lucide="activity" class="w-3 h-3 text-violet-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">PLC Analog Modül</span>
        </div>
-       <select id="sel-plc-analog" class="w-full h-7 px-2 bg-slate-900 border border-slate-600 rounded text-slate-100 text-xs focus:border-violet-500 focus:outline-none cursor-pointer">
+       <select id="sel-plc-analog" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-violet-500/30 rounded-lg text-slate-100 text-xs focus:border-violet-400 focus:outline-none cursor-pointer hover:border-violet-400/60 transition-colors">
         <option value="">-- Seçiniz --</option>
        </select>
       </div>
       <!-- Emniyet Rölesi -->
-      <div class="rounded-xl border border-rose-500/30 bg-slate-800/40 p-3 flex-shrink-0" style="min-width:155px">
-       <div class="flex items-center gap-1.5 mb-2">
+      <div class="rounded-xl border border-rose-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
+       <div class="flex items-center gap-2 mb-3">
         <div class="w-6 h-6 rounded-md bg-rose-500/20 flex items-center justify-center border border-rose-500/40">
          <i data-lucide="shield-check" class="w-3 h-3 text-rose-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">Emniyet Rölesi</span>
        </div>
-       <select id="sel-emniyet-rolesi" class="w-full h-7 px-2 bg-slate-900 border border-slate-600 rounded text-slate-100 text-xs focus:border-rose-500 focus:outline-none cursor-pointer">
+       <select id="sel-emniyet-rolesi" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-rose-500/30 rounded-lg text-slate-100 text-xs focus:border-rose-400 focus:outline-none cursor-pointer hover:border-rose-400/60 transition-colors">
         <option value="">-- Seçiniz --</option>
        </select>
       </div>
@@ -4300,17 +4304,32 @@
   }
 
   function addEkModul() {
-    const list = document.getElementById('ek-modul-list');
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-1';
-    row.innerHTML = `
-      <select class="ek-modul-sel flex-1 h-7 px-2 bg-slate-900 border border-slate-600 rounded text-slate-100 text-xs focus:border-emerald-500 focus:outline-none cursor-pointer">
+    const anchor = document.getElementById('ek-modul-anchor');
+    const newCard = document.createElement('div');
+    newCard.className = 'rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col ek-modul-extra';
+    newCard.style.minWidth = '190px';
+    newCard.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
+            <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
+          </div>
+          <span class="label-tag mono text-[10px]">PLC Ek Modül</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="addEkModul()" class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/40 transition-colors" title="Ek Modül Ekle">
+            <i data-lucide="plus" class="w-3 h-3 text-emerald-400"></i>
+          </button>
+          <button onclick="this.closest('.ek-modul-extra').remove()" class="w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/40 flex items-center justify-center hover:bg-rose-500/30 transition-colors" title="Kaldır">
+            <i data-lucide="minus" class="w-3 h-3 text-rose-400"></i>
+          </button>
+        </div>
+      </div>
+      <select class="ek-modul-sel mt-auto w-full h-8 px-2 bg-slate-900/80 border border-emerald-500/30 rounded-lg text-slate-100 text-xs focus:border-emerald-400 focus:outline-none cursor-pointer hover:border-emerald-400/60 transition-colors">
         <option value="">-- Seçiniz --</option>
-      </select>
-      <button onclick="this.parentElement.remove()" class="w-5 h-5 rounded bg-slate-700/60 border border-slate-600 flex items-center justify-center hover:bg-rose-500/30 hover:border-rose-500/50 transition-colors flex-shrink-0" title="Kaldır">
-        <i data-lucide="x" class="w-3 h-3 text-slate-400"></i>
-      </button>`;
-    list.appendChild(row);
+      </select>`;
+    // Insert right after anchor card
+    anchor.insertAdjacentElement('afterend', newCard);
     lucide.createIcons();
   }
 
@@ -4320,8 +4339,18 @@
     container.innerHTML = '';
 
     // PLC Tablosu
-    const plcRows = mergePLCRows(getPLCGirisRows(), getPLCCikisRows());
+    const girisRows = getPLCGirisRows();
+    const cikisRows = getPLCCikisRows();
+    const plcRows = mergePLCRows(girisRows, cikisRows);
     container.appendChild(buildIOTable('PLC', '#fbbf24', 'circuit-board', plcRows));
+
+    // IO Sayısı güncelle
+    const diCount = girisRows.filter(r => r.girisKomutu && r.girisKomutu.trim() !== '').length;
+    const doCount = cikisRows.filter(r => r.cikisKomutu && r.cikisKomutu.trim() !== '').length;
+    const diEl = document.getElementById('plc-di-count');
+    const doEl = document.getElementById('plc-do-count');
+    if (diEl) diEl.textContent = diCount;
+    if (doEl) doEl.textContent = doCount;
 
     // Safety PLC Tablosu — yalnızca Işın Bariyeri VAR ve Makine Tipi Kabinli ise
     if (state.isinBariyeri === 'VAR' && state.makineTipi === 'Kabinli') {
