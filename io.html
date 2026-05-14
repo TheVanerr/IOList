@@ -203,6 +203,9 @@
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
      <div class="flex items-center gap-1.5">
+      <button id="btn-standart-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
+      </button>
       <button id="btn-bulut-yukle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="cloud" class="w-3.5 h-3.5"></i> Projelerim
       </button>
@@ -2671,9 +2674,9 @@
       { label: 'Kullanım Yeri',    color: '#f472b6' },
       { label: 'Stok Kodu',        color: '#22d3ee' },
       { label: 'Ürün Adı',         color: '#22d3ee' },
-      { label: 'Birim Fiyat (₺)',  color: '#22d3ee' },
+      { label: 'Birim Fiyat (€)',  color: '#22d3ee' },
       { label: 'Adet',             color: '#22d3ee' },
-      { label: 'Toplam (₺)',       color: '#22d3ee' },
+      { label: 'Toplam (€)',       color: '#22d3ee' },
     ].forEach(h => {
       const th = document.createElement('th');
       th.className = 'px-3 py-3 text-center text-xs font-semibold mono';
@@ -2999,9 +3002,9 @@
     [
       { label: 'Stok Kodu',    color: '#22d3ee' },
       { label: 'Ürün Adı',     color: '#22d3ee' },
-      { label: 'Birim Fiyat (₺)', color: '#22d3ee' },
+      { label: 'Birim Fiyat (€)', color: '#22d3ee' },
       { label: 'Adet',         color: '#22d3ee' },
-      { label: 'Toplam (₺)',   color: '#22d3ee' },
+      { label: 'Toplam (€)',   color: '#22d3ee' },
     ].forEach(h => {
       const th = document.createElement('th');
       th.className = 'px-3 py-3 text-center text-xs font-semibold mono';
@@ -3171,7 +3174,7 @@
       const thead = document.createElement('thead');
       const hRow = document.createElement('tr');
       hRow.className = 'border-b border-slate-700/30 bg-slate-800/20';
-      ['#', 'Stok Kodu', 'Model', 'Açıklama', 'Birim Fiyat (₺)'].forEach(h => {
+      ['#', 'Stok Kodu', 'Model', 'Açıklama', 'Birim Fiyat (€)'].forEach(h => {
         const th = document.createElement('th');
         th.className = 'px-3 py-2 text-center text-xs font-semibold mono text-slate-500';
         th.textContent = h;
@@ -3431,7 +3434,7 @@
     hidden.value = price;
     const display = document.createElement('span');
     display.className = 'sbom-fiyat-display text-xs mono font-semibold ' + (price ? 'text-yellow-300' : 'text-slate-500');
-    display.textContent = price ? parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ₺' : '—';
+    display.textContent = price ? parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €' : '—';
     td.appendChild(hidden);
     td.appendChild(display);
     return td;
@@ -3457,11 +3460,11 @@
       const f = parseFloat(fiyatEl ? (fiyatEl.value !== undefined ? fiyatEl.value : fiyatEl.textContent) : 0) || 0;
       const a = parseFloat(adetEl  ? (adetEl.value  !== undefined ? adetEl.value  : adetEl.textContent)  : 0) || 0;
       const t = f * a;
-      if (toplamTd) toplamTd.textContent = t > 0 ? t.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ₺' : '—';
+      if (toplamTd) toplamTd.textContent = t > 0 ? t.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €' : '—';
       total += t;
     });
     const totalEl = document.getElementById('sbom-grand-total');
-    if (totalEl) totalEl.textContent = total.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ₺';
+    if (totalEl) totalEl.textContent = total.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
   }
 
   async function renderStandartBOM(model) {
@@ -3636,7 +3639,7 @@
       const sigTH = document.createElement('thead');
       const sigHR = document.createElement('tr');
       sigHR.className = 'bg-slate-800/60 border-b border-slate-700/50';
-      [{label:'Stok Kodu',color:'#22d3ee'},{label:'Ürün Adı',color:'#e2e8f0'},{label:'Birim Fiyatı',color:'#fbbf24'},{label:'Ürün Adedi',color:'#94a3b8'},{label:'Toplam Maliyet',color:'#34d399'}].forEach(h => {
+      [{label:'Stok Kodu',color:'#22d3ee'},{label:'Ürün Adı',color:'#e2e8f0'},{label:'Birim Fiyatı (€)',color:'#fbbf24'},{label:'Ürün Adedi',color:'#94a3b8'},{label:'Toplam Maliyet (€)',color:'#34d399'}].forEach(h => {
         const th = document.createElement('th');
         th.className = 'px-3 py-2.5 text-center text-xs font-bold mono';
         th.style.color = h.color; th.textContent = h.label; sigHR.appendChild(th);
@@ -3705,9 +3708,9 @@
     [
       { label: 'Stok Kodu',      color: '#22d3ee' },
       { label: 'Ürün Adı',       color: '#e2e8f0' },
-      { label: 'Birim Fiyatı',   color: '#fbbf24' },
-      { label: 'Ürün Adedi',     color: '#94a3b8' },
-      { label: 'Toplam Maliyet', color: '#34d399' },
+      { label: 'Birim Fiyatı (€)', color: '#fbbf24' },
+      { label: 'Ürün Adedi',         color: '#94a3b8' },
+      { label: 'Toplam Maliyet (€)', color: '#34d399' },
     ].forEach(h => {
       const th = document.createElement('th');
       th.className = 'px-3 py-2.5 text-center text-xs font-bold mono';
@@ -3800,7 +3803,7 @@
     const totalVal = document.createElement('span');
     totalVal.id = 'sbom-grand-total';
     totalVal.className = 'text-lg font-bold mono text-emerald-400 min-w-[160px] text-right';
-    totalVal.textContent = '0,00 ₺';
+    totalVal.textContent = '0,00 €';
     totalBar.appendChild(totalLabel);
     totalBar.appendChild(totalVal);
     container.appendChild(totalBar);
@@ -3879,25 +3882,13 @@
     selHeaderLeft.appendChild(selTitle);
     selHeader.appendChild(selHeaderLeft);
     if (isAdmin()) {
-      const adminBtnGroup = document.createElement('div');
-      adminBtnGroup.className = 'flex items-center gap-2';
-
       const uploadAllBtn = document.createElement('button');
       uploadAllBtn.id = 'standart-upload-all-btn';
       uploadAllBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-sky-600/40 hover:border-sky-400 text-sky-400 hover:bg-sky-900/20 text-xs font-semibold mono transition';
       uploadAllBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> JSON → Supabase';
       uploadAllBtn.title = 'standart.json içindeki tüm modelleri Supabase\'e yükle';
       uploadAllBtn.onclick = () => uploadAllToSupabase();
-      adminBtnGroup.appendChild(uploadAllBtn);
-
-      const editBtn = document.createElement('button');
-      editBtn.id = 'standart-edit-btn';
-      editBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-violet-600/40 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs font-semibold mono transition';
-      editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme';
-      editBtn.onclick = () => openStandartEditModal();
-      adminBtnGroup.appendChild(editBtn);
-
-      selHeader.appendChild(adminBtnGroup);
+      selHeader.appendChild(uploadAllBtn);
     }
     selectorSection.appendChild(selHeader);
 
@@ -3996,7 +3987,7 @@
           const disp   = row.querySelector('.sbom-fiyat-display');
           if (hidden) hidden.value = price;
           if (disp) {
-            disp.textContent = price ? parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ₺' : '—';
+            disp.textContent = price ? parseFloat(price).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €' : '—';
             disp.className = 'sbom-fiyat-display text-xs mono font-semibold ' + (price ? 'text-yellow-300' : 'text-slate-500');
           }
         }
@@ -4165,10 +4156,10 @@
     select.addEventListener('change', async () => {
       if (standartEditMode) {
         standartEditMode = false;
-        const btn = document.getElementById('standart-edit-btn');
+        const btn = document.getElementById('btn-standart-duzenle');
         if (btn) {
-          btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme';
-          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-violet-600/40 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs font-semibold mono transition';
+          btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenle';
+          btn.className = 'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono';
           btn.onclick = () => openStandartEditModal();
         }
       }
@@ -4969,10 +4960,10 @@
 
   function enterStandartEditMode() {
     standartEditMode = true;
-    const btn = document.getElementById('standart-edit-btn');
+    const btn = document.getElementById('btn-standart-duzenle');
     if (btn) {
       btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Kaydet';
-      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono transition';
+      btn.className = 'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono transition';
       btn.onclick = () => exitStandartEditMode(true);
     }
     const select = document.getElementById('standart-model-select');
@@ -4990,10 +4981,10 @@
       }
     }
     standartEditMode = false;
-    const btn = document.getElementById('standart-edit-btn');
+    const btn = document.getElementById('btn-standart-duzenle');
     if (btn) {
       btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenle';
-      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-violet-600/40 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs font-semibold mono transition';
+      btn.className = 'shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono';
       btn.onclick = () => openStandartEditModal();
     }
     const select = document.getElementById('standart-model-select');
@@ -5200,6 +5191,7 @@
   function updateAuthUI() {
     const girisBtn = document.getElementById('btn-kullanici-giris');
     const bulutBtn = document.getElementById('btn-bulut-yukle');
+    const standartDuzenleBtn = document.getElementById('btn-standart-duzenle');
     if (currentUser) {
       const email = currentUser.email || '';
       const short = email.length > 18 ? email.slice(0, 15) + '…' : email;
@@ -5207,10 +5199,21 @@
       girisBtn.innerHTML = `<i data-lucide="user-check" class="w-3.5 h-3.5"></i> ${short}${adminBadge}`;
       girisBtn.title = 'Çıkış yapmak için tıkla';
       bulutBtn.classList.remove('hidden');
+      if (isAdmin()) {
+        standartDuzenleBtn.classList.remove('hidden');
+        standartDuzenleBtn.onclick = () => {
+          const standartNavBtn = document.querySelector('[data-page="standart"]');
+          if (standartNavBtn && !standartNavBtn.classList.contains('active')) standartNavBtn.click();
+          openStandartEditModal();
+        };
+      } else {
+        standartDuzenleBtn.classList.add('hidden');
+      }
     } else {
       girisBtn.innerHTML = `<i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş`;
       girisBtn.title = '';
       bulutBtn.classList.add('hidden');
+      standartDuzenleBtn.classList.add('hidden');
     }
     lucide.createIcons();
   }
