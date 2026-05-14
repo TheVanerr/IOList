@@ -3879,12 +3879,25 @@
     selHeaderLeft.appendChild(selTitle);
     selHeader.appendChild(selHeaderLeft);
     if (isAdmin()) {
+      const adminBtnGroup = document.createElement('div');
+      adminBtnGroup.className = 'flex items-center gap-2';
+
+      const uploadAllBtn = document.createElement('button');
+      uploadAllBtn.id = 'standart-upload-all-btn';
+      uploadAllBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-sky-600/40 hover:border-sky-400 text-sky-400 hover:bg-sky-900/20 text-xs font-semibold mono transition';
+      uploadAllBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> JSON → Supabase';
+      uploadAllBtn.title = 'standart.json içindeki tüm modelleri Supabase\'e yükle';
+      uploadAllBtn.onclick = () => uploadAllToSupabase();
+      adminBtnGroup.appendChild(uploadAllBtn);
+
       const editBtn = document.createElement('button');
       editBtn.id = 'standart-edit-btn';
       editBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-violet-600/40 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs font-semibold mono transition';
       editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme';
       editBtn.onclick = () => openStandartEditModal();
-      selHeader.appendChild(editBtn);
+      adminBtnGroup.appendChild(editBtn);
+
+      selHeader.appendChild(adminBtnGroup);
     }
     selectorSection.appendChild(selHeader);
 
@@ -5005,8 +5018,56 @@
     return rows;
   }
 
-  async function saveStandartToSupabase(model, rows) {
-    if (!sb) { console.warn('Supabase bağlantısı yok, yalnızca bellekte güncellendi.'); return; }
+  async function uploadAllToSupabase() {
+    if (!sb) { alert('Supabase bağlantısı yok.'); return; }
+    await loadStandartVerileri();
+    const models = Object.keys(STANDART_MODEL_VERILERI);
+    const toplamSatir = models.reduce((s, m) => s + (STANDART_MODEL_VERILERI[m]?.length || 0), 0);
+    if (toplamSatir === 0) { alert('standart.json içinde yüklenecek veri bulunamadı.'); return; }
+
+    const btn = document.getElementById('standart-upload-all-btn');
+    if (btn) { btn.textContent = 'Yükleniyor…'; btn.disabled = true; }
+
+    try {
+      // Tüm tabloyu temizle ve yeniden yükle
+      const { error: delErr } = await sb.from('standart_bom').delete().neq('id', 0);
+      if (delErr) throw delErr;
+
+      const allRows = [];
+      models.forEach(model => {
+        (STANDART_MODEL_VERILERI[model] || []).forEach((r, i) => {
+          allRows.push({
+            model,
+            grup:      r.grup,
+            stok_kodu: r.stokKodu,
+            urun_adi:  r.urunAdi,
+            adet:      r.adet,
+            sira:      i
+          });
+        });
+      });
+
+      // Büyük veriyi 200'lük parçalar halinde insert et
+      const CHUNK = 200;
+      for (let i = 0; i < allRows.length; i += CHUNK) {
+        const chunk = allRows.slice(i, i + CHUNK);
+        const { error: insErr } = await sb.from('standart_bom').insert(chunk);
+        if (insErr) throw insErr;
+      }
+
+      alert(`✅ ${allRows.length} satır başarıyla Supabase'e yüklendi (${models.length} model).`);
+    } catch(e) {
+      console.error('Supabase toplu yükleme hatası:', e);
+      alert('❌ Yükleme başarısız: ' + (e.message || JSON.stringify(e)));
+    } finally {
+      if (btn) {
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg> JSON → Supabase';
+        btn.disabled = false;
+      }
+    }
+  }
+
+  async function saveStandartToSupabase(model, rows) {    if (!sb) { console.warn('Supabase bağlantısı yok, yalnızca bellekte güncellendi.'); return; }
     try {
       const { error: delErr } = await sb.from('standart_bom').delete().eq('model', model);
       if (delErr) { console.error('Supabase silme hatası:', delErr); return; }
