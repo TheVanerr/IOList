@@ -101,6 +101,63 @@
     background-color: #0e7490;
     color: #ffffff;
   }
+  /* ===== Custom Dropdown (cdd) ===== */
+  .cdd { position: relative; }
+  .cdd-trigger {
+    width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    padding: 0 10px; height: 30px; border-radius: 8px; font-size: 11px; cursor: pointer;
+    background: rgba(10,14,26,0.9); transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    font-family: 'Space Grotesk', system-ui, sans-serif; color: #94a3b8;
+  }
+  .cdd-trigger:hover { background: rgba(10,14,26,1); border-color: var(--cdd-color, #22d3ee) !important; }
+  .cdd.open .cdd-trigger { border-color: var(--cdd-color, #22d3ee) !important; box-shadow: 0 0 0 1px var(--cdd-color, #22d3ee); color: #e2e8f0; }
+  .cdd-chevron { transition: transform 0.2s ease; flex-shrink: 0; }
+  .cdd.open .cdd-chevron { transform: rotate(180deg); }
+  .cdd-val { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cdd-panel {
+    display: none; position: fixed; top: 0; left: 0;
+    width: max-content; min-width: 100%;
+    background: linear-gradient(135deg, #0d1526 0%, #080d1a 100%);
+    border: 1px solid rgba(71,85,105,0.5);
+    border-top: 2px solid var(--cdd-color, #334155);
+    border-radius: 14px;
+    box-shadow: 0 32px 64px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.04), 0 0 40px rgba(0,0,0,0.4);
+    z-index: 9999; overflow: hidden;
+  }
+  .cdd.open .cdd-panel { display: block; animation: cddIn 0.18s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes cddIn { from { opacity:0; transform:translateY(-8px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+  .cdd-header {
+    padding: 8px 12px 6px;
+    border-bottom: 1px solid rgba(71,85,105,0.3);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cdd-header-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cdd-color, #22d3ee);
+    box-shadow: 0 0 6px var(--cdd-color, #22d3ee);
+  }
+  .cdd-header-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #475569; font-family: 'JetBrains Mono', monospace; }
+  .cdd-options { padding: 5px; max-height: 220px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+  .cdd-options::-webkit-scrollbar { width: 4px; }
+  .cdd-options::-webkit-scrollbar-track { background: transparent; }
+  .cdd-options::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .cdd-option {
+    padding: 8px 12px; font-size: 11px; border-radius: 8px; cursor: pointer;
+    color: #64748b; transition: all 0.12s; white-space: nowrap;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid transparent;
+  }
+  .cdd-option::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: 0.4; flex-shrink: 0; }
+  .cdd-option:hover { background: rgba(148,163,184,0.08); color: #e2e8f0; border-color: rgba(148,163,184,0.1); }
+  .cdd-option.cdd-selected {
+    color: var(--cdd-color, #22d3ee);
+    background: rgba(34,211,238,0.08);
+    border-color: rgba(34,211,238,0.15);
+    font-weight: 600;
+  }
+  .cdd-option.cdd-selected::before { opacity: 1; background: var(--cdd-color, #22d3ee); box-shadow: 0 0 4px var(--cdd-color, #22d3ee); }
+  /* ===== End Custom Dropdown ===== */
 </style>
   <style>body { box-sizing: border-box; }</style>
   <!-- data_sdk.js optional - only available on hosting platform -->
@@ -304,49 +361,53 @@
       <div class="header-line mt-4"></div>
      </div>
      <!-- PLC Konfigürasyon Kartları -->
-     <div class="flex flex-nowrap gap-3 items-stretch overflow-x-auto pb-1">
+     <div class="flex flex-nowrap gap-2 items-stretch overflow-x-auto pb-1" style="overflow-y:visible">
       <!-- IO Sayısı -->
-      <div class="rounded-xl border border-slate-600/70 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col justify-between" style="min-width:140px">
-       <div class="flex items-center gap-2 mb-3">
+      <div class="rounded-xl border border-slate-600/70 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-4 py-2.5 flex-shrink-0 flex flex-col justify-between" style="min-width:230px">
+       <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-purple-500/20 flex items-center justify-center border border-purple-500/40">
          <i data-lucide="list-checks" class="w-3 h-3 text-purple-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">IO Sayısı</span>
        </div>
-       <div class="space-y-2">
-        <div class="flex items-center justify-between">
-         <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">DI</span>
-         <span id="plc-di-count" class="text-sm font-bold text-cyan-400 mono">0</span>
+       <div class="grid grid-cols-4 gap-2">
+        <div class="flex flex-col items-center gap-0.5 bg-cyan-500/5 border border-cyan-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-cyan-600 mono uppercase tracking-wider font-semibold">DI</span>
+         <span id="plc-di-count" class="text-base font-bold text-cyan-400 mono leading-tight">0</span>
         </div>
-        <div class="flex items-center justify-between">
-         <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">DO</span>
-         <span id="plc-do-count" class="text-sm font-bold text-emerald-400 mono">0</span>
+        <div class="flex flex-col items-center gap-0.5 bg-emerald-500/5 border border-emerald-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-emerald-600 mono uppercase tracking-wider font-semibold">DO</span>
+         <span id="plc-do-count" class="text-base font-bold text-emerald-400 mono leading-tight">0</span>
         </div>
-        <div class="flex items-center justify-between">
-         <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">AI</span>
-         <span id="plc-ai-count" class="text-sm font-bold text-violet-400 mono">0</span>
+        <div class="flex flex-col items-center gap-0.5 bg-violet-500/5 border border-violet-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-violet-600 mono uppercase tracking-wider font-semibold">AI</span>
+         <span id="plc-ai-count" class="text-base font-bold text-violet-400 mono leading-tight">0</span>
         </div>
-        <div class="flex items-center justify-between">
-         <span class="text-[10px] text-slate-400 mono uppercase tracking-widest">TC</span>
-         <span id="plc-tc-count" class="text-sm font-bold text-amber-400 mono">0</span>
+        <div class="flex flex-col items-center gap-0.5 bg-pink-500/5 border border-pink-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-pink-600 mono uppercase tracking-wider font-semibold">AO</span>
+         <span id="plc-ao-count" class="text-base font-bold text-pink-400 mono leading-tight">0</span>
         </div>
        </div>
       </div>
-      <!-- Si PLC CPU -->
-      <div class="rounded-xl border border-blue-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
-       <div class="flex items-center gap-2 mb-3">
+      <!-- PLC CPU -->
+      <div class="rounded-xl border border-blue-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+       <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
          <i data-lucide="cpu" class="w-3 h-3 text-blue-400"></i>
         </div>
-        <span class="label-tag mono text-[10px]">Si PLC CPU</span>
+        <span class="label-tag mono text-[10px]">PLC CPU</span>
        </div>
-       <select id="sel-plc-cpu" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-blue-500/30 rounded-lg text-slate-100 text-xs focus:border-blue-400 focus:outline-none cursor-pointer hover:border-blue-400/60 transition-colors">
-        <option value="">-- Seçiniz --</option>
-       </select>
+       <div class="cdd mt-auto" style="--cdd-color:#60a5fa">
+        <button class="cdd-trigger border border-blue-500/30" onclick="cddToggle(this)">
+         <span class="cdd-val">-- Seçiniz --</span>
+         <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+       </div>
       </div>
       <!-- PLC Ek Modül (ana) -->
-      <div id="ek-modul-anchor" class="rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
-       <div class="flex items-center justify-between mb-3">
+      <div id="ek-modul-anchor" class="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
          <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
           <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
@@ -357,45 +418,61 @@
          <i data-lucide="plus" class="w-3 h-3 text-emerald-400"></i>
         </button>
        </div>
-       <select class="ek-modul-sel mt-auto w-full h-8 px-2 bg-slate-900/80 border border-emerald-500/30 rounded-lg text-slate-100 text-xs focus:border-emerald-400 focus:outline-none cursor-pointer hover:border-emerald-400/60 transition-colors">
-        <option value="">-- Seçiniz --</option>
-       </select>
+       <div class="cdd mt-auto" style="--cdd-color:#34d399">
+        <button class="cdd-trigger border border-emerald-500/30" onclick="cddToggle(this)">
+         <span class="cdd-val">-- Seçiniz --</span>
+         <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+       </div>
       </div>
       <!-- PLC TC Modül -->
-      <div class="rounded-xl border border-amber-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
-       <div class="flex items-center gap-2 mb-3">
+      <div class="rounded-xl border border-amber-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+       <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
          <i data-lucide="thermometer" class="w-3 h-3 text-amber-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">PLC TC Modül</span>
        </div>
-       <select id="sel-plc-tc" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-amber-500/30 rounded-lg text-slate-100 text-xs focus:border-amber-400 focus:outline-none cursor-pointer hover:border-amber-400/60 transition-colors">
-        <option value="">-- Seçiniz --</option>
-       </select>
+       <div class="cdd mt-auto" style="--cdd-color:#fbbf24">
+        <button class="cdd-trigger border border-amber-500/30" onclick="cddToggle(this)">
+         <span class="cdd-val">-- Seçiniz --</span>
+         <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+       </div>
       </div>
       <!-- PLC Analog Modül -->
-      <div class="rounded-xl border border-violet-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
-       <div class="flex items-center gap-2 mb-3">
+      <div class="rounded-xl border border-violet-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+       <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40">
          <i data-lucide="activity" class="w-3 h-3 text-violet-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">PLC Analog Modül</span>
        </div>
-       <select id="sel-plc-analog" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-violet-500/30 rounded-lg text-slate-100 text-xs focus:border-violet-400 focus:outline-none cursor-pointer hover:border-violet-400/60 transition-colors">
-        <option value="">-- Seçiniz --</option>
-       </select>
+       <div class="cdd mt-auto" style="--cdd-color:#a78bfa">
+        <button class="cdd-trigger border border-violet-500/30" onclick="cddToggle(this)">
+         <span class="cdd-val">-- Seçiniz --</span>
+         <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+       </div>
       </div>
       <!-- Emniyet Rölesi -->
-      <div class="rounded-xl border border-rose-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col" style="min-width:190px">
-       <div class="flex items-center gap-2 mb-3">
+      <div class="rounded-xl border border-rose-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+       <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-rose-500/20 flex items-center justify-center border border-rose-500/40">
          <i data-lucide="shield-check" class="w-3 h-3 text-rose-400"></i>
         </div>
         <span class="label-tag mono text-[10px]">Emniyet Rölesi</span>
        </div>
-       <select id="sel-emniyet-rolesi" class="mt-auto w-full h-8 px-2 bg-slate-900/80 border border-rose-500/30 rounded-lg text-slate-100 text-xs focus:border-rose-400 focus:outline-none cursor-pointer hover:border-rose-400/60 transition-colors">
-        <option value="">-- Seçiniz --</option>
-       </select>
+       <div class="cdd mt-auto" style="--cdd-color:#fb7185">
+        <button class="cdd-trigger border border-rose-500/30" onclick="cddToggle(this)">
+         <span class="cdd-val">-- Seçiniz --</span>
+         <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+       </div>
       </div>
      </div>
      <div id="io-content"></div>
@@ -438,6 +515,25 @@
      <button data-page="secim" class="nav-btn active px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> <span>Seçim</span> </button> <button data-page="otomasyon" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="cpu" class="w-4 h-4"></i> <span>Otomasyon</span> </button> <button data-page="io" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="circuit-board" class="w-4 h-4"></i> <span>IO</span> </button> <button data-page="malzeme" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="package" class="w-4 h-4"></i> <span>Malzeme</span> </button> <button data-page="fiyatlar" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="tag" class="w-4 h-4"></i> <span>Fiyatlar</span> </button> <button data-page="standart" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="layout-template" class="w-4 h-4"></i> <span>Standart</span> </button>
     </div>
    </nav>
+  <!-- Standart Düzenleme Şifre Modalı -->
+  <div id="standart-edit-modal" class="fixed inset-0 z-[200] flex items-center justify-center hidden">
+   <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeStandartEditModal()"></div>
+   <div class="relative bg-slate-900 border border-violet-500/40 rounded-2xl p-6 w-80 shadow-2xl shadow-black/60">
+    <div class="flex items-center gap-2 mb-1">
+     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+     <span class="text-sm font-bold mono text-violet-400 uppercase tracking-wider">Düzenleme Kilidi</span>
+    </div>
+    <p class="text-xs text-slate-500 mb-4 mono mt-1">Standart tabloyu düzenlemek için şifreyi girin.</p>
+    <input id="standart-edit-pw" type="password" placeholder="Şifre"
+     class="w-full px-3 py-2.5 bg-slate-800 border border-slate-600 rounded-xl text-white text-sm mono focus:border-violet-500 focus:outline-none mb-1"
+     onkeydown="if(event.key==='Enter') submitStandartEditPw()">
+    <p id="standart-edit-pw-err" class="text-xs text-red-400 mb-3 h-4"></p>
+    <div class="flex gap-2 mt-1">
+     <button onclick="closeStandartEditModal()" class="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-xs text-slate-300 hover:bg-slate-700 mono transition">İptal</button>
+     <button onclick="submitStandartEditPw()" class="flex-1 px-3 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-xs text-white font-bold mono transition">Onayla</button>
+    </div>
+   </div>
+  </div>
   </div>
   <script>
   // State
@@ -3253,45 +3349,58 @@
     { grup: 'RTS Serisi',  renk: '#f87171', modeller: ['RTS 346 2B', 'RTS 346 4B'] },
   ];
 
-  // Her model için malzeme satırları buraya eklenecek.
-  // Satır formatı: { stokKodu, urunAdi, birimFiyat, adet }
-  const STANDART_MODEL_VERILERI = {
-    'LYM 950':        [],
-    'LYM 1150':       [],
-    'LYM 1350':       [],
-    'LYM 1500':       [],
-    'VDL 40 2500 1B': [],
-    'VDL 40 3500 2B': [],
-    'VDL 50 4250 2B': [],
-    'VDL 60 5500 2B': [],
-    'VDL 80 6500 2B': [],
-    'KBN 1B 1650':    [],
-    'KBN 1B 1850':    [],
-    'KBN 1B 2050':    [],
-    'KBN 2B 1650':    [],
-    'KBN 2B 1850':    [],
-    'KBN 2B 2050':    [],
-    'PYT 40':         [],
-    'PYT 90':         [],
-    'PYT 750':        [],
-    'PYT 800':        [],
-    'MST PRO 02':     [],
-    'MST LVB 60':     [],
-    'MST LVB 100':    [],
-    'ULT M40 1B':     [],
-    'ULT M60 1B':     [],
-    'ULT M80 1B':     [],
-    'ULT M100 1B':    [],
-    'ULT M140 1B':    [],
-    'ULT M200 1B L':  [],
-    'ULT M300 1B L':  [],
-    'ULT M400 1B L':  [],
-    'ULT M800 1B L':  [],
-    'KNV 60 4250 1B': [],
-    'KNV 60 6000 2B': [],
-    'RTS 346 2B':     [],
-    'RTS 346 4B':     [],
-  };
+  // Her model için malzeme satırları standart.json'dan yüklenir,
+  // Supabase'de kayıt varsa oradan override edilir.
+  let STANDART_MODEL_VERILERI = {};
+  let _standartLoaded = false;
+  let _standartLoadPromise = null;
+
+  async function loadStandartVerileri() {
+    if (_standartLoaded) return;
+    if (_standartLoadPromise) return _standartLoadPromise;
+    _standartLoadPromise = (async () => {
+      // 1) Önce local JSON'dan yükle (fallback + varsayılan)
+      try {
+        const res = await fetch('standart.json');
+        if (res.ok) STANDART_MODEL_VERILERI = await res.json();
+      } catch(e) {
+        console.warn('standart.json yüklenemedi:', e);
+      }
+
+      // 2) Supabase'de standart_bom tablosu varsa üzerine yaz (async, sessiz fail)
+      if (sb) {
+        try {
+          const { data, error } = await sb
+            .from('standart_bom')
+            .select('model,grup,stok_kodu,urun_adi,adet')
+            .order('model').order('sira');
+          if (!error && data && data.length > 0) {
+            // Supabase verisini STANDART_MODEL_VERILERI formatına dönüştür
+            const sbMap = {};
+            data.forEach(r => {
+              if (!sbMap[r.model]) sbMap[r.model] = [];
+              sbMap[r.model].push({
+                grup:     r.grup,
+                stokKodu: r.stok_kodu,
+                urunAdi:  r.urun_adi,
+                adet:     r.adet
+              });
+            });
+            // Sadece Supabase'de verisi olan modelleri güncelle, boş olanları JSON'dan koru
+            Object.entries(sbMap).forEach(([model, rows]) => {
+              if (rows.length > 0) STANDART_MODEL_VERILERI[model] = rows;
+            });
+          }
+        } catch(e) {
+          console.warn('Supabase standart_bom yüklenemedi:', e);
+        }
+      }
+
+      _standartLoaded = true;
+    })();
+    return _standartLoadPromise;
+  }
+
 
   function getModelGrupRenk(model) {
     for (const g of STANDART_MODEL_GRUPLARI) {
@@ -3355,9 +3464,10 @@
     if (totalEl) totalEl.textContent = total.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ₺';
   }
 
-  function renderStandartBOM(model) {
+  async function renderStandartBOM(model) {
     const container = document.getElementById('standart-bom-container');
     if (!container) return;
+    await loadStandartVerileri();
     container.innerHTML = '';
 
     const rows = STANDART_MODEL_VERILERI[model] || [];
@@ -3389,6 +3499,109 @@
     headerRow.appendChild(titleLeft);
     headerRow.appendChild(countBadge);
     container.appendChild(headerRow);
+
+    // === DÜZENLEME MODU ===
+    if (standartEditMode) {
+      standartEditAccentColor = accentColor;
+
+      const editInfoBar = document.createElement('div');
+      editInfoBar.className = 'flex items-center gap-2 px-3 py-2 mb-3 bg-violet-900/20 border border-violet-500/30 rounded-xl text-xs mono text-violet-400';
+      editInfoBar.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme modu aktif — değişiklikler "Kaydet & Çık"\'a basıldığında Supabase\'e yüklenir.';
+      container.appendChild(editInfoBar);
+
+      const editSection = document.createElement('div');
+      editSection.className = 'bg-slate-900/40 border border-violet-500/20 rounded-xl overflow-hidden mb-4';
+      const editWrapper = document.createElement('div');
+      editWrapper.className = 'overflow-x-auto';
+      const editTable = document.createElement('table');
+      editTable.className = 'w-full table-fixed';
+      const editCG = document.createElement('colgroup');
+      ['17%','42%','14%','10%','17%'].forEach(w => { const c = document.createElement('col'); c.style.width = w; editCG.appendChild(c); });
+      editTable.appendChild(editCG);
+
+      const editTHead = document.createElement('thead');
+      const editHRow = document.createElement('tr');
+      editHRow.className = 'bg-slate-800/80 border-b border-violet-500/20';
+      [{label:'Stok Kodu',col:'#22d3ee'},{label:'Ürün Adı',col:'#e2e8f0'},{label:'Birim Fiyatı',col:'#fbbf24'},{label:'Adet',col:'#94a3b8'},{label:'İşlem',col:'#f87171'}].forEach(h => {
+        const th = document.createElement('th');
+        th.className = 'px-3 py-2.5 text-center text-xs font-bold mono';
+        th.style.color = h.col; th.textContent = h.label;
+        editHRow.appendChild(th);
+      });
+      editTHead.appendChild(editHRow);
+      editTable.appendChild(editTHead);
+
+      const editTBody = document.createElement('tbody');
+      editTBody.id = 'standart-edit-tbody';
+
+      if (rows.length === 0) {
+        const emptyTr = document.createElement('tr');
+        const emptyTd = document.createElement('td');
+        emptyTd.setAttribute('colspan', '5');
+        emptyTd.className = 'px-4 py-8 text-center text-slate-500 mono text-xs';
+        emptyTd.textContent = 'Henüz satır yok. Aşağıdan grup ve satır ekleyebilirsiniz.';
+        emptyTr.appendChild(emptyTd);
+        editTBody.appendChild(emptyTr);
+      } else {
+        let currentGrup = null;
+        rows.forEach(row => {
+          if (row.grup !== currentGrup) {
+            currentGrup = row.grup;
+            editTBody.appendChild(makeGroupHeaderEditRow(currentGrup));
+          }
+          editTBody.appendChild(makeEditRow(row));
+        });
+      }
+
+      editTable.appendChild(editTBody);
+      editWrapper.appendChild(editTable);
+      editSection.appendChild(editWrapper);
+      container.appendChild(editSection);
+
+      // Yeni grup ekleme alanı
+      const newGrupBar = document.createElement('div');
+      newGrupBar.className = 'flex items-center gap-2 mb-4 px-1';
+      const newGrupInp = document.createElement('input');
+      newGrupInp.type = 'text';
+      newGrupInp.id = 'standart-yeni-grup-inp';
+      newGrupInp.placeholder = 'Yeni grup adı (ör: RÖLE GRUBU)';
+      newGrupInp.className = 'flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded-xl text-xs mono font-bold text-slate-100 focus:border-violet-500 focus:outline-none';
+      const newGrupBtn = document.createElement('button');
+      newGrupBtn.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 border border-slate-600 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs mono font-bold transition whitespace-nowrap';
+      newGrupBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Grup Ekle';
+      newGrupBtn.onclick = () => {
+        const inp = document.getElementById('standart-yeni-grup-inp');
+        const grupAdi = inp.value.trim().toUpperCase();
+        if (!grupAdi) return;
+        const tbody = document.getElementById('standart-edit-tbody');
+        if (!tbody) return;
+        tbody.appendChild(makeGroupHeaderEditRow(grupAdi));
+        const newRow = makeEditRow({ grup: grupAdi, stokKodu: '', urunAdi: '', adet: 1 });
+        tbody.appendChild(newRow);
+        inp.value = '';
+        newRow.querySelector('.edit-stok')?.focus();
+      };
+      newGrupInp.onkeydown = (e) => { if (e.key === 'Enter') newGrupBtn.click(); };
+      newGrupBar.appendChild(newGrupInp);
+      newGrupBar.appendChild(newGrupBtn);
+      container.appendChild(newGrupBar);
+
+      // Alt aksiyon barı
+      const actionBar = document.createElement('div');
+      actionBar.className = 'flex justify-end gap-2 pb-4';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 border border-slate-600 hover:bg-slate-700 text-xs text-slate-300 mono transition';
+      cancelBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> İptal';
+      cancelBtn.onclick = () => exitStandartEditMode(false);
+      const saveBtn2 = document.createElement('button');
+      saveBtn2.className = 'flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 border border-emerald-500/50 text-xs text-white font-bold mono transition';
+      saveBtn2.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Kaydet & Çık';
+      saveBtn2.onclick = () => exitStandartEditMode(true);
+      actionBar.appendChild(cancelBtn);
+      actionBar.appendChild(saveBtn2);
+      container.appendChild(actionBar);
+      return;
+    }
 
     // === SİGORTA GRUBU (yalnızca LYM modeller) ===
     if (model.startsWith('LYM')) {
@@ -3516,7 +3729,23 @@
       tr.appendChild(td);
       tbody.appendChild(tr);
     } else {
+      // Grup başlıklarını destekle
+      let lastGrup = null;
       rows.forEach((row, idx) => {
+        // Grup başlığı satırı
+        if (row.grup && row.grup !== lastGrup) {
+          lastGrup = row.grup;
+          const gtr = document.createElement('tr');
+          gtr.className = 'border-t border-slate-700/50 bg-slate-800/40';
+          const gtd = document.createElement('td');
+          gtd.setAttribute('colspan', '5');
+          gtd.className = 'px-4 py-2 text-center text-[11px] font-bold mono uppercase tracking-widest';
+          gtd.style.color = accentColor;
+          gtd.style.letterSpacing = '0.18em';
+          gtd.textContent = row.grup;
+          gtr.appendChild(gtd);
+          tbody.appendChild(gtr);
+        }
         const tr = document.createElement('tr');
         tr.className = 'sbom-row border-t border-slate-700/30 transition ' + (idx % 2 === 0 ? 'hover:bg-slate-800/30' : 'bg-slate-900/20 hover:bg-slate-800/30');
         tr.style.height = '40px';
@@ -3637,15 +3866,26 @@
     selectorSection.className = 'bg-slate-900/60 border border-emerald-500/20 rounded-xl p-5 mb-5';
 
     const selHeader = document.createElement('div');
-    selHeader.className = 'flex items-center gap-2 mb-4';
+    selHeader.className = 'flex items-center justify-between gap-2 mb-4';
+    const selHeaderLeft = document.createElement('div');
+    selHeaderLeft.className = 'flex items-center gap-2';
     const selIcon = document.createElement('i');
     selIcon.setAttribute('data-lucide', 'cpu');
     selIcon.className = 'w-4 h-4 text-emerald-400';
     const selTitle = document.createElement('span');
     selTitle.className = 'text-sm font-bold mono text-emerald-400 uppercase tracking-wider';
     selTitle.textContent = 'Makine Modeli';
-    selHeader.appendChild(selIcon);
-    selHeader.appendChild(selTitle);
+    selHeaderLeft.appendChild(selIcon);
+    selHeaderLeft.appendChild(selTitle);
+    selHeader.appendChild(selHeaderLeft);
+    if (isAdmin()) {
+      const editBtn = document.createElement('button');
+      editBtn.id = 'standart-edit-btn';
+      editBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-violet-600/40 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs font-semibold mono transition';
+      editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme';
+      editBtn.onclick = () => openStandartEditModal();
+      selHeader.appendChild(editBtn);
+    }
     selectorSection.appendChild(selHeader);
 
     // selRow: tam genişlik, iki satır — üst: select + bilgi kartları, alt: opsiyon butonları
@@ -3909,13 +4149,22 @@
     bomContainer.id = 'standart-bom-container';
     container.appendChild(bomContainer);
 
-    select.addEventListener('change', () => {
+    select.addEventListener('change', async () => {
+      if (standartEditMode) {
+        standartEditMode = false;
+        const btn = document.getElementById('standart-edit-btn');
+        if (btn) {
+          btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenleme';
+          btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-violet-600/40 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs font-semibold mono transition';
+          btn.onclick = () => openStandartEditModal();
+        }
+      }
       const isLym = select.value.startsWith('LYM');
       lymInfoSection.style.display = isLym ? 'flex' : 'none';
       lymOptionsRow.style.display  = isLym ? 'flex' : 'none';
       if (isLym) renderLymInfoCards(select.value);
       if (select.value) {
-        renderStandartBOM(select.value);
+        await renderStandartBOM(select.value);
       } else {
         document.getElementById('standart-bom-container').innerHTML = '';
       }
@@ -4303,13 +4552,53 @@
     return merged;
   }
 
+  // ===== Custom Dropdown (cdd) =====
+  function cddToggle(triggerEl) {
+    const cdd = triggerEl.closest('.cdd');
+    const wasOpen = cdd.classList.contains('open');
+    document.querySelectorAll('.cdd.open').forEach(d => d.classList.remove('open'));
+    if (!wasOpen) {
+      // Inject header if not present
+      const panel = cdd.querySelector('.cdd-panel');
+      if (panel && !panel.querySelector('.cdd-header')) {
+        const labelEl = cdd.closest('[class*="border-"]')?.querySelector('.label-tag');
+        const labelText = labelEl ? labelEl.textContent.trim() : 'Seçenek';
+        const hdr = document.createElement('div');
+        hdr.className = 'cdd-header';
+        hdr.innerHTML = `<div class="cdd-header-dot"></div><span class="cdd-header-label">${labelText}</span>`;
+        panel.insertBefore(hdr, panel.firstChild);
+      }
+      // Position panel using fixed coords to escape overflow:hidden parents
+      if (panel) {
+        const rect = triggerEl.getBoundingClientRect();
+        panel.style.position = 'fixed';
+        panel.style.top = (rect.bottom + 6) + 'px';
+        panel.style.left = rect.left + 'px';
+        panel.style.minWidth = rect.width + 'px';
+        panel.style.width = 'max-content';
+      }
+      cdd.classList.add('open');
+    }
+  }
+  function cddSelect(optEl, val, label) {
+    const cdd = optEl.closest('.cdd');
+    cdd.querySelector('.cdd-val').textContent = label || val || '-- Seçiniz --';
+    cdd.dataset.value = val || '';
+    cdd.querySelectorAll('.cdd-option').forEach(o => o.classList.toggle('cdd-selected', o.dataset.val === val));
+    cdd.classList.remove('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.cdd')) document.querySelectorAll('.cdd.open').forEach(d => d.classList.remove('open'));
+  });
+  // ===== End Custom Dropdown =====
+
   function addEkModul() {
     const anchor = document.getElementById('ek-modul-anchor');
     const newCard = document.createElement('div');
-    newCard.className = 'rounded-xl border border-emerald-500/30 bg-slate-800/50 p-4 flex-shrink-0 flex flex-col ek-modul-extra';
-    newCard.style.minWidth = '190px';
+    newCard.className = 'rounded-xl border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col ek-modul-extra';
+    newCard.style.minWidth = '230px';
     newCard.innerHTML = `
-      <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
           <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
             <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
@@ -4325,10 +4614,13 @@
           </button>
         </div>
       </div>
-      <select class="ek-modul-sel mt-auto w-full h-8 px-2 bg-slate-900/80 border border-emerald-500/30 rounded-lg text-slate-100 text-xs focus:border-emerald-400 focus:outline-none cursor-pointer hover:border-emerald-400/60 transition-colors">
-        <option value="">-- Seçiniz --</option>
-      </select>`;
-    // Insert right after anchor card
+      <div class="cdd mt-auto" style="--cdd-color:#34d399">
+        <button class="cdd-trigger border border-emerald-500/30" onclick="cddToggle(this)">
+          <span class="cdd-val">-- Seçiniz --</span>
+          <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+      </div>`;
     anchor.insertAdjacentElement('afterend', newCard);
     lucide.createIcons();
   }
@@ -4633,6 +4925,208 @@
   function isAdmin() {
     return currentUser && ADMIN_EMAILS.includes(currentUser.email);
   }
+
+  // ===== STANDART DÜZENLEME MODU =====
+  let standartEditMode = false;
+  let standartEditAccentColor = '#22d3ee';
+
+  function openStandartEditModal() {
+    const modal = document.getElementById('standart-edit-modal');
+    modal.classList.remove('hidden');
+    const inp = document.getElementById('standart-edit-pw');
+    inp.value = '';
+    document.getElementById('standart-edit-pw-err').textContent = '';
+    setTimeout(() => inp.focus(), 60);
+  }
+
+  function closeStandartEditModal() {
+    document.getElementById('standart-edit-modal').classList.add('hidden');
+  }
+
+  function submitStandartEditPw() {
+    const pw = document.getElementById('standart-edit-pw').value;
+    if (pw === '112263') {
+      closeStandartEditModal();
+      enterStandartEditMode();
+    } else {
+      document.getElementById('standart-edit-pw-err').textContent = 'Şifre hatalı.';
+      document.getElementById('standart-edit-pw').select();
+    }
+  }
+
+  function enterStandartEditMode() {
+    standartEditMode = true;
+    const btn = document.getElementById('standart-edit-btn');
+    if (btn) {
+      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Kaydet';
+      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:bg-emerald-900/20 text-xs font-semibold mono transition';
+      btn.onclick = () => exitStandartEditMode(true);
+    }
+    const select = document.getElementById('standart-model-select');
+    if (select && select.value) renderStandartBOM(select.value);
+  }
+
+  async function exitStandartEditMode(save) {
+    if (save) {
+      const select = document.getElementById('standart-model-select');
+      const model = select ? select.value : null;
+      if (model) {
+        const newRows = collectStandartEditRows();
+        STANDART_MODEL_VERILERI[model] = newRows;
+        await saveStandartToSupabase(model, newRows);
+      }
+    }
+    standartEditMode = false;
+    const btn = document.getElementById('standart-edit-btn');
+    if (btn) {
+      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Düzenle';
+      btn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 border border-violet-600/40 hover:border-violet-400 text-violet-400 hover:bg-violet-900/20 text-xs font-semibold mono transition';
+      btn.onclick = () => openStandartEditModal();
+    }
+    const select = document.getElementById('standart-model-select');
+    if (select && select.value) await renderStandartBOM(select.value);
+  }
+
+  function collectStandartEditRows() {
+    const rows = [];
+    const tbody = document.getElementById('standart-edit-tbody');
+    if (!tbody) return rows;
+    let currentGrup = '';
+    tbody.querySelectorAll('tr').forEach(tr => {
+      if (tr.dataset.grupHeader) {
+        currentGrup = tr.dataset.grupHeader;
+      } else if (tr.dataset.editRow) {
+        const stok = tr.querySelector('.edit-stok')?.value?.trim() || '';
+        const urun = tr.querySelector('.edit-urun')?.value?.trim() || '';
+        const adet = parseInt(tr.querySelector('.edit-adet')?.value) || 1;
+        rows.push({ grup: currentGrup, stokKodu: stok, urunAdi: urun, adet });
+      }
+    });
+    return rows;
+  }
+
+  async function saveStandartToSupabase(model, rows) {
+    if (!sb) { console.warn('Supabase bağlantısı yok, yalnızca bellekte güncellendi.'); return; }
+    try {
+      const { error: delErr } = await sb.from('standart_bom').delete().eq('model', model);
+      if (delErr) { console.error('Supabase silme hatası:', delErr); return; }
+      if (rows.length === 0) return;
+      const inserts = rows.map((r, i) => ({
+        model,
+        grup:      r.grup,
+        stok_kodu: r.stokKodu,
+        urun_adi:  r.urunAdi,
+        adet:      r.adet,
+        sira:      i
+      }));
+      const { error: insErr } = await sb.from('standart_bom').insert(inserts);
+      if (insErr) console.error('Supabase kayıt hatası:', insErr);
+      else console.log('Supabase güncellendi:', model, rows.length, 'satır');
+    } catch(e) {
+      console.error('Supabase bağlantı hatası:', e);
+    }
+  }
+
+  function makeEditRow(row) {
+    const tr = document.createElement('tr');
+    tr.dataset.editRow = '1';
+    tr.className = 'border-t border-slate-700/30 bg-slate-900/10';
+    tr.style.height = '42px';
+
+    const stokTd = document.createElement('td');
+    stokTd.className = 'px-2 py-1 align-middle';
+    const stokInp = document.createElement('input');
+    stokInp.type = 'text';
+    stokInp.className = 'edit-stok w-full px-2 py-1 bg-slate-800/80 border border-slate-600 rounded-lg text-xs mono font-bold focus:border-violet-500 focus:outline-none text-center';
+    stokInp.style.color = standartEditAccentColor;
+    stokInp.value = row.stokKodu || '';
+    stokInp.placeholder = 'Stok Kodu';
+    stokTd.appendChild(stokInp);
+    tr.appendChild(stokTd);
+
+    const urunTd = document.createElement('td');
+    urunTd.className = 'px-2 py-1 align-middle';
+    const urunInp = document.createElement('input');
+    urunInp.type = 'text';
+    urunInp.className = 'edit-urun w-full px-2 py-1 bg-slate-800/80 border border-slate-600 rounded-lg text-xs focus:border-violet-500 focus:outline-none text-slate-100';
+    urunInp.value = row.urunAdi || '';
+    urunInp.placeholder = 'Ürün Adı';
+    urunTd.appendChild(urunInp);
+    tr.appendChild(urunTd);
+
+    const fiyatTd = document.createElement('td');
+    fiyatTd.className = 'px-2 py-1 align-middle text-center text-xs mono text-slate-600';
+    fiyatTd.textContent = '—';
+    tr.appendChild(fiyatTd);
+
+    const adetTd = document.createElement('td');
+    adetTd.className = 'px-2 py-1 align-middle';
+    const adetInp = document.createElement('input');
+    adetInp.type = 'number';
+    adetInp.min = '1';
+    adetInp.className = 'edit-adet w-full px-2 py-1 bg-slate-800/80 border border-slate-600 rounded-lg text-xs mono font-bold focus:border-violet-500 focus:outline-none text-center text-slate-200';
+    adetInp.value = row.adet || 1;
+    adetTd.appendChild(adetInp);
+    tr.appendChild(adetTd);
+
+    const silTd = document.createElement('td');
+    silTd.className = 'px-2 py-1 align-middle text-center';
+    const silBtn = document.createElement('button');
+    silBtn.className = 'p-1.5 rounded-lg hover:bg-rose-900/40 text-slate-500 hover:text-rose-400 transition';
+    silBtn.title = 'Satırı Sil';
+    silBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+    silBtn.onclick = () => tr.remove();
+    silTd.appendChild(silBtn);
+    tr.appendChild(silTd);
+
+    return tr;
+  }
+
+  function makeGroupHeaderEditRow(grupAdi) {
+    const gtr = document.createElement('tr');
+    gtr.dataset.grupHeader = grupAdi;
+    gtr.className = 'border-t border-slate-700/50 bg-slate-800/50';
+    const gtd = document.createElement('td');
+    gtd.setAttribute('colspan', '4');
+    gtd.className = 'px-4 py-2 text-xs font-bold mono uppercase text-left';
+    gtd.style.color = standartEditAccentColor;
+    gtd.style.letterSpacing = '0.16em';
+    gtd.textContent = grupAdi;
+    gtr.appendChild(gtd);
+
+    const addTd = document.createElement('td');
+    addTd.className = 'px-2 py-2 align-middle text-center';
+    const addBtn = document.createElement('button');
+    addBtn.className = 'inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-900/30 border border-emerald-500/30 hover:border-emerald-400 text-emerald-400 text-[10px] mono font-bold transition';
+    addBtn.title = 'Bu gruba satır ekle';
+    addBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Satır';
+    const gcopy = grupAdi;
+    addBtn.onclick = () => standartAddRow(gcopy);
+    addTd.appendChild(addBtn);
+    gtr.appendChild(addTd);
+    return gtr;
+  }
+
+  function standartAddRow(grupAdi) {
+    const tbody = document.getElementById('standart-edit-tbody');
+    if (!tbody) return;
+    let insertAfter = null;
+    let passedGroup = false;
+    const trs = Array.from(tbody.querySelectorAll('tr'));
+    for (let i = 0; i < trs.length; i++) {
+      const tr = trs[i];
+      if (tr.dataset.grupHeader === grupAdi) { passedGroup = true; continue; }
+      if (passedGroup) {
+        if (tr.dataset.grupHeader) break;
+        insertAfter = tr;
+      }
+    }
+    const newTr = makeEditRow({ grup: grupAdi, stokKodu: '', urunAdi: '', adet: 1 });
+    if (insertAfter) insertAfter.after(newTr);
+    else tbody.appendChild(newTr);
+    newTr.querySelector('.edit-stok')?.focus();
+  }
+  // ===== END STANDART DÜZENLEME MODU =====
 
   try {
     if (window.supabase) {
