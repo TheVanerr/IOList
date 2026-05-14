@@ -372,7 +372,6 @@
     rezistanslar: {},
     kurutmaRezistanslar: [],
     kacakAkim: {},
-    fiyatlar: {},
     ekSensorlar: [],
     ekValfler: [],
     ekSwitchboxlar: []
@@ -3068,6 +3067,38 @@
       container.appendChild(section);
     });
 
+    // Kullanıcı giriş yapmışsa Supabase'den fiyatları asenkron yükle, input'ları güncelle
+    if (sb && currentUser) {
+      Promise.all([
+        sb.from('prices').select('key,price').eq('user_id', currentUser.id),
+        sb.from('stok_kodlari').select('key,stok_kodu').eq('user_id', currentUser.id)
+      ]).then(([pRes, sRes]) => {
+        const cloudPrices = {};
+        if (!pRes.error && pRes.data) pRes.data.forEach(r => { cloudPrices[r.key] = r.price; });
+        const cloudStok = {};
+        if (!sRes.error && sRes.data) sRes.data.forEach(r => { cloudStok[r.key] = r.stok_kodu; });
+
+        container.querySelectorAll('input.fiyat-input').forEach(input => {
+          const k = input.dataset.key;
+          if (cloudPrices[k] !== undefined) input.value = cloudPrices[k];
+        });
+        container.querySelectorAll('input.stok-input').forEach(input => {
+          const k = input.dataset.stokKey;
+          if (cloudStok[k] !== undefined) input.value = cloudStok[k];
+        });
+
+        // localStorage cache'ini bulut verileriyle güncelle
+        const mergedP = {};
+        try { Object.assign(mergedP, JSON.parse(localStorage.getItem('iolist_fiyatlar') || '{}')); } catch(e) {}
+        Object.entries(cloudPrices).forEach(([k, v]) => { mergedP[k] = v; });
+        localStorage.setItem('iolist_fiyatlar', JSON.stringify(mergedP));
+        const mergedS = {};
+        try { Object.assign(mergedS, JSON.parse(localStorage.getItem('iolist_stok') || '{}')); } catch(e) {}
+        Object.entries(cloudStok).forEach(([k, v]) => { mergedS[k] = v; });
+        localStorage.setItem('iolist_stok', JSON.stringify(mergedS));
+      });
+    }
+
     lucide.createIcons();
   }
 
@@ -3084,6 +3115,24 @@
       if (input.value !== '') stok[input.dataset.stokKey] = input.value;
     });
     localStorage.setItem('iolist_stok', JSON.stringify(stok));
+
+    // Supabase prices tablosuna da yaz (kullanıcı giriş yapmışsa)
+    if (sb && currentUser) {
+      const rows = Object.entries(prices).map(([k, v]) => ({
+        user_id: currentUser.id, key: k, price: parseFloat(v) || 0
+      }));
+      const stokRows = Object.entries(stok).map(([k, v]) => ({
+        user_id: currentUser.id, key: k, stok_kodu: v
+      }));
+      Promise.all([
+        rows.length ? sb.from('prices').upsert(rows, { onConflict: 'user_id,key' }) : Promise.resolve({ error: null }),
+        stokRows.length ? sb.from('stok_kodlari').upsert(stokRows, { onConflict: 'user_id,key' }) : Promise.resolve({ error: null })
+      ]).then(([pRes, sRes]) => {
+        if (pRes.error) console.warn('Fiyat bulut kaydet hata:', pRes.error.message);
+        if (sRes.error) console.warn('Stok bulut kaydet hata:', sRes.error.message);
+      });
+    }
+
     const btn = document.getElementById('btn-fiyat-guncelle');
     if (btn) {
       const orig = btn.innerHTML;
@@ -4322,6 +4371,7 @@
       kurData.push({ id: row.id.replace('kur-row-', ''), guc: gucSelect ? gucSelect.value : '' });
     });
 
+    // fiyatlar JSON formuna dahil edilmez — ayrı Supabase tablosunda saklanır
     return { state: { ...state }, motorData, rezData, kurData };
   }
 
