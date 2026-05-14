@@ -116,29 +116,26 @@
        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-lg shadow-cyan-500/30">
         <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
        </div>
-       <div>
-        <h1 class="text-lg font-bold text-white tracking-tight">PANO IO KONFİGÜRATÖR</h1>
-        <p class="text-xs text-slate-500 mono">Electrical Panel IO List Generator</p>
-       </div>
+       <h1 class="text-lg font-bold text-white tracking-tight">PANO IO KONFİGÜRATÖR</h1>
       </div>
       <!-- Aksiyon butonları — başlığın hemen sağında -->
       <div class="flex items-center gap-1.5">
-       <button id="btn-farkli-kaydet" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-cyan-500 text-slate-300 hover:text-cyan-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <button id="btn-farkli-kaydet" class="px-3 py-2 rounded-lg bg-slate-800 border border-cyan-700/50 hover:border-cyan-400 hover:bg-cyan-900/30 text-cyan-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> Farklı Kaydet
        </button>
-       <button id="btn-kaydet" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-emerald-500 text-slate-300 hover:text-emerald-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <button id="btn-kaydet" class="px-3 py-2 rounded-lg bg-slate-800 border border-emerald-700/50 hover:border-emerald-400 hover:bg-emerald-900/30 text-emerald-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="save" class="w-3.5 h-3.5"></i> Kaydet
        </button>
-       <button id="btn-yukle" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-amber-500 text-slate-300 hover:text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <button id="btn-yukle" class="px-3 py-2 rounded-lg bg-slate-800 border border-amber-700/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="folder-open" class="w-3.5 h-3.5"></i> Yükle
        </button>
-       <button id="btn-yeni-form" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-rose-500 text-slate-300 hover:text-rose-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <button id="btn-yeni-form" class="px-3 py-2 rounded-lg bg-slate-800 border border-rose-700/50 hover:border-rose-400 hover:bg-rose-900/30 text-rose-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="file" class="w-3.5 h-3.5"></i> Yeni Form
        </button>
-       <button id="btn-disari-aktar" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-violet-500 text-slate-300 hover:text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <button id="btn-disari-aktar" class="px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i> Dışarı Aktar
        </button>
-       <button id="btn-iceri-aktar" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-fuchsia-500 text-slate-300 hover:text-fuchsia-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+       <button id="btn-iceri-aktar" class="px-3 py-2 rounded-lg bg-slate-800 border border-fuchsia-700/50 hover:border-fuchsia-400 hover:bg-fuchsia-900/30 text-fuchsia-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="download" class="w-3.5 h-3.5"></i> İçeri Aktar
        </button>
        <input type="file" id="input-yukle" accept=".json" class="hidden">
@@ -149,10 +146,10 @@
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
      <div class="flex items-center gap-1.5">
-      <button id="btn-bulut-yukle" class="hidden shrink-0 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 hover:border-sky-400 text-slate-300 hover:text-sky-300 transition text-xs font-semibold mono flex items-center gap-1.5">
+      <button id="btn-bulut-yukle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="cloud" class="w-3.5 h-3.5"></i> Projelerim
       </button>
-      <button id="btn-kullanici-giris" class="shrink-0 px-4 py-1.5 rounded-lg bg-gradient-to-r from-slate-800 to-slate-700 border border-slate-600 hover:border-sky-500 text-slate-300 hover:text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+      <button id="btn-kullanici-giris" class="shrink-0 px-4 py-2 rounded-lg bg-gradient-to-r from-slate-800 to-slate-700 border border-slate-600 hover:border-sky-500 text-slate-300 hover:text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş
       </button>
      </div>
@@ -168,77 +165,77 @@
       <div class="header-line"></div>
      </div><!-- Selection Buttons -->
      <div class="grid grid-cols-2 md:grid-cols-8 gap-2">
-      <!-- Makine Gücü --> <div class="option-btn rounded-lg p-3 text-left cursor-default">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-green-500/20 flex items-center justify-center border border-green-500/40">
-         <i data-lucide="zap" class="w-3.5 h-3.5 text-green-400"></i>
+      <!-- Makine Gücü --> <div class="option-btn rounded-lg p-2 text-left cursor-default">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-green-500/20 flex items-center justify-center border border-green-500/40">
+         <i data-lucide="zap" class="w-3 h-3 text-green-400"></i>
         </div>
        </div>
        <div class="label-tag mono mb-0.5 text-[10px]">Makine Gücü</div>
-       <div id="val-makine-gucu" class="text-base font-bold text-green-400">0.00 kW</div>
+       <div id="val-makine-gucu" class="text-sm font-bold text-green-400">0.00 kW</div>
       </div>
-      <!-- Makine Tipi --> <button id="btn-makine-tipi" class="option-btn rounded-lg p-3 text-left">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
-         <i data-lucide="box" class="w-3.5 h-3.5 text-blue-400"></i>
+      <!-- Makine Tipi --> <button id="btn-makine-tipi" class="option-btn rounded-lg p-2 text-left">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
+         <i data-lucide="box" class="w-3 h-3 text-blue-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
        <div class="label-tag mono mb-0.5 text-[10px]">Makine Tipi</div>
-       <div id="val-makine-tipi" class="text-base font-bold value-tag">Kabinli</div>
+       <div id="val-makine-tipi" class="text-sm font-bold value-tag">Kabinli</div>
       </button>
-      <!-- Tank Sayısı --> <button id="btn-tank-sayisi" class="option-btn rounded-lg p-3 text-left">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
-         <i data-lucide="container" class="w-3.5 h-3.5 text-emerald-400"></i>
+      <!-- Tank Sayısı --> <button id="btn-tank-sayisi" class="option-btn rounded-lg p-2 text-left">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
+         <i data-lucide="container" class="w-3 h-3 text-emerald-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
        <div class="label-tag mono mb-0.5 text-[10px]">Tank Sayısı</div>
-       <div id="val-tank-sayisi" class="text-base font-bold value-tag">1</div>
+       <div id="val-tank-sayisi" class="text-sm font-bold value-tag">1</div>
       </button>
-      <!-- Otomatik Dolum --> <button id="btn-otomatik-dolum" class="option-btn rounded-lg p-3 text-left">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-         <i data-lucide="droplets" class="w-3.5 h-3.5 text-amber-400"></i>
+      <!-- Otomatik Dolum --> <button id="btn-otomatik-dolum" class="option-btn rounded-lg p-2 text-left">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
+         <i data-lucide="droplets" class="w-3 h-3 text-amber-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
        <div class="label-tag mono mb-0.5 text-[10px]">Otomatik Dolum</div>
-       <div id="val-otomatik-dolum" class="text-base font-bold value-tag">VAR</div>
+       <div id="val-otomatik-dolum" class="text-sm font-bold value-tag">VAR</div>
       </button>
-      <!-- Tepe Lambası --> <button id="btn-tepe-lambasi" class="option-btn rounded-lg p-3 text-left">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-yellow-500/20 flex items-center justify-center border border-yellow-500/40">
-         <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-yellow-400"></i>
+      <!-- Tepe Lambası --> <button id="btn-tepe-lambasi" class="option-btn rounded-lg p-2 text-left">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-yellow-500/20 flex items-center justify-center border border-yellow-500/40">
+         <i data-lucide="lightbulb" class="w-3 h-3 text-yellow-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
        <div class="label-tag mono mb-0.5 text-[10px]">Tepe Lambası</div>
-       <div id="val-tepe-lambasi" class="text-base font-bold value-tag">VAR</div>
+       <div id="val-tepe-lambasi" class="text-sm font-bold value-tag">VAR</div>
       </button>
-      <!-- Şalt Grubu --> <button id="btn-salt-grubu" class="option-btn rounded-lg p-3 text-left">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40">
-         <i data-lucide="cpu" class="w-3.5 h-3.5 text-violet-400"></i>
+      <!-- Şalt Grubu --> <button id="btn-salt-grubu" class="option-btn rounded-lg p-2 text-left">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40">
+         <i data-lucide="cpu" class="w-3 h-3 text-violet-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
        <div class="label-tag mono mb-0.5 text-[10px]">Şalt Grubu</div>
-       <div id="val-salt-grubu" class="text-base font-bold value-tag">Schneider</div>
+       <div id="val-salt-grubu" class="text-sm font-bold value-tag">Schneider</div>
       </button>
-      <!-- Kurutma Ünitesi --> <button id="btn-kurutma-unitesi" class="option-btn rounded-lg p-3 text-left">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-red-500/20 flex items-center justify-center border border-red-500/40">
-         <i data-lucide="flame" class="w-3.5 h-3.5 text-red-400"></i>
+      <!-- Kurutma Ünitesi --> <button id="btn-kurutma-unitesi" class="option-btn rounded-lg p-2 text-left">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-red-500/20 flex items-center justify-center border border-red-500/40">
+         <i data-lucide="flame" class="w-3 h-3 text-red-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
        <div class="label-tag mono mb-0.5 text-[10px]">Kurutma Ünitesi</div>
-       <div id="val-kurutma-unitesi" class="text-base font-bold value-tag">VAR</div>
+       <div id="val-kurutma-unitesi" class="text-sm font-bold value-tag">VAR</div>
       </button>
-      <!-- Işın Bariyeri --> <button id="btn-isin-bariyeri" class="option-btn rounded-lg p-3 text-left">
-       <div class="flex items-center justify-between mb-2">
-        <div class="w-7 h-7 rounded-md bg-fuchsia-500/20 flex items-center justify-center border border-fuchsia-500/40">
-         <i data-lucide="scan-line" class="w-3.5 h-3.5 text-fuchsia-400"></i>
+      <!-- Işın Bariyeri --> <button id="btn-isin-bariyeri" class="option-btn rounded-lg p-2 text-left">
+       <div class="flex items-center justify-between mb-1.5">
+        <div class="w-6 h-6 rounded-md bg-fuchsia-500/20 flex items-center justify-center border border-fuchsia-500/40">
+         <i data-lucide="scan-line" class="w-3 h-3 text-fuchsia-400"></i>
         </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
        </div>
        <div id="label-isin-bariyeri" class="label-tag mono mb-0.5 text-[10px]">Işın Bariyeri</div>
-       <div id="val-isin-bariyeri" class="text-base font-bold value-tag">YOK</div>
+       <div id="val-isin-bariyeri" class="text-sm font-bold value-tag">YOK</div>
       </button>
      </div>
      <div class="mt-2">
@@ -296,14 +293,6 @@
      <div id="tms-container" class="mt-4"></div>
     </section><!-- OTOMASYON PAGE -->
     <section id="page-otomasyon" class="page flex-col gap-6 w-full">
-     <div>
-      <div class="flex items-center gap-2 mb-1">
-       <i data-lucide="cpu" class="w-4 h-4 text-teal-400"></i> <span class="label-tag mono">Step 02 / Otomasyon</span>
-      </div>
-      <h2 class="text-3xl font-bold text-white">Otomasyon</h2>
-      <p class="text-slate-400 text-sm mt-1">Tank sensör listesi ve otomasyon elemanları.</p>
-      <div class="header-line mt-4"></div>
-     </div>
      <div id="sensor-container"></div>
      <div id="ek-tablolar-container" class="mt-4"></div>
     </section><!-- IO PAGE -->
