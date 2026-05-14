@@ -140,6 +140,7 @@
        </button>
        <input type="file" id="input-yukle" accept=".json" class="hidden">
        <input type="file" id="input-iceri-aktar" accept=".json" class="hidden">
+       <span id="active-project-name" class="hidden text-xs mono text-cyan-400 border border-cyan-700/40 bg-cyan-900/20 rounded px-2 py-1 max-w-[200px] truncate" title=""></span>
       </div>
      </div>
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
@@ -4375,105 +4376,39 @@
     return { state: { ...state }, motorData, rezData, kurData };
   }
 
-  function doKaydet(filename) {
-    const data = buildSaveData();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-    if (typeof currentUser !== 'undefined' && currentUser && sb) saveToCloud(filename.replace(/\.json$/i, ''));
+  let currentProjectName = null;
+
+  function updateProjectNameUI() {
+    const el = document.getElementById('active-project-name');
+    if (el) {
+      if (currentProjectName) {
+        el.textContent = '\uD83D\uDCC1 ' + currentProjectName;
+        el.title = currentProjectName;
+        el.classList.remove('hidden');
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+    document.title = currentProjectName ? currentProjectName + ' — IO Konfig.' : 'Pano IO Konfigüratör';
   }
 
-  let lastFileName = 'io-konfigürasyon.json';
-
   document.getElementById('btn-kaydet').addEventListener('click', () => {
-    doKaydet(lastFileName);
+    if (!sb || !currentUser) { document.getElementById('modal-auth').classList.remove('hidden'); return; }
+    if (currentProjectName) {
+      saveToCloud(currentProjectName);
+    } else {
+      window.openSaveAsModal('');
+    }
   });
 
   document.getElementById('btn-farkli-kaydet').addEventListener('click', () => {
-    const name = prompt('Dosya adını girin:', lastFileName);
-    if (!name) return;
-    lastFileName = name.endsWith('.json') ? name : name + '.json';
-    doKaydet(lastFileName);
+    if (!sb || !currentUser) { document.getElementById('modal-auth').classList.remove('hidden'); return; }
+    window.openSaveAsModal(currentProjectName || '');
   });
 
   document.getElementById('btn-yukle').addEventListener('click', () => {
-    document.getElementById('input-yukle').click();
-  });
-
-  document.getElementById('input-yukle').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    lastFileName = file.name;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target.result);
-        // State yükle
-        Object.assign(state, data.state);
-
-        // UI değerlerini güncelle
-        document.getElementById('val-makine-tipi').textContent = state.makineTipi;
-        document.getElementById('val-tank-sayisi').textContent = state.tankSayisi;
-        document.getElementById('val-otomatik-dolum').textContent = state.otomatikDolum;
-        document.getElementById('val-salt-grubu').textContent = state.saltGrubu;
-        document.getElementById('val-tepe-lambasi').textContent = state.tepeLambasi;
-        document.getElementById('val-kurutma-unitesi').textContent = state.kurutmaUnitesi;
-        valIsinBariyeri.textContent = state.isinBariyeri;
-        valIsinBariyeri.style.color = state.isinBariyeri === 'VAR' ? '#e879f9' : '';
-        const labelIsin = document.getElementById('label-isin-bariyeri');
-        if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
-
-        // Motorları temizle ve yeniden ekle
-        document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
-        if (data.motorData) {
-          data.motorData.forEach(m => {
-            const motorId = m.id || Date.now();
-            state.motors.push({ id: motorId });
-            const newRow = createMotorRow(motorId);
-            motorTbody.insertBefore(newRow, document.getElementById('motor-add-row'));
-            // Değerleri ata
-            const grubuBtn = newRow.querySelector('.motor-grubu-cell');
-            newRow.dataset.grubu = m.grubu || '';
-            if (grubuBtn) grubuBtn.textContent = m.grubu || 'Seç';
-            const adiSelect = newRow.querySelector('.motor-adi-select');
-            if (adiSelect && m.grubu && motorAdiOptions[m.grubu]) {
-              adiSelect.innerHTML = '<option value="">Seç...</option>';
-              motorAdiOptions[m.grubu].forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.adi; opt.dataset.kod = item.kod; opt.textContent = item.adi;
-                adiSelect.appendChild(opt);
-              });
-              adiSelect.value = m.adi || '';
-            }
-            const kodInput = newRow.querySelector('.motor-kod-input');
-            if (kodInput) kodInput.value = m.kod || '';
-            const gucSelect = newRow.querySelector('select.guc-select-all');
-            if (gucSelect) { gucSelect.value = m.guc || ''; gucSelect.dispatchEvent(new Event('change')); }
-            const korumaBtn = newRow.querySelector('[data-koruma-type]');
-            if (korumaBtn && m.korumaType) {
-              korumaBtn.dataset.korumaType = m.korumaType;
-              korumaBtn.textContent = m.korumaType === 'invertor' ? 'İnvertör/Sigorta' : 'MKŞ/Kontaktör';
-            }
-            if (newRow.updateDriveComponents) newRow.updateDriveComponents();
-          });
-        }
-
-        renderRezistansTable();
-        renderKurutmaTable();
-        renderKacakAkimTable();
-        renderTmsTable();
-        renderSensorTable();
-        lucide.createIcons();
-        if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
-      } catch(err) {
-        alert('Dosya yüklenirken hata oluştu: ' + err.message);
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
+    if (!sb || !currentUser) { document.getElementById('modal-auth').classList.remove('hidden'); return; }
+    loadCloudProjects();
   });
   document.getElementById('btn-disari-aktar').addEventListener('click', () => {
     const data = buildSaveData();
@@ -4682,9 +4617,13 @@
     reader.onload = async ev => {
       try {
         const data = JSON.parse(ev.target.result);
-        lastFileName = file.name;
+        const importName = file.name.replace(/\.json$/i, '');
         await applyProjectData(data);
-        if (typeof currentUser !== 'undefined' && currentUser) saveToCloud(file.name.replace(/\.json$/i, ''));
+        if (typeof currentUser !== 'undefined' && currentUser) {
+          currentProjectName = importName;
+          updateProjectNameUI();
+          saveToCloud(importName);
+        }
         showToast('Dosya içe aktarıldı ✓');
       } catch(err) { showToast('Dosya hatalı: ' + err.message, 'error'); }
     };
@@ -4714,6 +4653,28 @@
   window.closeCloudModalIfBackdrop = function(e) {
     if (e.target === e.currentTarget) window.closeModal('modal-cloud');
   };
+  window.closeSaveAsModalIfBackdrop = function(e) {
+    if (e.target === e.currentTarget) window.closeModal('modal-save-as');
+  };
+  window.openSaveAsModal = function(defaultName) {
+    const input = document.getElementById('save-as-name-input');
+    if (input) input.value = defaultName || '';
+    document.getElementById('modal-save-as').classList.remove('hidden');
+    lucide.createIcons();
+    setTimeout(() => { if (input) input.focus(); }, 60);
+  };
+  window.doSaveAs = async function() {
+    const input = document.getElementById('save-as-name-input');
+    const name = input ? input.value.trim() : '';
+    if (!name) {
+      if (input) { input.focus(); input.style.borderColor = '#ef4444'; setTimeout(() => { input.style.borderColor = ''; }, 1500); }
+      return;
+    }
+    window.closeModal('modal-save-as');
+    currentProjectName = name;
+    updateProjectNameUI();
+    await saveToCloud(name);
+  };
   window.doGoogleLogin = async function() {
     if (!sb) { showToast('Bulut bağlantısı aktif değil — internet bağlantısını kontrol edin.', 'error'); return; }
     try {
@@ -4727,7 +4688,7 @@
 
   // ESC ile tüm modalleri kapat
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { window.closeModal('modal-auth'); window.closeModal('modal-cloud'); }
+    if (e.key === 'Escape') { window.closeModal('modal-auth'); window.closeModal('modal-cloud'); window.closeModal('modal-save-as'); }
   });
 
   // Initialize Element SDK (optional — only available on hosting platform)
@@ -4745,6 +4706,48 @@
 
 <!-- Toast -->
 <div id="app-toast" class="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-lg text-sm font-semibold mono shadow-xl pointer-events-none opacity-0 bg-emerald-600 text-white" style="transition: opacity 0.3s;"></div>
+
+<!-- Save As Modal -->
+<div id="modal-save-as" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeSaveAsModalIfBackdrop(event)">
+  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-sm mx-4">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+      <h2 class="text-sm font-bold mono text-slate-200">Projeyi Kaydet</h2>
+      <button onclick="closeModal('modal-save-as')" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="px-6 py-6 flex flex-col gap-4">
+      <div>
+        <label class="block text-xs text-slate-400 mono mb-1.5">Proje Adı</label>
+        <input id="save-as-name-input" type="text" placeholder="Örn: Line-1 Tuz Makinesi"
+               class="w-full h-10 px-3 bg-slate-800 border border-slate-600 rounded-lg text-slate-100 text-sm mono focus:border-cyan-500 focus:outline-none"
+               onkeydown="if(event.key==='Enter') doSaveAs()">
+      </div>
+      <button onclick="doSaveAs()" class="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold mono transition flex items-center justify-center gap-2">
+        <i data-lucide="save" class="w-4 h-4"></i> Kaydet
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Save As Modal -->
+<div id="modal-save-as" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeSaveAsModalIfBackdrop(event)">
+  <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-sm mx-4">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+      <h2 class="text-sm font-bold mono text-slate-200">Projeyi Kaydet</h2>
+      <button onclick="closeModal('modal-save-as')" class="text-slate-500 hover:text-slate-300 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="px-6 py-6 flex flex-col gap-4">
+      <div>
+        <label class="block text-xs text-slate-400 mono mb-1.5">Proje Adı</label>
+        <input id="save-as-name-input" type="text" placeholder="Örn: Line-1 Tuz Makinesi"
+               class="w-full h-10 px-3 bg-slate-800 border border-slate-600 rounded-lg text-slate-100 text-sm mono focus:border-cyan-500 focus:outline-none"
+               onkeydown="if(event.key==='Enter') doSaveAs()">
+      </div>
+      <button onclick="doSaveAs()" class="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold mono transition flex items-center justify-center gap-2">
+        <i data-lucide="save" class="w-4 h-4"></i> Kaydet
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Auth Modal -->
 <div id="modal-auth" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeAuthModalIfBackdrop(event)">
