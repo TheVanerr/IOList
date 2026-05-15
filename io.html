@@ -3449,6 +3449,27 @@
           ? { ...r, stokKodu: '10 02613', urunAdi: 'BUTON MANDAL B101S30 1-0-2' }
           : r);
       }
+      // İnvertör varsa standart tablodan 1 adet TERMİK + 1 adet KONTAKTÖR düş,
+      // opsiyon bölümünde invertör kalemleri ayrı eklenecek.
+      if (lymState.invertor === 'VAR') {
+        let termikReduced = false;
+        let kontaktorReduced = false;
+        rows = rows
+          .map(r => {
+            if (!termikReduced && r.stokKodu === '10 00243') {
+              termikReduced = true;
+              const adet = Number(r.adet) || 0;
+              return adet > 1 ? { ...r, adet: adet - 1 } : null;
+            }
+            if (!kontaktorReduced && r.stokKodu === '10 01331') {
+              kontaktorReduced = true;
+              const adet = Number(r.adet) || 0;
+              return adet > 1 ? { ...r, adet: adet - 1 } : null;
+            }
+            return r;
+          })
+          .filter(Boolean);
+      }
     }
     const accentColor = getModelGrupRenk(model);
     const lsKey = 'sbom_' + model;
@@ -3990,7 +4011,8 @@
         renderLymOptionSection({
           title: 'İNVERTÖR VARSA', color: '#818cf8',
           items: [
-            { stokKodu: '-', urunAdi: 'İNVERTÖR', adet: 1 },
+            { stokKodu: '10 16319', urunAdi: 'İNVERTÖR VFD004EL21W-1 0,4KW', adet: 1 },
+            { stokKodu: '10 01421', urunAdi: 'SİGORTA A9F74106 1*6', adet: 1 },
           ],
           badgeText: 'VAR'
         });
