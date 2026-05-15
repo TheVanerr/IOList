@@ -84,6 +84,14 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }
+  .option-name-tag {
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.16);
+  }
+  .secim-option-card {
+    width: 100%;
+    justify-self: stretch;
+  }
   .value-tag {
     color: #22d3ee;
     font-weight: 700;
@@ -194,6 +202,9 @@
         <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
        </div>
        <h1 class="text-lg font-bold text-white tracking-tight">PANO IO KONFİGÜRATÖR</h1>
+       <button id="btn-standart-listele" style="display:none" class="px-3 py-2 rounded-lg bg-slate-800 border border-emerald-700/50 hover:border-emerald-400 hover:bg-emerald-900/30 text-emerald-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="table-2" class="w-3.5 h-3.5"></i> Listele
+       </button>
       </div>
       <!-- Aksiyon butonları — başlığın hemen sağında -->
       <div class="flex items-center gap-1.5">
@@ -263,80 +274,104 @@
       </div>
       <div class="header-line"></div>
      </div><!-- Selection Buttons -->
-     <div class="grid grid-cols-2 md:grid-cols-8 gap-2">
-      <!-- Makine Gücü --> <div class="option-btn rounded-lg p-2 text-left cursor-default">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-green-500/20 flex items-center justify-center border border-green-500/40">
-         <i data-lucide="zap" class="w-3 h-3 text-green-400"></i>
-        </div>
+    <div class="grid grid-cols-2 md:grid-cols-8 gap-2">
+    <!-- Makine Gücü --> <div class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left cursor-default flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-green-500/20 flex items-center justify-center border border-green-500/40 flex-shrink-0">
+        <i data-lucide="zap" class="w-3.5 h-3.5 text-green-400"></i>
        </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Makine Gücü</div>
-       <div id="val-makine-gucu" class="text-sm font-bold text-green-400">0.00 kW</div>
+      <div id="val-makine-gucu" class="text-[15px] font-bold text-green-400 tracking-wide text-center min-w-[52px]">0.00 kW</div>
+       <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+        <i data-lucide="activity" class="w-3.5 h-3.5 text-green-300"></i>
+       </div>
       </div>
-      <!-- Makine Tipi --> <button id="btn-makine-tipi" class="option-btn rounded-lg p-2 text-left">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
-         <i data-lucide="box" class="w-3 h-3 text-blue-400"></i>
-        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
-       </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Makine Tipi</div>
-       <div id="val-makine-tipi" class="text-sm font-bold value-tag">Kabinli</div>
-      </button>
-      <!-- Tank Sayısı --> <button id="btn-tank-sayisi" class="option-btn rounded-lg p-2 text-left">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
-         <i data-lucide="container" class="w-3 h-3 text-emerald-400"></i>
-        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
-       </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Tank Sayısı</div>
-       <div id="val-tank-sayisi" class="text-sm font-bold value-tag">1</div>
-      </button>
-      <!-- Otomatik Dolum --> <button id="btn-otomatik-dolum" class="option-btn rounded-lg p-2 text-left">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-         <i data-lucide="droplets" class="w-3 h-3 text-amber-400"></i>
-        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
-       </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Otomatik Dolum</div>
-       <div id="val-otomatik-dolum" class="text-sm font-bold value-tag">VAR</div>
-      </button>
-      <!-- Tepe Lambası --> <button id="btn-tepe-lambasi" class="option-btn rounded-lg p-2 text-left">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-yellow-500/20 flex items-center justify-center border border-yellow-500/40">
-         <i data-lucide="lightbulb" class="w-3 h-3 text-yellow-400"></i>
-        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
-       </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Tepe Lambası</div>
-       <div id="val-tepe-lambasi" class="text-sm font-bold value-tag">VAR</div>
-      </button>
-      <!-- Şalt Grubu --> <button id="btn-salt-grubu" class="option-btn rounded-lg p-2 text-left">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40">
-         <i data-lucide="cpu" class="w-3 h-3 text-violet-400"></i>
-        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
-       </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Şalt Grubu</div>
-       <div id="val-salt-grubu" class="text-sm font-bold value-tag">Schneider</div>
-      </button>
-      <!-- Kurutma Ünitesi --> <button id="btn-kurutma-unitesi" class="option-btn rounded-lg p-2 text-left">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-red-500/20 flex items-center justify-center border border-red-500/40">
-         <i data-lucide="flame" class="w-3 h-3 text-red-400"></i>
-        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
-       </div>
-       <div class="label-tag mono mb-0.5 text-[10px]">Kurutma Ünitesi</div>
-       <div id="val-kurutma-unitesi" class="text-sm font-bold value-tag">VAR</div>
-      </button>
-      <!-- Işın Bariyeri --> <button id="btn-isin-bariyeri" class="option-btn rounded-lg p-2 text-left">
-       <div class="flex items-center justify-between mb-1.5">
-        <div class="w-6 h-6 rounded-md bg-fuchsia-500/20 flex items-center justify-center border border-fuchsia-500/40">
-         <i data-lucide="scan-line" class="w-3 h-3 text-fuchsia-400"></i>
-        </div><i data-lucide="refresh-cw" class="w-3 h-3 text-slate-600"></i>
-       </div>
-       <div id="label-isin-bariyeri" class="label-tag mono mb-0.5 text-[10px]">Işın Bariyeri</div>
-       <div id="val-isin-bariyeri" class="text-sm font-bold value-tag">YOK</div>
-      </button>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#4ade80;">Makine Gücü</div>
      </div>
+          <!-- Makine Tipi --> <button id="btn-makine-tipi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40 flex-shrink-0">
+        <i data-lucide="box" class="w-3.5 h-3.5 text-blue-400"></i>
+       </div>
+      <div id="val-makine-tipi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">Kabinli</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#60a5fa;">Makine Tipi</div>
+     </button>
+          <!-- Tank Sayısı --> <button id="btn-tank-sayisi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40 flex-shrink-0">
+        <i data-lucide="container" class="w-3.5 h-3.5 text-emerald-400"></i>
+       </div>
+      <div id="val-tank-sayisi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">1</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#34d399;">Tank Sayısı</div>
+     </button>
+          <!-- Otomatik Dolum --> <button id="btn-otomatik-dolum" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40 flex-shrink-0">
+        <i data-lucide="droplets" class="w-3.5 h-3.5 text-amber-400"></i>
+       </div>
+      <div id="val-otomatik-dolum" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">VAR</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#f59e0b;">Otomatik Dolum</div>
+     </button>
+          <!-- Tepe Lambası --> <button id="btn-tepe-lambasi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-yellow-500/20 flex items-center justify-center border border-yellow-500/40 flex-shrink-0">
+        <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-yellow-400"></i>
+       </div>
+      <div id="val-tepe-lambasi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">VAR</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#facc15;">Tepe Lambası</div>
+     </button>
+          <!-- Şalt Grubu --> <button id="btn-salt-grubu" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40 flex-shrink-0">
+        <i data-lucide="cpu" class="w-3.5 h-3.5 text-violet-400"></i>
+       </div>
+      <div id="val-salt-grubu" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">Schneider</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#a78bfa;">Şalt Grubu</div>
+     </button>
+          <!-- Kurutma Ünitesi --> <button id="btn-kurutma-unitesi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-red-500/20 flex items-center justify-center border border-red-500/40 flex-shrink-0">
+        <i data-lucide="flame" class="w-3.5 h-3.5 text-red-400"></i>
+       </div>
+      <div id="val-kurutma-unitesi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">VAR</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#f87171;">Kurutma Ünitesi</div>
+     </button>
+          <!-- Işın Bariyeri --> <button id="btn-isin-bariyeri" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-fuchsia-500/20 flex items-center justify-center border border-fuchsia-500/40 flex-shrink-0">
+        <i data-lucide="scan-line" class="w-3.5 h-3.5 text-fuchsia-400"></i>
+       </div>
+      <div id="val-isin-bariyeri" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">YOK</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div id="label-isin-bariyeri" class="label-tag option-name-tag mono text-[11px] text-center" style="color:#e879f9;">Işın Bariyeri</div>
+     </button>
+    </div>
      <div class="mt-2">
       <div class="flex items-center justify-between gap-2 mb-3">
        <div class="flex items-center gap-2">
@@ -3475,8 +3510,9 @@
       }
     }
 
-    // LYM modellerinde sigorta grubu üstte ayrı tablo olarak gösteriliyor.
-    // Bu nedenle ana tabloda tekrar etmesini engelle.
+    // LYM modellerinde sigorta grubu dinamik hesaplanır ve ana BOM tablosuna
+    // diğer gruplarla aynı formatta eklenir.
+    let lymSigortaRows = [];
     if (model.startsWith('LYM')) {
       rows = rows.filter(r => (r.grup || '').toUpperCase() !== 'SİGORTA GRUBU');
       // Gerçek Zaman Saati varsa BUTON MANDAL B100SL20Y → B101S30 1-0-2 ile değiştir
@@ -3506,6 +3542,21 @@
           })
           .filter(Boolean);
       }
+
+      const ampEl = document.getElementById('lym-makine-akim-val');
+      const ampVal = ampEl ? parseFloat(ampEl.textContent) || 0 : 0;
+      const sig = getSigortaForAmp(ampVal);
+      const pako = getPakoSalterLYM(ampVal);
+      const sig2 = getSigortaA9F_LYM(ampVal);
+
+      lymSigortaRows = [
+        { grup: 'SİGORTA GRUBU', stokKodu: pako.stok, urunAdi: pako.urun, adet: 1 },
+        { grup: 'SİGORTA GRUBU', stokKodu: sig.stok,  urunAdi: sig.urun,  adet: 1 },
+        { grup: 'SİGORTA GRUBU', stokKodu: sig2.stok, urunAdi: sig2.urun, adet: 1 },
+        { grup: 'SİGORTA GRUBU', stokKodu: '10 00302', urunAdi: 'SİGORTA A9F74103 1*3', adet: 1 },
+      ];
+
+      rows = [...lymSigortaRows, ...rows];
     }
     const accentColor = getModelGrupRenk(model);
     const lsKey = 'sbom_' + model;
@@ -3637,90 +3688,6 @@
       actionBar.appendChild(saveBtn2);
       container.appendChild(actionBar);
       return;
-    }
-
-    // === SİGORTA GRUBU (yalnızca LYM modeller) ===
-    if (model.startsWith('LYM')) {
-      const ampEl = document.getElementById('lym-makine-akim-val');
-      const ampVal = ampEl ? parseFloat(ampEl.textContent) || 0 : 0;
-      const sig = getSigortaForAmp(ampVal);
-
-      const sigSection = document.createElement('div');
-      sigSection.className = 'bg-slate-900/40 border border-amber-500/20 rounded-xl overflow-hidden mb-4';
-
-      const sigHead = document.createElement('div');
-      sigHead.className = 'px-4 py-2.5 bg-slate-800/60 border-b border-amber-500/20 flex items-center gap-2';
-      const sigHIcon = document.createElement('i');
-      sigHIcon.setAttribute('data-lucide', 'shield-alert');
-      sigHIcon.className = 'w-3.5 h-3.5 text-amber-400';
-      const sigHLabel = document.createElement('span');
-      sigHLabel.className = 'text-xs font-bold mono text-amber-400 uppercase tracking-wider';
-      sigHLabel.textContent = 'Sigorta Grubu';
-      const sigAutoBadge = document.createElement('span');
-      sigAutoBadge.className = 'ml-auto px-2 py-0.5 rounded-full text-[10px] mono font-semibold';
-      sigAutoBadge.style.cssText = 'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)';
-      sigAutoBadge.textContent = 'Otomatik Seçim';
-      sigHead.appendChild(sigHIcon); sigHead.appendChild(sigHLabel); sigHead.appendChild(sigAutoBadge);
-      sigSection.appendChild(sigHead);
-
-      const sigTW = document.createElement('div'); sigTW.className = 'overflow-x-auto';
-      const sigT = document.createElement('table'); sigT.className = 'w-full table-fixed';
-      const sigCG = document.createElement('colgroup');
-      ['14%','36%','14%','12%','24%'].forEach(w => { const c = document.createElement('col'); c.style.width = w; sigCG.appendChild(c); });
-      sigT.appendChild(sigCG);
-
-      const sigTH = document.createElement('thead');
-      const sigHR = document.createElement('tr');
-      sigHR.className = 'bg-slate-800/60 border-b border-slate-700/50';
-      [{label:'Stok Kodu',color:'#22d3ee'},{label:'Ürün Adı',color:'#e2e8f0'},{label:'Birim Fiyatı (€)',color:'#fbbf24'},{label:'Ürün Adedi',color:'#94a3b8'},{label:'Toplam Maliyet (€)',color:'#34d399'}].forEach(h => {
-        const th = document.createElement('th');
-        th.className = 'px-3 py-2.5 text-center text-xs font-bold mono';
-        th.style.color = h.color; th.textContent = h.label; sigHR.appendChild(th);
-      });
-      sigTH.appendChild(sigHR); sigT.appendChild(sigTH);
-
-      const sigTB = document.createElement('tbody');
-
-      function makeSigortaTableRow(id, stok, urun) {
-        const r = document.createElement('tr');
-        r.id = id;
-        r.className = 'sbom-row border-t border-slate-700/30 hover:bg-slate-800/30';
-        r.style.height = '40px';
-        const sTd = document.createElement('td');
-        sTd.className = 'sigorta-stok-td px-3 py-0 text-xs mono font-bold align-middle text-center';
-        sTd.style.color = accentColor;
-        sTd.textContent = stok;
-        r.appendChild(sTd);
-        const uTd = document.createElement('td');
-        uTd.className = 'sigorta-urun-td px-3 py-0 text-xs text-slate-200 align-middle font-medium';
-        uTd.textContent = urun;
-        r.appendChild(uTd);
-        r.appendChild(makePriceCell(stok));
-        const aTd = document.createElement('td'); aTd.className = 'px-2 py-0 align-middle text-center';
-        const aSpan = document.createElement('span');
-        aSpan.className = 'sbom-adet-display text-xs mono font-semibold text-slate-300';
-        aSpan.textContent = '1';
-        const aHidden = document.createElement('input');
-        aHidden.type = 'hidden'; aHidden.className = 'sbom-adet'; aHidden.value = '1';
-        aTd.appendChild(aHidden); aTd.appendChild(aSpan); r.appendChild(aTd);
-        const tTd = document.createElement('td');
-        tTd.className = 'sbom-toplam px-3 py-0 text-xs mono font-bold align-middle text-center text-emerald-400';
-        tTd.textContent = '—';
-        r.appendChild(tTd);
-        return r;
-      }
-
-      {
-        const pako = getPakoSalterLYM(ampVal);
-        const sig2 = getSigortaA9F_LYM(ampVal);
-        sigTB.appendChild(makeSigortaTableRow('sigorta-pako-row',   pako.stok,  pako.urun));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row',   sig.stok,   sig.urun));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row-2', sig2.stok,  sig2.urun));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-row-3',      '10 00302', 'SİGORTA A9F74103 1*3'));
-      }
-
-      sigT.appendChild(sigTB); sigTW.appendChild(sigT); sigSection.appendChild(sigTW);
-      container.appendChild(sigSection);
     }
 
     const section = document.createElement('div');
@@ -4419,44 +4386,62 @@
     function makeLymToggleBtn(key, label, icon, states) {
       const col = optColors[key];
       const wrap = document.createElement('button');
-      wrap.className = 'option-btn rounded-lg p-3 text-left flex-shrink-0';
+      wrap.className = 'option-btn rounded-lg px-3 py-2 text-left flex-shrink-0 flex flex-col justify-evenly';
       wrap.style.minWidth = '130px';
+      wrap.style.minHeight = '94px';
+      wrap.dataset.optKey = key;
 
-      const topRow = document.createElement('div');
-      topRow.className = 'flex items-center justify-between mb-2';
+      const valueRow = document.createElement('div');
+      valueRow.className = 'flex items-center justify-center gap-2';
 
-      const iconWrap = document.createElement('div');
-      iconWrap.className = 'w-7 h-7 rounded-md flex items-center justify-center';
-      iconWrap.style.background = col.bg;
-      iconWrap.style.border = '1px solid ' + col.border;
+      const leftSym = document.createElement('div');
+      leftSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
+      leftSym.style.background = col.bg;
+      leftSym.style.border = '1px solid ' + col.border;
       const iEl = document.createElement('i');
       iEl.setAttribute('data-lucide', icon);
       iEl.className = 'w-3.5 h-3.5 ' + col.iconCls;
-      iconWrap.appendChild(iEl);
+      leftSym.appendChild(iEl);
 
+      const rightSym = document.createElement('div');
+      rightSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
+      rightSym.style.background = 'rgba(30,41,59,0.55)';
+      rightSym.style.border = '1px solid rgba(100,116,139,0.45)';
       const refreshI = document.createElement('i');
       refreshI.setAttribute('data-lucide', 'refresh-cw');
-      refreshI.className = 'w-3 h-3 text-slate-600';
+      refreshI.className = 'w-3.5 h-3.5 text-slate-500';
+      rightSym.appendChild(refreshI);
 
-      topRow.appendChild(iconWrap);
-      topRow.appendChild(refreshI);
-      wrap.appendChild(topRow);
+      const valEl = document.createElement('div');
+      valEl.className = 'text-base font-bold value-tag tracking-wide text-center min-w-[52px]';
+      valEl.textContent = lymState[key];
+
+      valueRow.appendChild(leftSym);
+      valueRow.appendChild(valEl);
+      valueRow.appendChild(rightSym);
+      wrap.appendChild(valueRow);
 
       const labelEl = document.createElement('div');
-      labelEl.className = 'label-tag mono mb-0.5 text-[10px]';
+      labelEl.className = 'label-tag option-name-tag mono text-[12px] text-center';
+      labelEl.style.color = col.active;
       labelEl.textContent = label;
       wrap.appendChild(labelEl);
 
-      const valEl = document.createElement('div');
-      valEl.className = 'text-base font-bold value-tag';
-      valEl.textContent = lymState[key];
-      wrap.appendChild(valEl);
+      function applyVisual() {
+        const isYok = lymState[key] === 'YOK';
+        valEl.style.color = isYok ? '#94a3b8' : col.active;
+        leftSym.style.borderColor = isYok ? col.border : (col.active + '99');
+        rightSym.style.borderColor = isYok ? 'rgba(100,116,139,0.45)' : (col.active + '80');
+        rightSym.style.background = isYok ? 'rgba(30,41,59,0.55)' : (col.bg || 'rgba(30,41,59,0.55)');
+      }
+      wrap._applyVisual = applyVisual;
+      applyVisual();
 
       wrap.addEventListener('click', () => {
         const idx = states.indexOf(lymState[key]);
         lymState[key] = states[(idx + 1) % states.length];
         valEl.textContent = lymState[key];
-        valEl.style.color = lymState[key] === 'YOK' ? '' : col.active;
+        applyVisual();
         updateMakinaGucu();
         const _curModel = document.getElementById('standart-model-select')?.value;
         if (_curModel) renderStandartBOM(_curModel);
@@ -4500,8 +4485,11 @@
       // Model değiştiğinde tüm LYM opsiyonlarını sıfırla
       Object.assign(lymState, { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK', invertor:'YOK' });
       lymOptionsRow.querySelectorAll('.option-btn').forEach(btn => {
+        const optKey = btn.dataset.optKey;
+        if (optKey) lymState[optKey] = 'YOK';
         const valEl = btn.querySelector('.value-tag');
-        if (valEl) { valEl.textContent = 'YOK'; valEl.style.color = ''; }
+        if (valEl) valEl.textContent = 'YOK';
+        if (typeof btn._applyVisual === 'function') btn._applyVisual();
       });
       if (isLym) renderLymInfoCards(select.value);
       else if (otherModelConfig[select.value]) renderOtherModelCards(select.value);
@@ -5016,6 +5004,9 @@
       // Form adı butonunu sadece ilk 4 sayfada göster (Seçim, Otomasyon, IO, Malzeme)
       const projectNameBtn = document.getElementById('active-project-name');
       if (projectNameBtn) projectNameBtn.style.display = hideFormBtns ? 'none' : '';
+      // Listele butonunu sadece Standart sayfasında göster
+      const standartListeleBtn = document.getElementById('btn-standart-listele');
+      if (standartListeleBtn) standartListeleBtn.style.display = isStandart ? '' : 'none';
       const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
       const duzenleBtn = document.getElementById('btn-standart-duzenle');
       const fiyatDuzenleBtn = document.getElementById('btn-fiyat-duzenle');
@@ -5056,6 +5047,39 @@
   const btnAddMotor = document.getElementById('btn-add-motor');
   const motorTbody = document.getElementById('motor-tbody');
 
+  const selectionYokColor = '#22d3ee';
+  const selectionCardVisuals = {
+    'btn-makine-tipi':     { valueId: 'val-makine-tipi',     cardColor: '#60a5fa', mode: 'always' },
+    'btn-tank-sayisi':     { valueId: 'val-tank-sayisi',     cardColor: '#34d399', mode: 'always' },
+    'btn-otomatik-dolum':  { valueId: 'val-otomatik-dolum',  cardColor: '#f59e0b', mode: 'varYok' },
+    'btn-salt-grubu':      { valueId: 'val-salt-grubu',      cardColor: '#a78bfa', mode: 'always' },
+    'btn-tepe-lambasi':    { valueId: 'val-tepe-lambasi',    cardColor: '#facc15', mode: 'varYok' },
+    'btn-kurutma-unitesi': { valueId: 'val-kurutma-unitesi', cardColor: '#f87171', mode: 'varYok' },
+    'btn-isin-bariyeri':   { valueId: 'val-isin-bariyeri',   cardColor: '#e879f9', mode: 'varYok' },
+  };
+
+  function syncSelectionCardVisuals() {
+    Object.entries(selectionCardVisuals).forEach(([btnId, cfg]) => {
+      const btn = document.getElementById(btnId);
+      const valEl = document.getElementById(cfg.valueId);
+      if (!btn || !valEl) return;
+      const txt = (valEl.textContent || '').trim().toUpperCase();
+      const activeColor = cfg.mode === 'varYok' && txt === 'YOK' ? selectionYokColor : cfg.cardColor;
+
+      valEl.style.color = activeColor;
+
+      const refreshIcon = btn.querySelector('[data-role="refresh-icon"]');
+      if (refreshIcon) {
+        refreshIcon.style.color = cfg.cardColor;
+        const refreshWrap = refreshIcon.parentElement;
+        if (refreshWrap) {
+          refreshWrap.style.borderColor = cfg.cardColor + '80';
+          refreshWrap.style.background = 'rgba(15,23,42,0.35)';
+        }
+      }
+    });
+  }
+
   btnMakineTipi.addEventListener('click', () => {
     state.makineTipi = state.makineTipi === 'Kabinli' ? 'Konveyör' : 'Kabinli';
     valMakineTipi.textContent = state.makineTipi;
@@ -5064,7 +5088,7 @@
     if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
     state.isinBariyeri = 'YOK';
     valIsinBariyeri.textContent = 'YOK';
-    valIsinBariyeri.style.color = '';
+    syncSelectionCardVisuals();
     renderSensorTable();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
@@ -5081,6 +5105,7 @@
   btnOtomatikDolum.addEventListener('click', () => {
     state.otomatikDolum = state.otomatikDolum === 'VAR' ? 'YOK' : 'VAR';
     valOtomatikDolum.textContent = state.otomatikDolum;
+    syncSelectionCardVisuals();
     renderSensorTable();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
@@ -5111,11 +5136,13 @@
   btnTepeLambasi.addEventListener('click', () => {
     state.tepeLambasi = state.tepeLambasi === 'VAR' ? 'YOK' : 'VAR';
     valTepeLambasi.textContent = state.tepeLambasi;
+    syncSelectionCardVisuals();
   });
 
   btnKurutmaUnitesi.addEventListener('click', () => {
     state.kurutmaUnitesi = state.kurutmaUnitesi === 'VAR' ? 'YOK' : 'VAR';
     valKurutmaUnitesi.textContent = state.kurutmaUnitesi;
+    syncSelectionCardVisuals();
     renderKurutmaTable();
     renderKacakAkimTable();
   });
@@ -5125,9 +5152,11 @@
   btnIsinBariyeri.addEventListener('click', () => {
     state.isinBariyeri = state.isinBariyeri === 'VAR' ? 'YOK' : 'VAR';
     valIsinBariyeri.textContent = state.isinBariyeri;
-    valIsinBariyeri.style.color = state.isinBariyeri === 'VAR' ? '#e879f9' : '';
+    syncSelectionCardVisuals();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
+
+  syncSelectionCardVisuals();
 
   // Motor ekleme
   btnAddMotor.addEventListener('click', () => {
@@ -5218,7 +5247,8 @@
     document.getElementById('val-tepe-lambasi').textContent = 'VAR';
     document.getElementById('val-kurutma-unitesi').textContent = 'VAR';
     const valIsinB = document.getElementById('val-isin-bariyeri');
-    if (valIsinB) { valIsinB.textContent = 'YOK'; valIsinB.style.color = ''; }
+    if (valIsinB) valIsinB.textContent = 'YOK';
+    syncSelectionCardVisuals();
     document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
     renderRezistansTable();
     renderKurutmaTable();
@@ -5831,9 +5861,9 @@
     document.getElementById('val-tepe-lambasi').textContent = state.tepeLambasi;
     document.getElementById('val-kurutma-unitesi').textContent = state.kurutmaUnitesi;
     valIsinBariyeri.textContent = state.isinBariyeri;
-    valIsinBariyeri.style.color = state.isinBariyeri === 'VAR' ? '#e879f9' : '';
     const labelIsin = document.getElementById('label-isin-bariyeri');
     if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
+    syncSelectionCardVisuals();
     document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
     if (d.motorData) {
       d.motorData.forEach(m => {
@@ -6312,7 +6342,174 @@
     URL.revokeObjectURL(url);
   }
 
+  // Standart sayfası Excel export (Listele butonu)
+  async function exportStandartToExcel() {
+    if (typeof ExcelJS === 'undefined') {
+      alert('Excel export kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edin.');
+      return;
+    }
+
+    const select = document.getElementById('standart-model-select');
+    const modelAdi = select ? select.value : 'Bilinmeyen Model';
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Standart');
+
+    const COL_COUNT = 12;
+    const ROW_H = 25;
+
+    // Koyu arka plan + açık yazı (okunur)
+    const STYLE_HEADER_BG  = 'FF1E3A5F'; // koyu lacivert
+    const STYLE_HEADER_FG  = 'FFFFFFFF'; // beyaz yazı
+    const STYLE_SUBHDR_BG  = 'FF243447'; // biraz açık lacivert
+    const STYLE_SUBHDR_FG  = 'FF93C5FD'; // pastel mavi
+    const STYLE_SECTION_BG = 'FF0F4C35'; // koyu yeşil
+    const STYLE_SECTION_FG = 'FF6EE7B7'; // mint yeşil
+    const STYLE_TH_BG      = 'FF1E3A5F'; // tablo başlık koyu
+    const STYLE_TH_FG      = 'FFE2E8F0'; // açık gri
+
+    function applyCell(cell, fgArgb, bgArgb, bold = false, size = 10) {
+      cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: false };
+      cell.font = { bold, size, color: { argb: fgArgb } };
+      if (bgArgb) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgArgb } };
+    }
+
+    function addStyledRow(values, fgArgb, bgArgb, bold = false, size = 10, merge = false) {
+      const row = sheet.addRow(values);
+      row.height = ROW_H;
+      row.eachCell({ includeEmpty: true }, c => applyCell(c, fgArgb, bgArgb, bold, size));
+      if (merge) sheet.mergeCells(`A${row.number}:L${row.number}`);
+      return row;
+    }
+
+    function addBlank() {
+      const row = sheet.addRow([]);
+      row.height = 8;
+      return row;
+    }
+
+    // === MODEL ADI ===
+    addStyledRow([modelAdi], STYLE_SECTION_FG, STYLE_SECTION_BG, true, 14, true);
+    addBlank();
+
+    // === BİLEŞEN KARTLARI ===
+    const infoSection = document.getElementById('lym-info-section');
+    if (infoSection && infoSection.style.display !== 'none') {
+      const cards = infoSection.querySelectorAll('.flex.flex-col');
+      const labels = [], kwVals = [], ampVals = [];
+      cards.forEach(card => {
+        const lbl = card.querySelector('.text-\\[10px\\]')?.textContent.trim();
+        const divs = card.querySelectorAll('div');
+        if (lbl && lbl !== 'standart + opsiyonlar') {
+          labels.push(lbl);
+          kwVals.push(divs[1]?.textContent.trim() || '');
+          ampVals.push(divs[2]?.textContent.trim() || '');
+        }
+      });
+      if (labels.length > 0) {
+        addStyledRow(labels,  STYLE_HEADER_FG,  STYLE_HEADER_BG,  true,  9);
+        addStyledRow(kwVals,  'FF34D399',        null,             true,  10);
+        addStyledRow(ampVals, 'FF94A3B8',        null,             false, 9);
+        addBlank();
+      }
+    }
+
+    // === LYM OPSİYONLAR ===
+    const optRow = document.getElementById('lym-options-row');
+    if (optRow && optRow.style.display !== 'none') {
+      const optLabels = [], optVals = [];
+      optRow.querySelectorAll('.option-btn').forEach(btn => {
+        const lbl = btn.querySelector('.label-tag')?.textContent.trim();
+        const val = btn.querySelector('.value-tag')?.textContent.trim() || '-';
+        if (lbl) { optLabels.push(lbl); optVals.push(val); }
+      });
+      if (optLabels.length > 0) {
+        addStyledRow(optLabels, STYLE_SUBHDR_FG, STYLE_SUBHDR_BG, true, 9);
+        const vRow = sheet.addRow(optVals);
+        vRow.height = ROW_H;
+        vRow.eachCell({ includeEmpty: true }, (c, idx) => {
+          const isVar = optVals[idx - 1] !== 'YOK';
+          applyCell(c, isVar ? 'FF34D399' : 'FF64748B', null, true, 10);
+        });
+        addBlank();
+      }
+    }
+
+    // === BOM TABLOSU ===
+    const bomContainer = document.getElementById('standart-bom-container');
+    if (bomContainer) {
+      // Seksiyon başlığı (Malzeme Tablosu — MODEL)
+      const secTitleEl = bomContainer.querySelector('span.font-bold.mono');
+      const secTitleTxt = secTitleEl ? secTitleEl.textContent.trim() : ('Malzeme Tablosu — ' + modelAdi);
+      addStyledRow([secTitleTxt], STYLE_SECTION_FG, STYLE_SECTION_BG, true, 11, true);
+      addBlank();
+
+      // Sadece görünür BOM tablolarını al (düzenleme tablosunu dışla)
+      const bomTables = Array.from(bomContainer.querySelectorAll('table'))
+        .filter(t => !t.closest('[id="standart-edit-tbody"]') && !t.querySelector('[id="standart-edit-tbody"]') && t.querySelector('tbody'));
+
+      if (bomTables.length > 0) {
+        // Ortak sütun başlıklarını yaz — ilk tablodan al
+        const BOM_NCOLS = 5;
+        const ths = bomTables[0].querySelectorAll('thead th');
+        if (ths.length > 0) {
+          const hRow = sheet.addRow(Array.from(ths).map(th => th.textContent.trim()));
+          hRow.height = ROW_H;
+          hRow.eachCell({ includeEmpty: true }, c => applyCell(c, STYLE_TH_FG, STYLE_TH_BG, true, 9));
+        }
+
+        // Grup başlık satırı (SİGORTA GRUBU, KONTAKTÖR GRUBU, vb.) — hepsi aynı stil
+        function addGroupLabelRow(text) {
+          const gr = sheet.addRow([text]);
+          gr.height = ROW_H;
+          for (let ci = 1; ci <= BOM_NCOLS; ci++) applyCell(gr.getCell(ci), STYLE_SUBHDR_FG, STYLE_SUBHDR_BG, true, 9);
+          sheet.mergeCells(`A${gr.number}:E${gr.number}`);
+        }
+
+        bomTables.forEach((table, tIdx) => {
+          // LYM sigorta tablosu (ilk tablo, amber kenarlıklı sarmalayıcıda)
+          if (tIdx === 0 && table.closest('[class*="border-amber"]')) {
+            addGroupLabelRow('SİGORTA GRUBU');
+          }
+
+          table.querySelectorAll('tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length === 0) return;
+            if (cells.length === 1 && cells[0].querySelector('button')) return;
+            // Tek hücreli grup başlık satırı (colspan, buton yok)
+            if (cells.length === 1) {
+              addGroupLabelRow(cells[0].textContent.trim());
+              return;
+            }
+            const data = Array.from(cells).map(cell => {
+              const inp = cell.querySelector('input');
+              return inp ? inp.value : cell.textContent.trim();
+            });
+            const dRow = sheet.addRow(data);
+            dRow.height = ROW_H;
+            dRow.eachCell({ includeEmpty: true }, c => applyCell(c, 'FF1E293B', null, false, 9));
+          });
+        });
+      }
+    }
+
+    // Sütun genişlikleri
+    for (let i = 1; i <= COL_COUNT; i++) sheet.getColumn(i).width = 22;
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Standart_${modelAdi.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   // Button click handlers
+  document.getElementById('btn-standart-listele')?.addEventListener('click', exportStandartToExcel);
   document.getElementById('btn-excel-dok')?.addEventListener('click', exportAll4PagesToExcel);
   
   document.getElementById('btn-fiyat-disari-aktar')?.addEventListener('click', exportFiyatlarToExcel);
