@@ -204,13 +204,13 @@
      <!-- Sağ: Cloud + Kullanıcı Girişi -->
      <div class="flex items-center gap-1.5">
       <button id="btn-fiyat-katalog-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-amber-700/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 transition text-xs font-semibold mono flex items-center gap-1.5">
-       <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> Katalog → Supabase
+       <i data-lucide="upload" class="w-3.5 h-3.5"></i> Katalog → Supabase
       </button>
       <button id="btn-fiyat-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-teal-700/50 hover:border-teal-400 hover:bg-teal-900/30 text-teal-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
       </button>
       <button id="btn-standart-json-supabase" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
-       <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> JSON → Supabase
+       <i data-lucide="upload" class="w-3.5 h-3.5"></i> JSON → Supabase
       </button>
       <button id="btn-standart-duzenle" class="hidden shrink-0 px-3 py-2 rounded-lg bg-slate-800 border border-violet-700/50 hover:border-violet-400 hover:bg-violet-900/30 text-violet-400 transition text-xs font-semibold mono flex items-center gap-1.5">
        <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle
@@ -3259,6 +3259,9 @@
 
   // ===== END FİYATLAR =====
 
+  // LYM OPSİYON DURUMU (module scope — renderStandartBOM erişimi için)
+  let lymState = { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK' };
+
   // ===== STANDART MAKİNELER =====
   const STANDART_MAKINELER = [
     { ad: 'Tek Tanklı Kabinli Yıkama',   ikon: 'container',          renk: '#22d3ee', badge: 'Standart',        aciklama: 'Yıkama ve durulama pompası, 1 tank rezistans grubu (max 3×8.25 kW). Temel tek bölmeli kabin makinesi.', tankSayisi: 1, kurutma: 'YOK', otomatikDolum: 'VAR', toplamGucAralik: '11 – 36 kW',  motorBilgisi: '2 Pompa' },
@@ -3354,6 +3357,11 @@
     else               return { stok: '-', urun: 'SİGORTA A9F74363 SCHNEİDER 63A 3P' };
   }
 
+  // LYM serisi için 1 fazlı sigorta (kontrol devresi)
+  function getSigortaA9F_LYM(amp) {
+    return { stok: '10 02663', urun: 'SİGORTA A9F74425 SCHNEİDER İC60N,6KA,25A' };
+  }
+
   function makePriceCell(stokKodu) {
     const td = document.createElement('td');
     td.className = 'px-2 py-0 align-middle text-center';
@@ -3403,7 +3411,30 @@
     await loadStandartVerileri();
     container.innerHTML = '';
 
-    const rows = STANDART_MODEL_VERILERI[model] || [];
+    let rows = STANDART_MODEL_VERILERI[model] || [];
+    // Güvenlik ağı: model Supabase'de eksikse local JSON'dan o modeli taze çek.
+    if (rows.length === 0) {
+      try {
+        const freshRes = await fetch('standart.json?_t=' + Date.now());
+        if (freshRes.ok) {
+          const freshJson = await freshRes.json();
+          const localRows = freshJson?.[model] || [];
+          if (localRows.length > 0) {
+            STANDART_MODEL_VERILERI[model] = localRows;
+            rows = localRows;
+            console.warn('Model local JSON fallback ile yüklendi:', model, localRows.length);
+          }
+        }
+      } catch(e) {
+        console.warn('Model fallback JSON yüklenemedi:', model, e);
+      }
+    }
+
+    // LYM modellerinde sigorta grubu üstte ayrı tablo olarak gösteriliyor.
+    // Bu nedenle ana tabloda tekrar etmesini engelle.
+    if (model.startsWith('LYM')) {
+      rows = rows.filter(r => (r.grup || '').toUpperCase() !== 'SİGORTA GRUBU');
+    }
     const accentColor = getModelGrupRenk(model);
     const lsKey = 'sbom_' + model;
     let savedPrices = {};
@@ -3584,7 +3615,8 @@
         r.className = 'sbom-row border-t border-slate-700/30 hover:bg-slate-800/30';
         r.style.height = '40px';
         const sTd = document.createElement('td');
-        sTd.className = 'sigorta-stok-td px-3 py-0 text-xs mono font-bold align-middle text-center text-amber-300';
+        sTd.className = 'sigorta-stok-td px-3 py-0 text-xs mono font-bold align-middle text-center';
+        sTd.style.color = accentColor;
         sTd.textContent = stok;
         r.appendChild(sTd);
         const uTd = document.createElement('td');
@@ -3606,10 +3638,18 @@
         return r;
       }
 
-      const sig2 = getSigortaA9F(ampVal);
-      sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row',   sig.stok,     sig.urun));
-      sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row-2', sig2.stok,    sig2.urun));
-      sigTB.appendChild(makeSigortaTableRow('sigorta-row-3',      '10 00302',   "SİGORTA A9F74103 1*3"));
+      if (model === 'LYM 1500') {
+        sigTB.appendChild(makeSigortaTableRow('sigorta-pako-row',   '10 00286', 'PAKO ŞALTER YKL301M40 3*40 KÜÇÜK KASALI'));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row',   '10 00304', 'SİGORTA KAÇAK AKIMLI A9R41440 4 LÜ'));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row-2', '10 02664', 'SİGORTA A9F74440 SCHNEİDER 40A'));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-row-3',      '10 00302', 'SİGORTA A9F74103 1*3'));
+      } else {
+        const sig2 = getSigortaA9F_LYM(ampVal);
+        sigTB.appendChild(makeSigortaTableRow('sigorta-pako-row',   '10 00285',   'PAKO ŞALTER YKL301025 3*25 BÜYÜK KASALI'));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row',   sig.stok,     sig.urun));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row-2', sig2.stok,    sig2.urun));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-row-3',      '10 00302',   'SİGORTA A9F74103 1*3'));
+      }
 
       sigT.appendChild(sigTB); sigTW.appendChild(sigT); sigSection.appendChild(sigTW);
       container.appendChild(sigSection);
@@ -3723,6 +3763,197 @@
     tableWrap.appendChild(table);
     section.appendChild(tableWrap);
     container.appendChild(section);
+
+    // === LYM OPSİYON EK TABLOLARI ===
+    if (model.startsWith('LYM') && !standartEditMode) {
+      function renderLymOptionSection(opt) {
+        const optSec = document.createElement('div');
+        optSec.className = 'bg-slate-900/40 border rounded-xl overflow-hidden mb-4';
+        optSec.style.borderColor = opt.color + '40';
+
+        const optHead = document.createElement('div');
+        optHead.className = 'px-4 py-2.5 bg-slate-800/60 border-b flex items-center gap-2';
+        optHead.style.borderColor = opt.color + '30';
+        const optDot = document.createElement('div');
+        optDot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${opt.color};box-shadow:0 0 6px ${opt.color};flex-shrink:0`;
+        const optHLabel = document.createElement('span');
+        optHLabel.className = 'text-xs font-bold mono uppercase tracking-wider';
+        optHLabel.style.color = opt.color;
+        optHLabel.textContent = opt.title;
+        const optBadge = document.createElement('span');
+        optBadge.className = 'ml-auto px-2 py-0.5 rounded-full text-[10px] mono font-semibold';
+        optBadge.style.cssText = `background:${opt.color}20;color:${opt.color};border:1px solid ${opt.color}40`;
+        optBadge.textContent = opt.badgeText || 'AKTİF';
+        optHead.appendChild(optDot); optHead.appendChild(optHLabel); optHead.appendChild(optBadge);
+        optSec.appendChild(optHead);
+
+        const optTW = document.createElement('div'); optTW.className = 'overflow-x-auto';
+        const optT  = document.createElement('table'); optT.className = 'w-full table-fixed';
+        const optCG = document.createElement('colgroup');
+        ['14%','36%','14%','12%','24%'].forEach(w => { const c = document.createElement('col'); c.style.width = w; optCG.appendChild(c); });
+        optT.appendChild(optCG);
+
+        const optTHead = document.createElement('thead');
+        const optHRow  = document.createElement('tr');
+        optHRow.className = 'bg-slate-800/60 border-b border-slate-700/50';
+        [{label:'Stok Kodu',col:'#22d3ee'},{label:'Ürün Adı',col:'#e2e8f0'},{label:'Birim Fiyatı (€)',col:'#fbbf24'},{label:'Ürün Adedi',col:'#94a3b8'},{label:'Toplam Maliyet (€)',col:'#34d399'}].forEach(h => {
+          const th = document.createElement('th'); th.className = 'px-3 py-2.5 text-center text-xs font-bold mono'; th.style.color = h.col; th.textContent = h.label; optHRow.appendChild(th);
+        });
+        optTHead.appendChild(optHRow); optT.appendChild(optTHead);
+
+        const optTBody = document.createElement('tbody');
+        opt.items.forEach((item, idx) => {
+          const tr = document.createElement('tr');
+          tr.className = 'sbom-row border-t border-slate-700/30 ' + (idx % 2 === 0 ? 'hover:bg-slate-800/30' : 'bg-slate-900/20 hover:bg-slate-800/30');
+          tr.style.height = '40px';
+          const stokTd = document.createElement('td'); stokTd.className = 'px-3 py-0 text-xs mono font-bold align-middle text-center'; stokTd.style.color = opt.color; stokTd.textContent = item.stokKodu; tr.appendChild(stokTd);
+          const adiTd  = document.createElement('td'); adiTd.className  = 'px-3 py-0 text-xs text-slate-200 align-middle font-medium'; adiTd.textContent = item.urunAdi; tr.appendChild(adiTd);
+          tr.appendChild(makePriceCell(item.stokKodu));
+          const aTd = document.createElement('td'); aTd.className = 'px-2 py-0 align-middle text-center';
+          const aSpan = document.createElement('span'); aSpan.className = 'sbom-adet text-xs mono font-semibold text-slate-300'; aSpan.textContent = item.adet; aTd.appendChild(aSpan); tr.appendChild(aTd);
+          const tTd = document.createElement('td'); tTd.className = 'sbom-toplam px-3 py-0 text-xs mono font-bold align-middle text-center text-emerald-400'; tTd.textContent = '—'; tr.appendChild(tTd);
+          optTBody.appendChild(tr);
+        });
+        optT.appendChild(optTBody); optTW.appendChild(optT); optSec.appendChild(optTW);
+        container.appendChild(optSec);
+      }
+
+      const isEgzos = lymState.egzosFani === 'VAR';
+      const kurutmaTip = lymState.kurutmaFani;
+
+      if (lymState.yagSiyirici === 'VAR') {
+        renderLymOptionSection({
+          title: 'YAĞ SIYIRICI VARSA', color: '#fb923c',
+          items: [
+            { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 1 },
+            { stokKodu: '10 02314', urunAdi: 'KONTAKTÖR LC1K0610M7 220V', adet: 1 },
+            { stokKodu: '10 00262', urunAdi: 'BUTON MANDAL B100S20', adet: 1 },
+            { stokKodu: '10 00279', urunAdi: 'SİNYAL LAMBASI S14B BEYAZ 220V', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+          ],
+          badgeText: 'VAR'
+        });
+      }
+
+      if (lymState.interlockKilit === 'VAR') {
+        renderLymOptionSection({
+          title: 'İNTERLOCK KİLİT VARSA', color: '#fbbf24',
+          items: [
+            { stokKodu: '10 01337', urunAdi: 'MİNYATÜR RÖLE RSB2A080P7 2 KUTUPLU 8 PİNLİ', adet: 1 },
+            { stokKodu: '10 00268', urunAdi: 'KONTAK BLOK NC B2', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+          ],
+          badgeText: 'VAR'
+        });
+      }
+
+      if (isEgzos && kurutmaTip === 'YOK') {
+        renderLymOptionSection({
+          title: 'SADECE EGZOS FANI VARSA', color: '#38bdf8',
+          items: [
+            { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 1 },
+            { stokKodu: '10 01331', urunAdi: 'KONTAKTÖR LC1K0910M7 220V', adet: 1 },
+            { stokKodu: '10 00240', urunAdi: 'YARDIMCI KONTAK LA1KN31', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+            { stokKodu: '10 01387', urunAdi: 'ZAMAN RÖLESİ ATP4S08-UV-60', adet: 1 },
+            { stokKodu: '10 01394', urunAdi: 'RÖLE SOKETİ RS1P08G1 8 PİNLİ', adet: 1 },
+          ],
+          badgeText: 'EGZOS'
+        });
+      }
+
+      if (!isEgzos && (kurutmaTip === 'Normal Tip' || kurutmaTip === 'Yoğuşturmalı Tip')) {
+        renderLymOptionSection({
+          title: 'SADECE KURUTMA FANI VARSA', color: '#fb7185',
+          items: [
+            { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 1 },
+            { stokKodu: '10 01331', urunAdi: 'KONTAKTÖR LC1K0910M7 220V', adet: 1 },
+            { stokKodu: '10 01332', urunAdi: 'KONTAKTÖR LC1K1610M7 220V', adet: 1 },
+            { stokKodu: '10 00240', urunAdi: 'YARDIMCI KONTAK LA1KN31', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+            { stokKodu: '10 01387', urunAdi: 'ZAMAN RÖLESİ ATP4S08-UV-60', adet: 1 },
+            { stokKodu: '10 01394', urunAdi: 'RÖLE SOKETİ RS1P08G1 8 PİNLİ', adet: 1 },
+          ],
+          badgeText: kurutmaTip
+        });
+      }
+
+      if (isEgzos && kurutmaTip === 'Normal Tip') {
+        renderLymOptionSection({
+          title: 'HEM EGZOS HEM KURUTMA FANI VARSA', color: '#f43f5e',
+          items: [
+            { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 2 },
+            { stokKodu: '10 01331', urunAdi: 'KONTAKTÖR LC1K0910M7 220V', adet: 2 },
+            { stokKodu: '10 01332', urunAdi: 'KONTAKTÖR LC1K1610M7 220V', adet: 1 },
+            { stokKodu: '10 00240', urunAdi: 'YARDIMCI KONTAK LA1KN31', adet: 2 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+            { stokKodu: '10 01387', urunAdi: 'ZAMAN RÖLESİ ATP4S08-UV-60', adet: 1 },
+            { stokKodu: '10 01394', urunAdi: 'RÖLE SOKETİ RS1P08G1 8 PİNLİ', adet: 1 },
+          ],
+          badgeText: 'EGZOS + NORMAL'
+        });
+      }
+
+      if (isEgzos && kurutmaTip === 'Yoğuşturmalı Tip') {
+        renderLymOptionSection({
+          title: 'EGZOS FANI YOĞUŞTURMALI TİP İSE', color: '#0ea5e9',
+          items: [
+            { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 1 },
+            { stokKodu: '10 01331', urunAdi: 'KONTAKTÖR LC1K0910M7 220V', adet: 1 },
+            { stokKodu: '10 00240', urunAdi: 'YARDIMCI KONTAK LA1KN31', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+            { stokKodu: '10 01387', urunAdi: 'ZAMAN RÖLESİ ATP4S08-UV-60', adet: 1 },
+            { stokKodu: '10 01394', urunAdi: 'RÖLE SOKETİ RS1P08G1 8 PİNLİ', adet: 1 },
+          ],
+          badgeText: 'EGZOS + YOĞUŞTURMALI'
+        });
+      }
+
+      if (!isEgzos && kurutmaTip === 'Blower Tip') {
+        renderLymOptionSection({
+          title: 'KURUTMA FANI BLOWER TİP İSE', color: '#dc2626',
+          items: [
+            { stokKodu: '10 01359', urunAdi: 'TERMİK RÖLESİ LR2K0316 8--11,5A', adet: 1 },
+            { stokKodu: '10 01332', urunAdi: 'KONTAKTÖR LC1K1610M7 220V', adet: 2 },
+            { stokKodu: '10 00240', urunAdi: 'YARDIMCI KONTAK LA1KN31', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+            { stokKodu: '10 01387', urunAdi: 'ZAMAN RÖLESİ ATP4S08-UV-60', adet: 1 },
+            { stokKodu: '10 01394', urunAdi: 'RÖLE SOKETİ RS1P08G1 8 PİNLİ', adet: 1 },
+          ],
+          badgeText: 'BLOWER'
+        });
+      }
+
+      if (isEgzos && kurutmaTip === 'Blower Tip') {
+        renderLymOptionSection({
+          title: 'HEM EGZOS HEM DE BLOWER TİP KURUTMA FANI VARSA', color: '#be123c',
+          items: [
+            { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 1 },
+            { stokKodu: '10 01359', urunAdi: 'TERMİK RÖLESİ LR2K0316 8--11,5A', adet: 1 },
+            { stokKodu: '10 01331', urunAdi: 'KONTAKTÖR LC1K0910M7 220V', adet: 1 },
+            { stokKodu: '10 01332', urunAdi: 'KONTAKTÖR LC1K1610M7 220V', adet: 2 },
+            { stokKodu: '10 00240', urunAdi: 'YARDIMCI KONTAK LA1KN31', adet: 2 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+            { stokKodu: '10 01387', urunAdi: 'ZAMAN RÖLESİ ATP4S08-UV-60', adet: 1 },
+            { stokKodu: '10 01394', urunAdi: 'RÖLE SOKETİ RS1P08G1 8 PİNLİ', adet: 1 },
+          ],
+          badgeText: 'EGZOS + BLOWER'
+        });
+      }
+
+      if (lymState.drenajPompasi === 'VAR') {
+        renderLymOptionSection({
+          title: 'DRENAJ POMPASI VARSA', color: '#14b8a6',
+          items: [
+            { stokKodu: '10 00248', urunAdi: 'TERMİK RÖLESİ LR2K0312 3,70-5,5A', adet: 1 },
+            { stokKodu: '10 01331', urunAdi: 'KONTAKTÖR LC1K0910M7 220V', adet: 1 },
+            { stokKodu: '10 00273', urunAdi: 'BUTON START B100DY', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
+          ],
+          badgeText: 'VAR'
+        });
+      }
+    }
 
     // Toplam Pano Maliyeti satırı
     const totalBar = document.createElement('div');
@@ -3860,15 +4091,8 @@
     lymOptionsRow.className = 'flex flex-wrap gap-3 p-3 rounded-xl border border-slate-700/50 bg-slate-800/30';
     lymOptionsRow.style.display = 'none';
 
-    const lymState = {
-      interlockKilit:   'YOK',
-      yagSiyirici:      'YOK',
-      egzosFani:        'YOK',
-      kurutmaFani:      'YOK',
-      drenajPompasi:    'YOK',
-      gercekZamanSaati: 'YOK',
-      emniyetRolesi:    'YOK',
-    };
+    // Modül seviyesi lymState'i sıfırla (sayfa her yenilendiğinde)
+    Object.assign(lymState, { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK' });
     const kurutmaFaniStates = ['YOK', 'Normal Tip', 'Blower Tip', 'Yoğuşturmalı Tip'];
 
     const optColors = {
@@ -3913,7 +4137,7 @@
           }
         }
         updateSigRow('sigorta-auto-row',   getSigortaForAmp(totalA));
-        updateSigRow('sigorta-auto-row-2', getSigortaA9F(totalA));
+        updateSigRow('sigorta-auto-row-2', getSigortaA9F_LYM(totalA));
         recalcStandartBOM();
       }
     }
@@ -4052,6 +4276,8 @@
         valEl.textContent = lymState[key];
         valEl.style.color = lymState[key] === 'YOK' ? '' : col.active;
         updateMakinaGucu();
+        const _curModel = document.getElementById('standart-model-select')?.value;
+        if (_curModel) renderStandartBOM(_curModel);
       });
 
       return wrap;
@@ -5012,7 +5238,7 @@
       alert(`✅ ${total} ürün, ${FIYAT_GRUPLARI.length} grup Supabase'e yüklendi.`);
     } finally {
       if (btn) {
-        btn.innerHTML = '<i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> Katalog → Supabase';
+        btn.innerHTML = '<i data-lucide="upload" class="w-3.5 h-3.5"></i> Katalog → Supabase';
         btn.disabled = false;
         lucide.createIcons();
       }
@@ -5097,9 +5323,20 @@
 
   async function uploadAllToSupabase() {
     if (!sb) { alert('Supabase bağlantısı yok.'); return; }
-    await loadStandartVerileri();
-    const models = Object.keys(STANDART_MODEL_VERILERI);
-    const toplamSatir = models.reduce((s, m) => s + (STANDART_MODEL_VERILERI[m]?.length || 0), 0);
+
+    // Her zaman standart.json'dan TAZE oku — bellekteki veya Supabase'deki mevcut veriyi YOKSAY
+    let freshData = {};
+    try {
+      const res = await fetch('standart.json?_t=' + Date.now());
+      if (!res.ok) throw new Error('standart.json sunucudan okunamadı (HTTP ' + res.status + ')');
+      freshData = await res.json();
+    } catch(e) {
+      alert('❌ standart.json okunamadı: ' + e.message);
+      return;
+    }
+
+    const models = Object.keys(freshData);
+    const toplamSatir = models.reduce((s, m) => s + (freshData[m]?.length || 0), 0);
     if (toplamSatir === 0) { alert('standart.json içinde yüklenecek veri bulunamadı.'); return; }
 
     const btn = document.getElementById('btn-standart-json-supabase');
@@ -5110,35 +5347,69 @@
       const { error: delErr } = await sb.from('standart_bom').delete().neq('id', 0);
       if (delErr) throw delErr;
 
-      const allRows = [];
+      // Model bazlı yükle ve her modelin yazıldığını doğrula
+      const expectedByModel = {};
+      const payloadByModel = {};
       models.forEach(model => {
-        (STANDART_MODEL_VERILERI[model] || []).forEach((r, i) => {
-          allRows.push({
-            model,
-            grup:      r.grup,
-            stok_kodu: r.stokKodu,
-            urun_adi:  r.urunAdi,
-            adet:      r.adet,
-            sira:      i
-          });
-        });
+        const rows = Array.isArray(freshData[model]) ? freshData[model] : [];
+        if (rows.length === 0) return;
+        payloadByModel[model] = rows.map((r, i) => ({
+          model,
+          grup:      r.grup,
+          stok_kodu: r.stokKodu,
+          urun_adi:  r.urunAdi,
+          adet:      r.adet,
+          sira:      i
+        }));
+        expectedByModel[model] = payloadByModel[model].length;
       });
 
-      // Büyük veriyi 200'lük parçalar halinde insert et
-      const CHUNK = 200;
-      for (let i = 0; i < allRows.length; i += CHUNK) {
-        const chunk = allRows.slice(i, i + CHUNK);
-        const { error: insErr } = await sb.from('standart_bom').insert(chunk);
-        if (insErr) throw insErr;
+      let insertedCount = 0;
+      const failedModels = [];
+      for (const model of Object.keys(payloadByModel)) {
+        const payload = payloadByModel[model];
+        const { error: insErr } = await sb.from('standart_bom').insert(payload);
+        if (insErr) {
+          failedModels.push(model + ': ' + (insErr.message || JSON.stringify(insErr)));
+          continue;
+        }
+        insertedCount += payload.length;
+      }
+      if (failedModels.length > 0) {
+        throw new Error('Bazı modeller yazılamadı: ' + failedModels.join(' | '));
       }
 
-      alert(`✅ ${allRows.length} satır başarıyla Supabase'e yüklendi (${models.length} model).`);
+      const { data: verifyRows, error: verifyErr } = await sb.from('standart_bom').select('model');
+      if (verifyErr) throw verifyErr;
+      const actualByModel = {};
+      (verifyRows || []).forEach(r => {
+        if (!actualByModel[r.model]) actualByModel[r.model] = 0;
+        actualByModel[r.model] += 1;
+      });
+      const mismatch = Object.keys(expectedByModel)
+        .filter(m => (actualByModel[m] || 0) !== expectedByModel[m])
+        .map(m => `${m}: beklenen ${expectedByModel[m]}, yazılan ${actualByModel[m] || 0}`);
+      if (mismatch.length > 0) {
+        throw new Error('Yükleme sonrası doğrulama hatası -> ' + mismatch.join(' | '));
+      }
+
+      // Belleği de güncelle — sayfa yenilemeden BOM doğru görünsün
+      Object.assign(STANDART_MODEL_VERILERI, freshData);
+      _standartLoaded = true;
+      _standartLoadPromise = null;
+
+      alert(`✅ ${insertedCount} satır başarıyla Supabase'e yüklendi (${Object.keys(expectedByModel).length} model).`);
+
+      // Aktif LYM modelini yeniden render et
+      const selEl = document.getElementById('standart-model-select');
+      if (selEl && selEl.value) renderStandartBOM(selEl.value);
+
     } catch(e) {
       console.error('Supabase toplu yükleme hatası:', e);
       alert('❌ Yükleme başarısız: ' + (e.message || JSON.stringify(e)));
     } finally {
       if (btn) {
-        btn.innerHTML = '<i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> JSON → Supabase';
+        btn.innerHTML = '<i data-lucide="upload" class="w-3.5 h-3.5"></i> JSON → Supabase';
         btn.disabled = false;
         lucide.createIcons();
       }
@@ -5597,9 +5868,13 @@
   window.doGoogleLogin = async function() {
     if (!sb) { showToast('Bulut bağlantısı aktif değil — internet bağlantısını kontrol edin.', 'error'); return; }
     try {
+      const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      const redirectTo = isLocal
+        ? (window.location.origin + '/io.html')
+        : (window.location.origin + window.location.pathname);
       const { error } = await sb.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.href }
+        options: { redirectTo }
       });
       if (error) showToast('Google girişi başarısız: ' + error.message, 'error');
     } catch(err) { showToast('Hata: ' + err.message, 'error'); }
