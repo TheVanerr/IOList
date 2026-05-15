@@ -4382,6 +4382,12 @@
       const isLym = select.value.startsWith('LYM');
       lymInfoSection.style.display = isLym ? 'flex' : 'none';
       lymOptionsRow.style.display  = isLym ? 'flex' : 'none';
+      // Model değiştiğinde tüm LYM opsiyonlarını sıfırla
+      Object.assign(lymState, { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK', invertor:'YOK' });
+      lymOptionsRow.querySelectorAll('.option-btn').forEach(btn => {
+        const valEl = btn.querySelector('.value-tag');
+        if (valEl) { valEl.textContent = 'YOK'; valEl.style.color = ''; }
+      });
       if (isLym) renderLymInfoCards(select.value);
       if (select.value) {
         await renderStandartBOM(select.value);
