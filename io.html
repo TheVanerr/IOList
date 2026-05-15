@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
   body {
@@ -177,6 +178,13 @@
       </div>
       <!-- Aksiyon butonları — başlığın hemen sağında -->
       <div class="flex items-center gap-1.5">
+       <button id="btn-fiyat-disari-aktar" class="hidden px-3 py-2 rounded-lg bg-slate-800 border border-green-700/50 hover:border-green-400 hover:bg-green-900/30 text-green-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i> Dışarı Aktar
+       </button>
+       <button id="btn-fiyat-iceri-aktar" class="hidden px-3 py-2 rounded-lg bg-slate-800 border border-orange-700/50 hover:border-orange-400 hover:bg-orange-900/30 text-orange-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="upload" class="w-3.5 h-3.5"></i> İçeri Aktar
+       </button>
+       <input type="file" id="input-fiyat-iceri-aktar" accept=".xlsx,.xls,.csv" class="hidden">
        <button id="btn-farkli-kaydet" class="px-3 py-2 rounded-lg bg-slate-800 border border-cyan-700/50 hover:border-cyan-400 hover:bg-cyan-900/30 text-cyan-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> Farklı Kaydet
        </button>
@@ -4210,29 +4218,107 @@
       }
     }
 
+    // Renk paleti — bileşen kartları için
+    const cardPalette = [
+      { bg: 'rgba(56,189,248,0.10)',  border: 'rgba(56,189,248,0.35)',  lbl: '#7dd3fc', val: '#38bdf8' },
+      { bg: 'rgba(251,113,133,0.10)', border: 'rgba(251,113,133,0.35)', lbl: '#fda4af', val: '#fb7185' },
+      { bg: 'rgba(167,139,250,0.10)', border: 'rgba(167,139,250,0.35)', lbl: '#c4b5fd', val: '#a78bfa' },
+      { bg: 'rgba(251,191,36,0.10)',  border: 'rgba(251,191,36,0.35)',  lbl: '#fde68a', val: '#fbbf24' },
+      { bg: 'rgba(52,211,153,0.10)',  border: 'rgba(52,211,153,0.35)',  lbl: '#6ee7b7', val: '#34d399' },
+    ];
+
+    // Non-LYM modeller için bileşen konfigürasyonu
+    const otherModelConfig = {
+      'MST LVB 60':  { cards: [{ label: 'Pompa',    kw: 0.04, a: 0.18 }, { label: 'Isıtıcı', kw: 1.5, a: 6.52 }] },
+      'MST LVB 100': { cards: [{ label: 'Pompa',    kw: 0.04, a: 0.18 }, { label: 'Isıtıcı', kw: 1.5, a: 6.52 }] },
+      'PYT 40':      { cards: [{ label: 'Pompa',    kw: 0.04, a: 0.18 }, { label: 'Isıtıcı', kw: 3.0, a: 13.04 }] },
+      'PYT 90':      { cards: [{ label: 'Pompa',    kw: 0.04, a: 0.18 }, { label: 'Isıtıcı', kw: 3.0, a: 13.04 }] },
+      'PYT 750':     { cards: [{ label: 'Pompa',    kw: 0.75, a: 1.93 }, { label: 'Isıtıcı 1', kw: 8.0, a: 34.78 }, { label: 'Isıtıcı 2', kw: 8.0, a: 34.78 }] },
+      'PYT 800':     { cards: [{ label: 'Pompa',    kw: 0.75, a: 1.93 }, { label: 'Isıtıcı 1', kw: 8.0, a: 34.78 }, { label: 'Isıtıcı 2', kw: 8.0, a: 34.78 }] },
+    };
+
+    function renderOtherModelCards(model) {
+      lymInfoSection.innerHTML = '';
+      const cfg = otherModelConfig[model];
+      if (!cfg) return;
+      const acc = getModelGrupRenk(model);
+      cfg.cards.forEach((c, i) => {
+        const pal = cardPalette[i % cardPalette.length];
+        const card = document.createElement('div');
+        card.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
+        card.style.background = pal.bg;
+        card.style.border = '1px solid ' + pal.border;
+        const lbl = document.createElement('div');
+        lbl.className = 'text-[10px] mono uppercase tracking-wide mb-1 font-semibold';
+        lbl.style.color = pal.lbl;
+        lbl.textContent = c.label;
+        card.appendChild(lbl);
+        const kwEl = document.createElement('div');
+        kwEl.className = 'text-sm font-bold mono';
+        kwEl.style.color = pal.val;
+        kwEl.textContent = c.kw + ' kW';
+        card.appendChild(kwEl);
+        const aEl = document.createElement('div');
+        aEl.className = 'text-[11px] mono font-medium';
+        aEl.style.color = pal.lbl;
+        aEl.textContent = c.a.toFixed(2) + ' A';
+        card.appendChild(aEl);
+        lymInfoSection.appendChild(card);
+      });
+      // Toplam kart
+      const totalKw = cfg.cards.reduce((s, c) => s + c.kw, 0);
+      const totalA  = cfg.cards.reduce((s, c) => s + c.a, 0);
+      const sep = document.createElement('div');
+      sep.style.cssText = 'width:1px;align-self:stretch;background:rgba(71,85,105,0.4);margin:0 4px';
+      lymInfoSection.appendChild(sep);
+      const totCard = document.createElement('div');
+      totCard.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
+      totCard.style.background = 'rgba(6,78,59,0.35)';
+      totCard.style.border = '1px solid rgba(52,211,153,0.4)';
+      const totLbl = document.createElement('div');
+      totLbl.className = 'text-[10px] mono text-emerald-400 uppercase tracking-wide mb-1 flex items-center gap-1 font-semibold';
+      const zi = document.createElement('i'); zi.setAttribute('data-lucide','zap'); zi.className = 'w-3 h-3';
+      totLbl.appendChild(zi); totLbl.appendChild(document.createTextNode('Toplam Güç'));
+      totCard.appendChild(totLbl);
+      const totKw = document.createElement('div');
+      totKw.className = 'text-base font-bold text-emerald-400 mono';
+      totKw.textContent = totalKw.toFixed(2) + ' kW';
+      totCard.appendChild(totKw);
+      const totA = document.createElement('div');
+      totA.className = 'text-[11px] text-emerald-300 mono font-medium';
+      totA.textContent = totalA.toFixed(2) + ' A';
+      totCard.appendChild(totA);
+      lymInfoSection.appendChild(totCard);
+      lucide.createIcons();
+    }
+
     function renderLymInfoCards(model) {
       lymInfoSection.innerHTML = '';
       const cfg = lymModelConfig[model];
       if (!cfg) return;
 
-      cfg.cards.forEach(c => {
+      cfg.cards.forEach((c, i) => {
+        const pal = cardPalette[i % cardPalette.length];
         const card = document.createElement('div');
         card.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-        card.style.background = 'rgba(30,41,59,0.9)';
-        card.style.border = '1px solid rgba(71,85,105,0.5)';
+        card.style.background = pal.bg;
+        card.style.border = '1px solid ' + pal.border;
 
         const lbl = document.createElement('div');
-        lbl.className = 'text-[10px] mono text-slate-400 uppercase tracking-wide mb-1';
+        lbl.className = 'text-[10px] mono uppercase tracking-wide mb-1 font-semibold';
+        lbl.style.color = pal.lbl;
         lbl.textContent = c.label;
         card.appendChild(lbl);
 
         const kwEl = document.createElement('div');
-        kwEl.className = 'text-sm font-bold text-white mono';
+        kwEl.className = 'text-sm font-bold mono';
+        kwEl.style.color = pal.val;
         kwEl.textContent = c.kw + ' kW';
         card.appendChild(kwEl);
 
         const aEl = document.createElement('div');
-        aEl.className = 'text-[11px] text-slate-500 mono';
+        aEl.className = 'text-[11px] mono font-medium';
+        aEl.style.color = pal.lbl;
         aEl.textContent = c.a + ' A';
         card.appendChild(aEl);
 
@@ -4380,7 +4466,8 @@
         }
       }
       const isLym = select.value.startsWith('LYM');
-      lymInfoSection.style.display = isLym ? 'flex' : 'none';
+      const hasCards = isLym || otherModelConfig[select.value];
+      lymInfoSection.style.display = hasCards ? 'flex' : 'none';
       lymOptionsRow.style.display  = isLym ? 'flex' : 'none';
       // Model değiştiğinde tüm LYM opsiyonlarını sıfırla
       Object.assign(lymState, { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK', invertor:'YOK' });
@@ -4389,6 +4476,7 @@
         if (valEl) { valEl.textContent = 'YOK'; valEl.style.color = ''; }
       });
       if (isLym) renderLymInfoCards(select.value);
+      else if (otherModelConfig[select.value]) renderOtherModelCards(select.value);
       if (select.value) {
         await renderStandartBOM(select.value);
       } else {
@@ -4893,6 +4981,10 @@
       // Standart sayfasına özel admin butonlarını göster/gizle
       const isStandart = target === 'standart';
       const isFiyatlar = target === 'fiyatlar';
+      // Ana header butonlarını Fiyatlar ve Standart sayfalarında gizle
+      const formBtns = ['btn-farkli-kaydet','btn-kaydet','btn-yukle','btn-yeni-form','btn-disari-aktar','btn-iceri-aktar'];
+      const hideFormBtns = isStandart || isFiyatlar;
+      formBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = hideFormBtns ? 'none' : ''; });
       const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
       const duzenleBtn = document.getElementById('btn-standart-duzenle');
       const fiyatDuzenleBtn = document.getElementById('btn-fiyat-duzenle');
@@ -4901,6 +4993,11 @@
       if (duzenleBtn) duzenleBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
       if (fiyatDuzenleBtn) fiyatDuzenleBtn.classList.toggle('hidden', !(isFiyatlar && isAdmin()));
       if (fiyatKatalogBtn) fiyatKatalogBtn.classList.toggle('hidden', !(isFiyatlar && isAdmin()));
+      // Fiyatlar sayfasında Excel import/export butonlarını göster
+      const fiyatDisariAktarBtn = document.getElementById('btn-fiyat-disari-aktar');
+      const fiyatIceriAktarBtn = document.getElementById('btn-fiyat-iceri-aktar');
+      if (fiyatDisariAktarBtn) fiyatDisariAktarBtn.classList.toggle('hidden', !isFiyatlar);
+      if (fiyatIceriAktarBtn) fiyatIceriAktarBtn.classList.toggle('hidden', !isFiyatlar);
       // Sayfa değişince fiyat edit modunu çık
       if (!isFiyatlar && fiyatEditMode) { fiyatEditMode = false; }
       if (target === 'secim') { renderRezistansTable(); renderKurutmaTable(); renderKacakAkimTable(); renderTmsTable(); }
@@ -5834,6 +5931,102 @@
 
   // Projelerim
   document.getElementById('btn-bulut-yukle').addEventListener('click', () => loadCloudProjects());
+
+  // ===== FIYATLAR EXCEL EXPORT/IMPORT =====
+  
+  // Fiyatları Excel'e aktar
+  function exportFiyatlarToExcel() {
+    const data = collectFiyatKatalogData();
+    if (!data || data.length === 0) {
+      alert('Dışarı aktarılacak fiyat verisi bulunamadı.');
+      return;
+    }
+    
+    const workbook = XLSX.utils.book_new();
+    
+    data.forEach(grup => {
+      const rows = [];
+      grup.elemanlar.forEach((el, idx) => {
+        rows.push({
+          '#': idx + 1,
+          'Model': el.model || '',
+          'Açıklama': el.aciklama || '',
+          'Stok Kodu': el.stokKodu || '',
+          'Dolfin Kodu': el.dolfinKodu || '',
+          'Birim Fiyat (€)': el.fiyat || ''
+        });
+      });
+      
+      const ws = XLSX.utils.json_to_sheet(rows);
+      ws['!cols'] = [{ wch: 4 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
+      XLSX.utils.book_append_sheet(workbook, ws, grup.grupAdi.substring(0, 31));
+    });
+    
+    XLSX.writeFile(workbook, 'Fiyatlar_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  }
+  
+  // Excel'den fiyatları içeri aktar
+  function importFiyatlarFromExcel(file) {
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const workbook = XLSX.read(ev.target.result, { type: 'array' });
+        const newGruplar = [];
+        
+        workbook.SheetNames.forEach(sheetName => {
+          const ws = workbook.Sheets[sheetName];
+          const data = XLSX.utils.sheet_to_json(ws);
+          
+          const existingGrup = FIYAT_GRUPLARI.find(g => g.grupAdi === sheetName);
+          const renk = existingGrup?.renk || '#64748b';
+          
+          const elemanlar = data.map(row => ({
+            model: row['Model'] || '',
+            aciklama: row['Açıklama'] || '',
+            stokKodu: row['Stok Kodu'] || '',
+            dolfinKodu: row['Dolfin Kodu'] || '',
+            fiyat: row['Birim Fiyat (€)'] || ''
+          })).filter(el => el.model || el.stokKodu);
+          
+          if (elemanlar.length > 0) {
+            newGruplar.push({
+              grupAdi: sheetName,
+              renk: renk,
+              elemanlar: elemanlar
+            });
+          }
+        });
+        
+        if (newGruplar.length > 0) {
+          FIYAT_GRUPLARI = newGruplar;
+          // localStorage'a kaydet
+          localStorage.setItem('iolist_fiyatlar', JSON.stringify(newGruplar));
+          alert('Fiyatlar başarıyla içeri aktarıldı!');
+          renderFiyatlarTable();
+        } else {
+          alert('Excel dosyasında veri bulunamadı.');
+        }
+      } catch (err) {
+        alert('Excel dosyası okunurken hata oluştu: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  
+  // Button click handlers
+  document.getElementById('btn-fiyat-disari-aktar').addEventListener('click', () => {
+    console.log('Dışarı Aktar tıklandı');
+    exportFiyatlarToExcel();
+  });
+  document.getElementById('btn-fiyat-iceri-aktar').addEventListener('click', () => {
+    document.getElementById('input-fiyat-iceri-aktar').click();
+  });
+  document.getElementById('input-fiyat-iceri-aktar').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) importFiyatlarFromExcel(file);
+    e.target.value = '';
+  });
+  // ===== END FIYATLAR EXCEL =====
 
   // İçeri Aktar
   document.getElementById('btn-iceri-aktar').addEventListener('click', () => document.getElementById('input-iceri-aktar').click());
