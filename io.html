@@ -3357,9 +3357,18 @@
     else               return { stok: '-', urun: 'SİGORTA A9F74363 SCHNEİDER 63A 3P' };
   }
 
-  // LYM serisi için 1 fazlı sigorta (kontrol devresi)
+  // LYM serisi için güç sigortası (akıma göre)
   function getSigortaA9F_LYM(amp) {
-    return { stok: '10 02663', urun: 'SİGORTA A9F74425 SCHNEİDER İC60N,6KA,25A' };
+    if (amp < 25)      return { stok: '10 02663', urun: 'SİGORTA A9F74425 SCHNEİDER İC60N,6KA,25A' };
+    else if (amp < 40) return { stok: '10 02664', urun: 'SİGORTA A9F74440 SCHNEİDER 40A' };
+    else               return { stok: '10 04732', urun: 'SİGORTA A9F74463 SCHNEİDER İC60N,6KA,63A,4P' };
+  }
+
+  // LYM serisi için PAKO ŞALTER (akıma göre)
+  function getPakoSalterLYM(amp) {
+    if (amp < 25)      return { stok: '10 00285', urun: 'PAKO ŞALTER YKL301025 3*25 BÜYÜK KASALI' };
+    else if (amp < 40) return { stok: '10 00286', urun: 'PAKO ŞALTER YKL301M40 3*40 KÜÇÜK KASALI' };
+    else               return { stok: '10 00287', urun: 'PAKO ŞALTER YKL301M63 3*63 KÜÇÜK KASALI' };
   }
 
   function makePriceCell(stokKodu) {
@@ -3638,17 +3647,13 @@
         return r;
       }
 
-      if (model === 'LYM 1500') {
-        sigTB.appendChild(makeSigortaTableRow('sigorta-pako-row',   '10 00286', 'PAKO ŞALTER YKL301M40 3*40 KÜÇÜK KASALI'));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row',   '10 00304', 'SİGORTA KAÇAK AKIMLI A9R41440 4 LÜ'));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row-2', '10 02664', 'SİGORTA A9F74440 SCHNEİDER 40A'));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-row-3',      '10 00302', 'SİGORTA A9F74103 1*3'));
-      } else {
+      {
+        const pako = getPakoSalterLYM(ampVal);
         const sig2 = getSigortaA9F_LYM(ampVal);
-        sigTB.appendChild(makeSigortaTableRow('sigorta-pako-row',   '10 00285',   'PAKO ŞALTER YKL301025 3*25 BÜYÜK KASALI'));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row',   sig.stok,     sig.urun));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row-2', sig2.stok,    sig2.urun));
-        sigTB.appendChild(makeSigortaTableRow('sigorta-row-3',      '10 00302',   'SİGORTA A9F74103 1*3'));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-pako-row',   pako.stok,  pako.urun));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row',   sig.stok,   sig.urun));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-auto-row-2', sig2.stok,  sig2.urun));
+        sigTB.appendChild(makeSigortaTableRow('sigorta-row-3',      '10 00302', 'SİGORTA A9F74103 1*3'));
       }
 
       sigT.appendChild(sigTB); sigTW.appendChild(sigT); sigSection.appendChild(sigTW);
@@ -4136,6 +4141,7 @@
             disp.className = 'sbom-fiyat-display text-xs mono font-semibold ' + (price ? 'text-yellow-300' : 'text-slate-500');
           }
         }
+        updateSigRow('sigorta-pako-row',   getPakoSalterLYM(totalA));
         updateSigRow('sigorta-auto-row',   getSigortaForAmp(totalA));
         updateSigRow('sigorta-auto-row-2', getSigortaA9F_LYM(totalA));
         recalcStandartBOM();
