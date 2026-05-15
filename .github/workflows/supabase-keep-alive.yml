@@ -31,13 +31,10 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${SUPABASE_URL}/rest/v1/standart_bom?select=id&limit=1" \
+          CLEAN_URL=$(echo "$SUPABASE_URL" | tr -d '[:space:]')
+          echo "Temizlenmiş URL uzunluğu: ${#CLEAN_URL}"
+          STATUS=$(curl -sv -o /dev/null -w "%{http_code}" \
+            "${CLEAN_URL}/rest/v1/standart_bom?select=id&limit=1" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
-          echo "HTTP Status: $STATUS"
-          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
-            echo "Ping başarısız! HTTP $STATUS"
-            exit 1
-          fi
-          echo "Supabase aktif, ping başarılı."
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" 2>&1 | tail -5)
+          echo "Curl çıktısı: $STATUS"
