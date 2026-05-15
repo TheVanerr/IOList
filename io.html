@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
   body {
@@ -25,6 +26,24 @@
   .mono { font-family: 'JetBrains Mono', monospace; }
   .page { display: none; }
   .page.active { display: flex; }
+  /* Fiyat sütunları her tabloda merkez hizalı olsun */
+  .fiyat-input,
+  .fiyat-edit-fiyat,
+  .birim-input,
+  .sbom-fiyat-display,
+  .sbom-fiyat {
+    text-align: center !important;
+  }
+  /* Fiyatlar sayfasi: Aciklama sutunu ortali */
+  #fiyatlar-content table td:nth-child(3) input {
+    text-align: center !important;
+  }
+  /* Standart sayfasi: Urun Adi baslik + veri ortali */
+  #standart-bom-container table th:nth-child(2),
+  #standart-bom-container table td:nth-child(2),
+  #standart-bom-container table td:nth-child(2) input {
+    text-align: center !important;
+  }
   .nav-btn {
     transition: all 0.2s ease;
   }
@@ -5351,7 +5370,8 @@
     container.querySelectorAll('[data-fiyat-grup-block]').forEach(block => {
       const grupAdiInp = block.querySelector('.fiyat-edit-grup-adi');
       const grupRenkInp = block.querySelector('.fiyat-edit-grup-renk');
-      const grupAdi = grupAdiInp ? grupAdiInp.value.trim() : '';
+      const headerLabel = block.querySelector('div > span.text-sm.font-semibold.mono');
+      const grupAdi = grupAdiInp ? grupAdiInp.value.trim() : (headerLabel ? headerLabel.textContent.trim() : '');
       const renk = grupRenkInp ? grupRenkInp.value : '#94a3b8';
       if (!grupAdi) return;
       const elemanlar = [];
@@ -5361,7 +5381,7 @@
         const stok = tr.querySelector('.fiyat-edit-stok')?.value?.trim() || '';
         const dolfin = tr.querySelector('.fiyat-edit-dolfin')?.value?.trim() || '';
         const fiyat = tr.querySelector('.fiyat-edit-fiyat')?.value?.trim() || '';
-        if (model) elemanlar.push({ model, aciklama, stok, dolfin, fiyat });
+        if (model || aciklama || stok || dolfin || fiyat) elemanlar.push({ model, aciklama, stok, dolfin, fiyat });
       });
       groups.push({ grupAdi, renk, elemanlar });
     });
@@ -5933,97 +5953,257 @@
   document.getElementById('btn-bulut-yukle').addEventListener('click', () => loadCloudProjects());
 
   // ===== FIYATLAR EXCEL EXPORT/IMPORT =====
-  
+  let pendingFiyatImportFile = null;
+
+  function ensureFiyatImportModal() {
+    if (document.getElementById('fiyat-import-modal')) return;
+    const modal = document.createElement('div');
+    modal.id = 'fiyat-import-modal';
+    modal.className = 'fixed inset-0 z-[200] hidden items-center justify-center';
+    modal.innerHTML = `
+      <div id="fiyat-import-backdrop" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      <div class="relative bg-slate-900 border border-orange-500/40 rounded-2xl p-6 w-80 shadow-2xl shadow-black/60">
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="shield-check" class="w-4 h-4 text-orange-400"></i>
+          <span class="text-sm font-bold mono text-orange-400 uppercase tracking-wider">İçeri Aktar Onayı</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-4 mono mt-1">İçe aktarma için doğrulama şifresi girin.</p>
+        <input id="fiyat-import-pw" type="password" placeholder="Şifre (112263)"
+          class="w-full px-3 py-2.5 bg-slate-800 border border-slate-600 rounded-xl text-white text-sm mono focus:border-orange-500 focus:outline-none mb-1" />
+        <p id="fiyat-import-pw-err" class="text-xs text-red-400 mb-3 h-4"></p>
+        <div class="flex gap-2 mt-1">
+          <button id="fiyat-import-cancel" class="flex-1 px-3 py-2 rounded-lg bg-slate-800 border border-slate-600 text-xs text-slate-300 hover:bg-slate-700 mono transition">İptal</button>
+          <button id="fiyat-import-confirm" class="flex-1 px-3 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-xs text-white font-bold mono transition">Onayla</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const close = () => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      pendingFiyatImportFile = null;
+      const err = document.getElementById('fiyat-import-pw-err');
+      const inp = document.getElementById('fiyat-import-pw');
+      if (err) err.textContent = '';
+      if (inp) inp.value = '';
+    };
+
+    document.getElementById('fiyat-import-backdrop')?.addEventListener('click', close);
+    document.getElementById('fiyat-import-cancel')?.addEventListener('click', close);
+    document.getElementById('fiyat-import-confirm')?.addEventListener('click', () => {
+      const inp = document.getElementById('fiyat-import-pw');
+      const err = document.getElementById('fiyat-import-pw-err');
+      if (!inp) return;
+      if (inp.value !== '112263') {
+        if (err) err.textContent = 'Şifre yanlış!';
+        return;
+      }
+      const file = pendingFiyatImportFile;
+      close();
+      if (file) importFiyatlarFromExcel(file);
+    });
+
+    document.getElementById('fiyat-import-pw')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('fiyat-import-confirm')?.click();
+    });
+
+    lucide.createIcons();
+  }
+
+  function openFiyatImportModal(file) {
+    ensureFiyatImportModal();
+    pendingFiyatImportFile = file;
+    const modal = document.getElementById('fiyat-import-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    const inp = document.getElementById('fiyat-import-pw');
+    const err = document.getElementById('fiyat-import-pw-err');
+    if (inp) inp.value = '';
+    if (err) err.textContent = '';
+    inp?.focus();
+  }
+
   // Fiyatları Excel'e aktar
-  function exportFiyatlarToExcel() {
+  async function exportFiyatlarToExcel() {
+    if (typeof ExcelJS === 'undefined') {
+      alert('Excel export kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edin.');
+      return;
+    }
     const data = collectFiyatKatalogData();
     if (!data || data.length === 0) {
       alert('Dışarı aktarılacak fiyat verisi bulunamadı.');
       return;
     }
-    
-    const workbook = XLSX.utils.book_new();
-    
-    data.forEach(grup => {
-      const rows = [];
-      grup.elemanlar.forEach((el, idx) => {
-        rows.push({
-          '#': idx + 1,
-          'Model': el.model || '',
-          'Açıklama': el.aciklama || '',
-          'Stok Kodu': el.stokKodu || '',
-          'Dolfin Kodu': el.dolfinKodu || '',
-          'Birim Fiyat (€)': el.fiyat || ''
-        });
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Fiyatlar');
+    const headers = ['#', 'Model', 'Açıklama', 'Stok Kodu', 'Dolfin Kodu', 'Birim Fiyat (€)'];
+
+    // Sütun genişlikleri (istenen sabit değerler)
+    sheet.columns = [
+      { width: 20 }, // A
+      { width: 30 }, // B
+      { width: 60 }, // C
+      { width: 30 }, // D
+      { width: 60 }, // E
+      { width: 60 }  // F
+    ];
+
+    function styleRow(row, isHeader = false) {
+      row.height = 25;
+      row.eachCell((cell, colNumber) => {
+        cell.alignment = {
+          vertical: 'middle',
+          horizontal: 'center'
+        };
+        if (isHeader) cell.font = { bold: true };
       });
-      
-      const ws = XLSX.utils.json_to_sheet(rows);
-      ws['!cols'] = [{ wch: 4 }, { wch: 15 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
-      XLSX.utils.book_append_sheet(workbook, ws, grup.grupAdi.substring(0, 31));
+    }
+
+    // Ana başlık
+    const topHeader = sheet.addRow(headers);
+    styleRow(topHeader, true);
+
+    data.forEach((grup) => {
+      const titleRow = sheet.addRow(['TABLO ADI', grup.grupAdi || '', '', '', '', '']);
+      styleRow(titleRow, true);
+
+      const groupHeader = sheet.addRow(headers);
+      styleRow(groupHeader, true);
+
+      (grup.elemanlar || []).forEach((el, idx) => {
+        const dataRow = sheet.addRow([
+          idx + 1,
+          el.model || '',
+          el.aciklama || '',
+          el.stok || '',
+          el.dolfin || '',
+          el.fiyat || ''
+        ]);
+        styleRow(dataRow, false);
+      });
+
+      const blank = sheet.addRow(['', '', '', '', '', '']);
+      styleRow(blank, false);
     });
-    
-    XLSX.writeFile(workbook, 'Fiyatlar_' + new Date().toISOString().slice(0,10) + '.xlsx');
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Fiyatlar_${new Date().toISOString().slice(0,10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
-  
+
   // Excel'den fiyatları içeri aktar
   function importFiyatlarFromExcel(file) {
+    if (typeof XLSX === 'undefined') {
+      alert('Excel kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edin.');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = async ev => {
       try {
         const workbook = XLSX.read(ev.target.result, { type: 'array' });
-        const newGruplar = [];
-        
-        workbook.SheetNames.forEach(sheetName => {
-          const ws = workbook.Sheets[sheetName];
-          const data = XLSX.utils.sheet_to_json(ws);
-          
-          const existingGrup = FIYAT_GRUPLARI.find(g => g.grupAdi === sheetName);
-          const renk = existingGrup?.renk || '#64748b';
-          
-          const elemanlar = data.map(row => ({
-            model: row['Model'] || '',
-            aciklama: row['Açıklama'] || '',
-            stokKodu: row['Stok Kodu'] || '',
-            dolfinKodu: row['Dolfin Kodu'] || '',
-            fiyat: row['Birim Fiyat (€)'] || ''
-          })).filter(el => el.model || el.stokKodu);
-          
-          if (elemanlar.length > 0) {
-            newGruplar.push({
-              grupAdi: sheetName,
-              renk: renk,
-              elemanlar: elemanlar
-            });
-          }
-        });
-        
-        if (newGruplar.length > 0) {
-          FIYAT_GRUPLARI = newGruplar;
-          // localStorage'a kaydet
-          localStorage.setItem('iolist_fiyatlar', JSON.stringify(newGruplar));
-          alert('Fiyatlar başarıyla içeri aktarıldı!');
-          renderFiyatlarTable();
-        } else {
-          alert('Excel dosyasında veri bulunamadı.');
+        const sheetName = workbook.SheetNames[0];
+        if (!sheetName) {
+          alert('Excel dosyasında sayfa bulunamadı.');
+          return;
         }
+
+        const ws = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        const newGruplar = [];
+        const savedPrices = {};
+        const savedStok = {};
+        const savedDolfin = {};
+        const palette = ['#22d3ee','#f59e0b','#fb7185','#a78bfa','#34d399','#38bdf8'];
+
+        let i = 0;
+        while (i < rows.length) {
+          const r = rows[i] || [];
+          const c0 = String(r[0] || '').trim().toUpperCase();
+
+          if (c0 !== 'TABLO ADI') {
+            i += 1;
+            continue;
+          }
+
+          const grupAdi = String(r[1] || '').trim();
+          const existingGrup = FIYAT_GRUPLARI.find(g => g.grupAdi === grupAdi);
+          const renk = existingGrup?.renk || palette[newGruplar.length % palette.length];
+          const elemanlar = [];
+
+          // TABLO ADI satırı + hemen altındaki header satırı geçilsin
+          i += 2;
+
+          while (i < rows.length) {
+            const dr = rows[i] || [];
+            const d0 = String(dr[0] || '').trim();
+            const maybeNext = d0.toUpperCase();
+
+            if (maybeNext === 'TABLO ADI') break;
+            const isBlank = dr.every(v => String(v || '').trim() === '');
+            if (isBlank) {
+              i += 1;
+              continue;
+            }
+
+            const el = {
+              model: String(dr[1] || '').trim(),
+              aciklama: String(dr[2] || '').trim(),
+              stok: String(dr[3] || '').trim(),
+              dolfin: String(dr[4] || '').trim(),
+              fiyat: String(dr[5] || '').trim()
+            };
+
+            if (el.model || el.aciklama || el.stok || el.dolfin || el.fiyat) {
+              const key = `${grupAdi}|${el.model}`;
+              if (el.fiyat) savedPrices[key] = el.fiyat;
+              if (el.stok) savedStok[key] = el.stok;
+              if (el.dolfin) savedDolfin[key] = el.dolfin;
+              elemanlar.push(el);
+            }
+            i += 1;
+          }
+
+          if (grupAdi) newGruplar.push({ grupAdi, renk, elemanlar });
+        }
+
+        if (newGruplar.length === 0) {
+          alert('Excel dosyasında veri bulunamadı.');
+          return;
+        }
+
+        FIYAT_GRUPLARI = newGruplar;
+        localStorage.setItem('iolist_fiyatlar', JSON.stringify(savedPrices));
+        localStorage.setItem('iolist_stok', JSON.stringify(savedStok));
+        localStorage.setItem('iolist_dolfin', JSON.stringify(savedDolfin));
+        renderFiyatlarTable();
+        alert('Fiyatlar başarıyla içeri aktarıldı.');
       } catch (err) {
         alert('Excel dosyası okunurken hata oluştu: ' + err.message);
       }
     };
     reader.readAsArrayBuffer(file);
   }
-  
+
   // Button click handlers
-  document.getElementById('btn-fiyat-disari-aktar').addEventListener('click', () => {
-    console.log('Dışarı Aktar tıklandı');
-    exportFiyatlarToExcel();
+  document.getElementById('btn-fiyat-disari-aktar')?.addEventListener('click', exportFiyatlarToExcel);
+  document.getElementById('btn-fiyat-iceri-aktar')?.addEventListener('click', () => {
+    document.getElementById('input-fiyat-iceri-aktar')?.click();
   });
-  document.getElementById('btn-fiyat-iceri-aktar').addEventListener('click', () => {
-    document.getElementById('input-fiyat-iceri-aktar').click();
-  });
-  document.getElementById('input-fiyat-iceri-aktar').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) importFiyatlarFromExcel(file);
+  document.getElementById('input-fiyat-iceri-aktar')?.addEventListener('change', e => {
+    const file = e.target.files && e.target.files[0];
+    if (file) openFiyatImportModal(file);
     e.target.value = '';
   });
   // ===== END FIYATLAR EXCEL =====
