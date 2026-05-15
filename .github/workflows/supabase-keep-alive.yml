@@ -10,12 +10,31 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug secret varlığı
+        run: |
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "HATA: SUPABASE_URL secret boş veya tanımsız!"
+          else
+            echo "SUPABASE_URL uzunluğu: ${#SUPABASE_URL} karakter"
+          fi
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "HATA: SUPABASE_ANON_KEY secret boş veya tanımsız!"
+          else
+            echo "SUPABASE_ANON_KEY uzunluğu: ${#SUPABASE_ANON_KEY} karakter"
+          fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
       - name: Supabase'e ping at
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.SUPABASE_URL }}/rest/v1/standart_bom?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+            "${SUPABASE_URL}/rest/v1/standart_bom?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
           echo "HTTP Status: $STATUS"
           if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
             echo "Ping başarısız! HTTP $STATUS"
