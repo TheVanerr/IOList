@@ -129,6 +129,17 @@
     background-color: #0e7490;
     color: #ffffff;
   }
+  .standart-model-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23e2e8f0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 8 10 12 14 8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: right 1rem center;
+    padding-right: 2.75rem !important;
+  }
+  .standart-model-select::-ms-expand { display: none; }
   /* ===== Custom Dropdown (cdd) ===== */
   .cdd { position: relative; }
   .cdd-trigger {
@@ -4119,7 +4130,7 @@
 
     const select = document.createElement('select');
     select.id = 'standart-model-select';
-    select.className = 'h-14 px-4 pr-10 bg-slate-800 border-2 border-slate-600 rounded-xl text-white text-base font-bold focus:border-emerald-500 focus:outline-none cursor-pointer flex-shrink-0';
+    select.className = 'standart-model-select h-14 px-4 bg-slate-800 border-2 border-slate-600 rounded-xl text-white text-base font-bold focus:border-emerald-500 focus:outline-none cursor-pointer flex-shrink-0';
     select.style.minWidth = '240px';
 
     const defOpt = document.createElement('option');
@@ -4174,6 +4185,7 @@
       emniyetRolesi:    { bg: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.3)',  iconCls: 'text-emerald-400', active: '#34d399' },
       invertor:         { bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.3)',  iconCls: 'text-indigo-400',  active: '#818cf8' },
     };
+    const LYM_OPTION_YOK_COLOR = '#22d3ee';
 
     function updateMakinaGucu() {
       const cfg = lymModelConfig[select.value];
@@ -4405,11 +4417,12 @@
 
       const rightSym = document.createElement('div');
       rightSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
-      rightSym.style.background = 'rgba(30,41,59,0.55)';
-      rightSym.style.border = '1px solid rgba(100,116,139,0.45)';
+      rightSym.style.background = 'rgba(15,23,42,0.35)';
+      rightSym.style.border = '1px solid ' + col.active + '80';
       const refreshI = document.createElement('i');
       refreshI.setAttribute('data-lucide', 'refresh-cw');
-      refreshI.className = 'w-3.5 h-3.5 text-slate-500';
+      refreshI.className = 'w-3.5 h-3.5';
+      refreshI.style.color = col.active;
       rightSym.appendChild(refreshI);
 
       const valEl = document.createElement('div');
@@ -4429,10 +4442,10 @@
 
       function applyVisual() {
         const isYok = lymState[key] === 'YOK';
-        valEl.style.color = isYok ? '#94a3b8' : col.active;
+        valEl.style.color = isYok ? LYM_OPTION_YOK_COLOR : col.active;
         leftSym.style.borderColor = isYok ? col.border : (col.active + '99');
-        rightSym.style.borderColor = isYok ? 'rgba(100,116,139,0.45)' : (col.active + '80');
-        rightSym.style.background = isYok ? 'rgba(30,41,59,0.55)' : (col.bg || 'rgba(30,41,59,0.55)');
+        rightSym.style.borderColor = col.active + '80';
+        rightSym.style.background = 'rgba(15,23,42,0.35)';
       }
       wrap._applyVisual = applyVisual;
       applyVisual();
@@ -5255,6 +5268,7 @@
     renderKacakAkimTable();
     renderTmsTable();
     renderSensorTable();
+    updateMakineGucu();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
     lucide.createIcons();
   }
@@ -5901,6 +5915,7 @@
     renderKacakAkimTable();
     renderTmsTable();
     renderSensorTable();
+    updateMakineGucu();
     lucide.createIcons();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   }
