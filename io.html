@@ -222,9 +222,12 @@
        <button id="btn-iceri-aktar" class="px-3 py-2 rounded-lg bg-slate-800 border border-fuchsia-700/50 hover:border-fuchsia-400 hover:bg-fuchsia-900/30 text-fuchsia-400 transition text-xs font-semibold mono flex items-center gap-1.5">
         <i data-lucide="download" class="w-3.5 h-3.5"></i> İçeri Aktar
        </button>
+       <button id="btn-excel-dok" class="px-3 py-2 rounded-lg bg-slate-800 border border-sky-700/50 hover:border-sky-400 hover:bg-sky-900/30 text-sky-400 transition text-xs font-semibold mono flex items-center gap-1.5">
+        <i data-lucide="sheet" class="w-3.5 h-3.5"></i> Excele Dök
+       </button>
        <input type="file" id="input-yukle" accept=".json" class="hidden">
        <input type="file" id="input-iceri-aktar" accept=".json" class="hidden">
-       <span id="active-project-name" class="hidden text-xs mono text-cyan-400 border border-cyan-700/40 bg-cyan-900/20 rounded px-2 py-1 max-w-[200px] truncate cursor-pointer select-none" title="Çift tıklayarak yeniden adlandır"
+       <span id="active-project-name" class="hidden text-xs mono text-emerald-400 border border-emerald-600/60 bg-emerald-900/40 rounded px-3 py-2 max-w-[200px] truncate cursor-pointer select-none hover:border-emerald-400 hover:bg-emerald-900/70 transition" title="Çift tıklayarak yeniden adlandır"
         ondblclick="openRenameModal()"></span>
       </div>
      </div>
@@ -1285,8 +1288,11 @@
       const tbody = document.createElement('tbody');
       tbody.id = `rez-tbody-${t}`;
 
+      let rezIdx = 1;
       state.rezistanslar[t].forEach(rez => {
-        tbody.appendChild(createRezistansRow(t, rez.id));
+        const rezRow = createRezistansRow(t, rez.id);
+        if (rezRow.setPosition) rezRow.setPosition(rezIdx++);
+        tbody.appendChild(rezRow);
       });
 
       // Add-row button
@@ -1503,8 +1509,11 @@
     const tbody = document.createElement('tbody');
     tbody.id = 'kur-tbody';
 
+    let kurIdx = 1;
     state.kurutmaRezistanslar.forEach(rez => {
-      tbody.appendChild(createKurutmaRezistansRow(rez.id));
+      const kurRow = createKurutmaRezistansRow(rez.id);
+      if (kurRow.setPosition) kurRow.setPosition(kurIdx++);
+      tbody.appendChild(kurRow);
     });
 
     const addRow = document.createElement('tr');
@@ -5001,9 +5010,12 @@
       const isStandart = target === 'standart';
       const isFiyatlar = target === 'fiyatlar';
       // Ana header butonlarını Fiyatlar ve Standart sayfalarında gizle
-      const formBtns = ['btn-farkli-kaydet','btn-kaydet','btn-yukle','btn-yeni-form','btn-disari-aktar','btn-iceri-aktar'];
+      const formBtns = ['btn-farkli-kaydet','btn-kaydet','btn-yukle','btn-yeni-form','btn-disari-aktar','btn-iceri-aktar','btn-excel-dok'];
       const hideFormBtns = isStandart || isFiyatlar;
       formBtns.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = hideFormBtns ? 'none' : ''; });
+      // Form adı butonunu sadece ilk 4 sayfada göster (Seçim, Otomasyon, IO, Malzeme)
+      const projectNameBtn = document.getElementById('active-project-name');
+      if (projectNameBtn) projectNameBtn.style.display = hideFormBtns ? 'none' : '';
       const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
       const duzenleBtn = document.getElementById('btn-standart-duzenle');
       const fiyatDuzenleBtn = document.getElementById('btn-fiyat-duzenle');
@@ -6196,7 +6208,113 @@
     reader.readAsArrayBuffer(file);
   }
 
+  // Seçim, Otomasyon, IO, Malzeme sayfalarındaki tüm tabloları Excel'e aktar
+  async function exportAll4PagesToExcel() {
+    if (typeof ExcelJS === 'undefined') {
+      alert('Excel export kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edin.');
+      return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const pages = [
+      { id: 'page-secim', sheetName: 'Seçim' },
+      { id: 'page-otomasyon', sheetName: 'Otomasyon' },
+      { id: 'page-io', sheetName: 'IO' },
+      { id: 'page-malzeme', sheetName: 'Malzeme' }
+    ];
+
+    pages.forEach(page => {
+      const sheet = workbook.addWorksheet(page.sheetName);
+      const pageElement = document.getElementById(page.id);
+      
+      if (!pageElement) return;
+
+      // Tüm tabloları bul
+      const tables = pageElement.querySelectorAll('table');
+      let rowIndex = 0;
+
+      tables.forEach((table, tableIdx) => {
+        if (tableIdx > 0) {
+          // Tablolar arasında boş satır bırak
+          const blankRow = sheet.addRow([]);
+          blankRow.height = 25;
+          rowIndex++;
+        }
+
+        // Table header'ını al
+        const headers = table.querySelectorAll('thead th');
+        if (headers.length > 0) {
+          const headerRow = sheet.addRow(Array.from(headers).map(h => h.textContent.trim()));
+          headerRow.height = 25;
+          headerRow.font = { bold: true };
+          headerRow.eachCell((cell, colNumber) => {
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4B5563' } };
+          });
+          rowIndex++;
+        }
+
+        // Table body'sini al
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          // Sadece 1 hücresi olan ve içinde buton olan satırları (ekle butonu vb.) atla
+          if (cells.length === 1 && cells[0].querySelector('button')) return;
+          if (cells.length > 0) {
+            const data = Array.from(cells).map(cell => {
+              // Custom dropdown (cdd) varsa seçili değeri al
+              const cdd = cell.querySelector('.cdd');
+              if (cdd) {
+                const cddVal = cdd.querySelector('.cdd-val');
+                return cddVal ? cddVal.textContent.trim() : '';
+              }
+              
+              // Select elementos varsa seçili option'ı al
+              const select = cell.querySelector('select');
+              if (select && select.selectedIndex >= 0) {
+                return select.options[select.selectedIndex].textContent;
+              }
+              
+              // Input elementi varsa value'sini al
+              const input = cell.querySelector('input');
+              if (input) return input.value;
+              
+              // Yoksa textContent'i al
+              return cell.textContent.trim();
+            });
+            const dataRow = sheet.addRow(data);
+            dataRow.height = 25;
+            dataRow.eachCell((cell, colNumber) => {
+              cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            });
+            rowIndex++;
+          }
+        });
+      });
+
+      // Column widths'i otomatik ayarla
+      sheet.columns.forEach(column => {
+        column.width = 20;
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Paneller_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   // Button click handlers
+  document.getElementById('btn-excel-dok')?.addEventListener('click', exportAll4PagesToExcel);
+  
   document.getElementById('btn-fiyat-disari-aktar')?.addEventListener('click', exportFiyatlarToExcel);
   document.getElementById('btn-fiyat-iceri-aktar')?.addEventListener('click', () => {
     document.getElementById('input-fiyat-iceri-aktar')?.click();
