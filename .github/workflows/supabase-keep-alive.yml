@@ -6,10 +6,41 @@ on:
     - cron: '0 8 */3 * *'
   workflow_dispatch: # Elle de tetiklenebilir
 
+permissions:
+  contents: write
+
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
+      - name: Repoyu tam geçmişle al
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gerekirse boş keep-alive commit oluştur
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          LAST_COMMIT_EPOCH=$(git log -1 --format=%ct)
+          NOW_EPOCH=$(date -u +%s)
+          AGE_DAYS=$(((NOW_EPOCH - LAST_COMMIT_EPOCH) / 86400))
+
+          echo "Son commit yaşı: ${AGE_DAYS} gün"
+
+          # GitHub Actions schedule güvenliği için 60 güne yaklaşmadan boş commit at.
+          if [ "$AGE_DAYS" -ge 55 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "chore: keep repo active [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+            echo "Boş keep-alive commit gönderildi."
+          else
+            echo "Boş commit gerekmedi."
+          fi
+
       - name: Supabase'e ping at
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
