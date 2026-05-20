@@ -383,6 +383,21 @@
       <div id="label-isin-bariyeri" class="label-tag option-name-tag mono text-[11px] text-center" style="color:#e879f9;">Işın Bariyeri</div>
      </button>
     </div>
+    <!-- İkinci Satır: Butonlar -->
+    <div class="grid grid-cols-2 md:grid-cols-8 gap-2 mt-2">
+          <!-- Buton Tipi --> <button id="btn-buton-tipi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
+      <div class="flex items-center justify-center gap-2">
+       <div class="w-7 h-7 rounded-md bg-orange-500/20 flex items-center justify-center border border-orange-500/40 flex-shrink-0">
+        <i data-lucide="toggle-left" class="w-3.5 h-3.5 text-orange-400"></i>
+       </div>
+      <div id="val-buton-tipi" class="text-[13px] font-bold value-tag tracking-wide text-center min-w-[52px]">Manuel</div>
+      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
+       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       </div>
+      </div>
+      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#fb923c;">Butonlar</div>
+     </button>
+    </div>
      <div class="mt-2">
       <div class="flex items-center justify-between gap-2 mb-3">
        <div class="flex items-center gap-2">
@@ -449,14 +464,14 @@
       <div class="header-line mt-4"></div>
      </div>
      <!-- PLC Konfigürasyon Kartları -->
-     <div class="flex flex-nowrap gap-2 items-stretch overflow-x-auto pb-1" style="overflow-y:visible">
+     <div class="flex flex-wrap gap-2 items-stretch">
       <!-- IO Sayısı -->
       <div class="rounded-xl border border-slate-600/70 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-4 py-2.5 flex-shrink-0 flex flex-col justify-between" style="min-width:230px">
        <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-purple-500/20 flex items-center justify-center border border-purple-500/40">
          <i data-lucide="list-checks" class="w-3 h-3 text-purple-400"></i>
         </div>
-        <span class="label-tag mono text-[10px]">IO Sayısı</span>
+        <span class="label-tag mono text-[10px] text-purple-400">IO Sayısı</span>
        </div>
        <div class="grid grid-cols-4 gap-2">
         <div class="flex flex-col items-center gap-0.5 bg-cyan-500/5 border border-cyan-500/20 rounded-lg px-2 py-1.5">
@@ -477,36 +492,70 @@
         </div>
        </div>
       </div>
+      <!-- PLC IO Sayısı (Modül toplamı) -->
+      <div class="rounded-xl border border-indigo-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-4 py-2.5 flex-shrink-0 flex flex-col justify-between" style="min-width:230px">
+       <div class="flex items-center gap-2 mb-2">
+        <div class="w-6 h-6 rounded-md bg-indigo-500/20 flex items-center justify-center border border-indigo-500/40">
+         <i data-lucide="layout-grid" class="w-3 h-3 text-indigo-400"></i>
+        </div>
+        <span class="label-tag mono text-[10px] text-indigo-400">PLC IO Sayısı</span>
+       </div>
+       <div class="grid grid-cols-4 gap-2">
+        <div class="flex flex-col items-center gap-0.5 bg-cyan-500/5 border border-cyan-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-cyan-600 mono uppercase tracking-wider font-semibold">DI</span>
+         <span id="plc-modul-di" class="text-base font-bold text-cyan-400 mono leading-tight">0</span>
+        </div>
+        <div class="flex flex-col items-center gap-0.5 bg-emerald-500/5 border border-emerald-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-emerald-600 mono uppercase tracking-wider font-semibold">DO</span>
+         <span id="plc-modul-do" class="text-base font-bold text-emerald-400 mono leading-tight">0</span>
+        </div>
+        <div class="flex flex-col items-center gap-0.5 bg-violet-500/5 border border-violet-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-violet-600 mono uppercase tracking-wider font-semibold">AI</span>
+         <span id="plc-modul-ai" class="text-base font-bold text-violet-400 mono leading-tight">0</span>
+        </div>
+        <div class="flex flex-col items-center gap-0.5 bg-pink-500/5 border border-pink-500/20 rounded-lg px-2 py-1.5">
+         <span class="text-[9px] text-pink-600 mono uppercase tracking-wider font-semibold">AO</span>
+         <span id="plc-modul-ao" class="text-base font-bold text-pink-400 mono leading-tight">0</span>
+        </div>
+       </div>
+      </div>
       <!-- PLC CPU -->
       <div class="rounded-xl border border-blue-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
        <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40">
          <i data-lucide="cpu" class="w-3 h-3 text-blue-400"></i>
         </div>
-        <span class="label-tag mono text-[10px]">PLC CPU</span>
+        <span class="label-tag mono text-[10px] text-blue-400">PLC CPU</span>
+        <span id="plc-cpu-io-badge" class="text-[9px] mono text-blue-300 ml-1" style="display:none"></span>
        </div>
-       <div class="cdd mt-auto" style="--cdd-color:#60a5fa">
+       <div id="plc-cpu-cdd" class="cdd mt-auto" style="--cdd-color:#60a5fa">
         <button class="cdd-trigger border border-blue-500/30" onclick="cddToggle(this)">
          <span class="cdd-val">-- Seçiniz --</span>
          <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
         </button>
-        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+        <div class="cdd-panel"><div class="cdd-options">
+         <div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div>
+         <div class="cdd-option" data-val="s7-1215c" onclick="cddSelect(this,'s7-1215c','S7-1200 CPU 1215C DC/DC/DC (14DI/10DO)')">S7-1200 CPU 1215C DC/DC/DC (14DI/10DO)</div>
+         <div class="cdd-option" data-val="s7-1214c" onclick="cddSelect(this,'s7-1214c','S7-1200 CPU 1214C DC/DC/DC (14DI/10DO)')">S7-1200 CPU 1214C DC/DC/DC (14DI/10DO)</div>
+         <div class="cdd-option" data-val="cp2e-n60dt1" onclick="cddSelect(this,'cp2e-n60dt1','OMRON CP2E-N60DT1-D (36DI/24DO)')">OMRON CP2E-N60DT1-D (36DI/24DO)</div>
+        </div></div>
        </div>
       </div>
       <!-- PLC Ek Modül (ana) -->
-      <div id="ek-modul-anchor" class="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+      <div id="ek-modul-anchor" class="rounded-xl ek-modul-card border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
        <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
          <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
           <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
          </div>
-         <span class="label-tag mono text-[10px]">PLC Ek Modül</span>
+         <span class="label-tag mono text-[10px] text-emerald-400">PLC Ek Modül</span>
+         <span class="ek-modul-io-badge text-[9px] mono text-emerald-300 ml-1" style="display:none"></span>
         </div>
         <button onclick="addEkModul()" class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/40 transition-colors" title="Ek Modül Ekle">
          <i data-lucide="plus" class="w-3 h-3 text-emerald-400"></i>
         </button>
        </div>
-       <div class="cdd mt-auto" style="--cdd-color:#34d399">
+       <div class="cdd ek-modul-cdd mt-auto" style="--cdd-color:#34d399">
         <button class="cdd-trigger border border-emerald-500/30" onclick="cddToggle(this)">
          <span class="cdd-val">-- Seçiniz --</span>
          <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
@@ -520,9 +569,9 @@
         <div class="w-6 h-6 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
          <i data-lucide="thermometer" class="w-3 h-3 text-amber-400"></i>
         </div>
-        <span class="label-tag mono text-[10px]">PLC TC Modül</span>
+        <span class="label-tag mono text-[10px] text-amber-400">PLC TC Modül</span>
        </div>
-       <div class="cdd mt-auto" style="--cdd-color:#fbbf24">
+       <div class="cdd plc-tc-cdd mt-auto" style="--cdd-color:#fbbf24">
         <button class="cdd-trigger border border-amber-500/30" onclick="cddToggle(this)">
          <span class="cdd-val">-- Seçiniz --</span>
          <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
@@ -536,9 +585,9 @@
         <div class="w-6 h-6 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40">
          <i data-lucide="activity" class="w-3 h-3 text-violet-400"></i>
         </div>
-        <span class="label-tag mono text-[10px]">PLC Analog Modül</span>
+        <span class="label-tag mono text-[10px] text-violet-400">PLC Analog Modül</span>
        </div>
-       <div class="cdd mt-auto" style="--cdd-color:#a78bfa">
+       <div class="cdd plc-analog-cdd mt-auto" style="--cdd-color:#a78bfa">
         <button class="cdd-trigger border border-violet-500/30" onclick="cddToggle(this)">
          <span class="cdd-val">-- Seçiniz --</span>
          <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
@@ -552,7 +601,7 @@
         <div class="w-6 h-6 rounded-md bg-rose-500/20 flex items-center justify-center border border-rose-500/40">
          <i data-lucide="shield-check" class="w-3 h-3 text-rose-400"></i>
         </div>
-        <span class="label-tag mono text-[10px]">Emniyet Rölesi</span>
+        <span class="label-tag mono text-[10px] text-rose-400">Emniyet Rölesi</span>
        </div>
        <div class="cdd mt-auto" style="--cdd-color:#fb7185">
         <button class="cdd-trigger border border-rose-500/30" onclick="cddToggle(this)">
@@ -648,6 +697,8 @@
     tepeLambasi: 'VAR',
     kurutmaUnitesi: 'VAR',
     isinBariyeri: 'YOK',
+    butonTipi: 'Manuel',
+    tmsSecimAkim: null,
     motors: [],
     rezistanslar: {},
     kurutmaRezistanslar: [],
@@ -1663,8 +1714,17 @@
     }
     populateRccbOptions();
 
+    // Kaydedilmiş RCCB seçimini geri yükle
+    const _kaEntry = (state.kacakAkim[sectionKey] || []).find(r => r.id === rowId);
+    if (_kaEntry && _kaEntry.rccb) {
+      rccbSelect.value = _kaEntry.rccb;
+      rccbSelect.dataset.rccbAkim = rccbSelect.value || '0';
+    }
+
     rccbSelect.addEventListener('change', () => {
       rccbSelect.dataset.rccbAkim = rccbSelect.value ? rccbSelect.value : '0';
+      const _entry = (state.kacakAkim[sectionKey] || []).find(r => r.id === rowId);
+      if (_entry) _entry.rccb = rccbSelect.value;
       updateKacakAkimTotals();
     });
     rccbCell.appendChild(rccbSelect);
@@ -1941,6 +2001,13 @@
     bar.appendChild(barLeft); bar.appendChild(barRight);
     section.appendChild(bar);
 
+    // Uyarı bandı (TMŞ akımı yetersizse göster)
+    const tmsWarnDiv = document.createElement('div');
+    tmsWarnDiv.id = 'tms-warn';
+    tmsWarnDiv.className = 'items-center gap-2 px-4 py-2 bg-amber-500/10 border-b border-amber-500/30 text-amber-400 text-xs mono font-semibold';
+    tmsWarnDiv.style.display = 'none';
+    section.appendChild(tmsWarnDiv);
+
     const wrapper = document.createElement('div');
     wrapper.className = 'overflow-x-auto';
     const table = document.createElement('table');
@@ -1995,6 +2062,10 @@
       tmsSelect.appendChild(opt);
     });
     if (autoAkim) tmsSelect.value = autoAkim;
+    // Kullanıcının önceki seçimini koru (state'de kayıtlıysa)
+    if (state.tmsSecimAkim && [...tmsSelect.options].some(o => o.value === String(state.tmsSecimAkim))) {
+      tmsSelect.value = state.tmsSecimAkim;
+    }
 
     // Kol input (güncelleme fonksiyon referansı için dışarda tanımla)
     const kolInput = document.createElement('input');
@@ -2010,7 +2081,11 @@
     }
     setKolFromSelect();
 
-    tmsSelect.addEventListener('change', setKolFromSelect);
+    tmsSelect.addEventListener('change', () => {
+      state.tmsSecimAkim = tmsSelect.value;
+      setKolFromSelect();
+      updateTmsWarn();
+    });
     tmsCell.appendChild(tmsSelect);
     row1.appendChild(tmsCell);
     tbody.appendChild(row1);
@@ -2081,6 +2156,26 @@
         const found = data.find(d => String(d.akim) === String(tmsSel.value));
         kolInput.value = found ? `TMŞ KOLU ${found.kol}` : '';
       }
+    }
+    updateTmsWarn();
+  }
+
+  function updateTmsWarn() {
+    const warnEl = document.getElementById('tms-warn');
+    if (!warnEl) return;
+    // Makine toplam akımı
+    let totalKw = 0;
+    document.querySelectorAll('select.guc-select-all').forEach(sel => {
+      if (sel.value) totalKw += parseFloat(sel.value);
+    });
+    const totalAkim = totalKw * 2;
+    // Seçili TMŞ akımı
+    const tmsSel = document.getElementById('tms-select');
+    const seciliAkim = tmsSel ? parseFloat(tmsSel.value) : 0;
+    const isWarn = seciliAkim > 0 && seciliAkim < totalAkim;
+    warnEl.style.display = isWarn ? 'flex' : 'none';
+    if (isWarn) {
+      warnEl.textContent = `⚠  Seçili TMŞ (${seciliAkim} A), makine toplam akımından (${totalAkim.toFixed(1)} A) küçük! Yetersiz koruma.`;
     }
   }
 
@@ -2416,6 +2511,18 @@
       { urunAdi: 'GÜÇ KAYNAĞI LRS 350/24 24VDC 14,6AMP', stok: '10 06963' },
       { urunAdi: 'SİGORTA A9F74106 1*6', stok: '10 01421' }
     ]},
+    { kullanim: 'CT', urunler: [
+      { urunAdi: 'CT-2467', stok: '10 03255' }
+    ]},
+    { kullanim: 'GÜÇ KAYNAĞI SİGORTA', urunler: [
+      { urunAdi: 'SİGORTA A9F74106 1*6', stok: '10 01421' }
+    ]},
+    { kullanim: 'PLC SİGORTA', urunler: [
+      { urunAdi: 'SİGORTA A9F74110 1*10', stok: '10 01421' }
+    ]},
+    { kullanim: 'SWITCH', urunler: [
+      { urunAdi: 'SWITCH BS1012 ANI HARK.1NA+1NK', stok: '10 16231' }
+    ]},
   ];
 
   function getMalzemeRows() {
@@ -2430,7 +2537,7 @@
     }
     function addRow(grupAdi, model, urunAdi, kullanim) {
       const { stok, birimFiyat } = fiyatVeStok(grupAdi, model);
-      rows.push({ stok, urunAdi, birimFiyat, adet: 0, model, grupAdi, kullanim: kullanim || '' });
+      rows.push({ stok, urunAdi, birimFiyat, adet: 0, model, grupAdi, kullanim: kullanim || '', _section: 'GÜÇ GRUBU' });
     }
 
     // Motorlar
@@ -2538,12 +2645,45 @@
       }
     }
 
-    // Adet birleştir
+    // Yaprak Röle + Röle Köprüsü (DO sayısına bağlı sabit kalemler)
+    const doCount = getPLCCikisRows().filter(r => r.cikisKomutu && r.cikisKomutu.trim() !== '').length;
+    if (doCount > 0) {
+      rows.push({ stok: '10 01384', urunAdi: 'YAPRAK RÖLE APF30324-VDS-KK SOKET 1C/O 24VDC', birimFiyat: 0, adet: doCount, model: 'APF30324', grupAdi: 'Yaprak Röle', kullanim: 'YAPRAK RÖLE', _fixedAdet: true });
+    }
+    const roleKoprusuAdet = doCount > 0 ? Math.ceil(doCount / 24) : 1;
+    rows.push({ stok: '10 13016', urunAdi: 'RÖLE KÖPRÜSÜ WEIDMÜLLER TCC 6.4/51 OR (24 diş)', birimFiyat: 0, adet: roleKoprusuAdet, model: 'TCC6.4-51OR', grupAdi: 'Röle Köprüsü', kullanim: 'RÖLE KÖPRÜSÜ', _fixedAdet: true });
+
+    // --- Sabit Kalemler (her zaman görünür) ---
+    rows.push({ stok: '10 00302', urunAdi: 'SİGORTA A9F74103 1*3', birimFiyat: 0, adet: 1, model: 'SABİT|KUMANDA SİSTEMİ|SİGORTA A9F74103 1*3', grupAdi: 'SABİT|KUMANDA SİSTEMİ', kullanim: 'KUMANDA SİSTEMİ', _fixedAdet: true });
+    rows.push({ stok: '10 00258', urunAdi: 'FAZ KORUMA RÖLESİ MKS-03', birimFiyat: 0, adet: 1, model: 'SABİT|FAZ KORUMA|FAZ KORUMA RÖLESİ MKS-03', grupAdi: 'SABİT|FAZ KORUMA', kullanim: 'FAZ KORUMA', _fixedAdet: true });
+    rows.push({ stok: '1004905', urunAdi: 'TEPE LAMBASI 3 RENKLİ', birimFiyat: 0, adet: 1, model: 'SABİT|LAMBA|TEPE LAMBASI 3 RENKLİ', grupAdi: 'SABİT|LAMBA', kullanim: 'LAMBA', _fixedAdet: true });
+    rows.push({ stok: '10 03313', urunAdi: 'PRİZ RAYA MONTAJ TOPRAKLI EPREU2G', birimFiyat: 0, adet: 1, model: 'SABİT|PRİZ|PRİZ RAYA MONTAJ TOPRAKLI EPREU2G', grupAdi: 'SABİT|PRİZ', kullanim: 'PRİZ', _fixedAdet: true });
+    rows.push({ stok: '10 06963', urunAdi: 'GÜÇ KAYNAĞI LRS 350/24 24VDC 14,6AMP', birimFiyat: 0, adet: 1, model: 'SABİT|GÜÇ KAYNAĞI|GÜÇ KAYNAĞI LRS 350/24 24VDC 14,6AMP', grupAdi: 'SABİT|GÜÇ KAYNAĞI', kullanim: 'GÜÇ KAYNAĞI', _fixedAdet: true });
+    rows.push({ stok: '10 03255', urunAdi: 'CT-2467', birimFiyat: 0, adet: 1, model: 'SABİT|CT|CT-2467', grupAdi: 'SABİT|CT', kullanim: 'CT', _fixedAdet: true });
+    rows.push({ stok: '10 01421', urunAdi: 'SİGORTA A9F74106 1*6', birimFiyat: 0, adet: 1, model: 'SABİT|GÜÇ KAYNAĞI SİGORTA|SİGORTA A9F74106 1*6', grupAdi: 'SABİT|GÜÇ KAYNAĞI SİGORTA', kullanim: 'GÜÇ KAYNAĞI SİGORTA', _fixedAdet: true });
+    rows.push({ stok: '10 01421', urunAdi: 'SİGORTA A9F74106 1*6', birimFiyat: 0, adet: 1, model: 'SABİT|GÜÇ KAYNAĞI SİGORTA 2|SİGORTA A9F74106 1*6', grupAdi: 'SABİT|GÜÇ KAYNAĞI SİGORTA 2', kullanim: 'GÜÇ KAYNAĞI SİGORTA', _fixedAdet: true });
+    rows.push({ stok: '10 01421', urunAdi: 'SİGORTA A9F74110 1*10', birimFiyat: 0, adet: 1, model: 'SABİT|PLC SİGORTA|SİGORTA A9F74110 1*10', grupAdi: 'SABİT|PLC SİGORTA', kullanim: 'PLC SİGORTA', _fixedAdet: true });
+    let kaAkimCount = 0;
+    document.querySelectorAll('[id^="ka-tbody-"]').forEach(tb => {
+      tb.querySelectorAll('[data-rccb-akim]').forEach(sel => { if (sel.value) kaAkimCount++; });
+    });
+    rows.push({ stok: '10 16231', urunAdi: 'SWITCH BS1012 ANI HARK.1NA+1NK', birimFiyat: 0, adet: Math.max(1, kaAkimCount - 1), model: 'SABİT|SWITCH|SWITCH BS1012 ANI HARK.1NA+1NK', grupAdi: 'SABİT|SWITCH', kullanim: 'SWITCH', _fixedAdet: true });
+
+    // Bölüm etiketlenmemiş satırları GÜÇ DÖNÜŞTÜRME GRUBU olarak işaretle
+    rows.forEach(r => { if (!r._section) r._section = 'GÜÇ DÖNÜŞTÜRME GRUBU'; });
+
+    // Adet birleştir (addRow ile eklenenler adet:0 başlar, her kopya +1 sayılır)
+    // _fixedAdet:true olan satırlar sabit adetini taşır
     const merged = [];
     rows.forEach(r => {
       const key = r.grupAdi + '|' + r.model + '|' + r.urunAdi;
       const ex = merged.find(m => m._key === key);
-      if (ex) { ex.adet++; } else { merged.push({ ...r, _key: key, adet: 1 }); }
+      if (ex) {
+        if (r._fixedAdet) ex.adet = (ex.adet || 0) + r.adet;
+        else ex.adet++;
+      } else {
+        merged.push({ ...r, _key: key, adet: r._fixedAdet ? r.adet : 1 });
+      }
     });
     return merged;
   }
@@ -2863,13 +3003,48 @@
       }
     }
 
+    // --- Sabit Kalemler (her zaman 1 adet) ---
+    function addFixed(stok, urunAdi, kullanim, adet) {
+      const _key = 'SABİT|' + kullanim + '|' + urunAdi;
+      rows.push({ stok, urunAdi, birimFiyat: 0, adet: adet || 1, model: _key, grupAdi: 'SABİT|' + kullanim, kullanim: kullanim, _fixedAdet: true });
+    }
+    addFixed('10 00302', 'SİGORTA A9F74103 1*3', 'KUMANDA SİSTEMİ');
+    addFixed('10 00258', 'FAZ KORUMA RÖLESİ MKS-03', 'FAZ KORUMA');
+    addFixed('1004905',  'TEPE LAMBASI 3 RENKLİ', 'LAMBA');
+    addFixed('10 03313', 'PRİZ RAYA MONTAJ TOPRAKLI EPREU2G', 'PRİZ');
+    addFixed('10 06963', 'GÜÇ KAYNAĞI LRS 350/24 24VDC 14,6AMP', 'GÜÇ KAYNAĞI');
+    addFixed('10 03255', 'CT-2467', 'CT');
+    addFixed('10 01421', 'SİGORTA A9F74106 1*6', 'GÜÇ KAYNAĞI SİGORTA');
+    addFixed('10 01421', 'SİGORTA A9F74106 1*6', 'GÜÇ KAYNAĞI SİGORTA 2');
+    addFixed('10 01421', 'SİGORTA A9F74110 1*10', 'PLC SİGORTA');
+
+    // --- Yaprak Röle + Röle Köprüsü (DO sayısına bağlı) ---
+    const doCount = getPLCCikisRows().filter(r => r.cikisKomutu && r.cikisKomutu.trim() !== '').length;
+    if (doCount > 0) {
+      rows.push({ stok: '10 01384', urunAdi: 'YAPRAK RÖLE APF30324-VDS-KK SOKET 1C/O 24VDC', birimFiyat: 0, adet: doCount, model: 'APF30324', grupAdi: 'SABİT|YAPRAK RÖLE', kullanim: 'YAPRAK RÖLE', _fixedAdet: true });
+    }
+    const roleKoprusuAdet = doCount > 0 ? Math.ceil(doCount / 24) : 1;
+    rows.push({ stok: '10 13016', urunAdi: 'RÖLE KÖPRÜSÜ WEIDMÜLLER TCC 6.4/51 OR (24 diş)', birimFiyat: 0, adet: roleKoprusuAdet, model: 'TCC6451OR', grupAdi: 'SABİT|RÖLE KÖPRÜSÜ', kullanim: 'RÖLE KÖPRÜSÜ', _fixedAdet: true });
+
+    // --- Switch BS1012 (kaçak akım sayısı - 1) ---
+    let kaAkimCount = 0;
+    document.querySelectorAll('[id^="ka-tbody-"]').forEach(tb => {
+      tb.querySelectorAll('[data-rccb-akim]').forEach(sel => { if (sel.value) kaAkimCount++; });
+    });
+    const switchAdet = Math.max(1, kaAkimCount - 1);
+    addFixed('10 16231', 'SWITCH BS1012 ANI HARK.1NA+1NK', 'SWITCH', switchAdet);
+
     // Benzersiz satırları say ve adet birleştir
     const merged = [];
     rows.forEach(r => {
       const key = r.grupAdi + '|' + r.model + '|' + r.urunAdi;
       const ex = merged.find(m => m._key === key);
-      if (ex) { ex.adet++; }
-      else { merged.push({ ...r, _key: key, adet: 1 }); }
+      if (ex) {
+        if (r._fixedAdet) ex.adet = (ex.adet || 0) + r.adet;
+        else ex.adet++;
+      } else {
+        merged.push({ ...r, _key: key, adet: r._fixedAdet ? r.adet : 1 });
+      }
     });
 
     return merged;
@@ -2892,7 +3067,7 @@
     table.className = 'w-full table-fixed';
 
     const colgroup = document.createElement('colgroup');
-    ['13%', '44%', '14%', '10%', '19%'].forEach(w => {
+    ['13%', '12%', '32%', '13%', '9%', '21%'].forEach(w => {
       const col = document.createElement('col'); col.style.width = w; colgroup.appendChild(col);
     });
     table.appendChild(colgroup);
@@ -2901,11 +3076,12 @@
     const hRow = document.createElement('tr');
     hRow.className = 'border-b border-slate-700/50 bg-slate-800/60';
     [
-      { label: 'Stok Kodu',    color: '#22d3ee' },
-      { label: 'Ürün Adı',     color: '#22d3ee' },
+      { label: 'Kullanım Yeri',   color: '#f472b6' },
+      { label: 'Stok Kodu',       color: '#22d3ee' },
+      { label: 'Ürün Adı',        color: '#22d3ee' },
       { label: 'Birim Fiyat (€)', color: '#22d3ee' },
-      { label: 'Adet',         color: '#22d3ee' },
-      { label: 'Toplam (€)',   color: '#22d3ee' },
+      { label: 'Adet',            color: '#22d3ee' },
+      { label: 'Toplam (€)',      color: '#22d3ee' },
     ].forEach(h => {
       const th = document.createElement('th');
       th.className = 'px-3 py-3 text-center text-xs font-semibold mono';
@@ -2919,10 +3095,32 @@
     const tbody = document.createElement('tbody');
     let grandTotal = 0;
 
+    let currentSection = null;
     rows.forEach((r, idx) => {
+      // Alt başlık: bölüm değişince başlık satırı ekle
+      if (r._section && r._section !== currentSection) {
+        currentSection = r._section;
+        const hdrTr = document.createElement('tr');
+        hdrTr.className = 'bg-slate-900/70';
+        const hdrTd = document.createElement('td');
+        hdrTd.setAttribute('colspan', '6');
+        hdrTd.className = 'px-4 py-2 text-xs font-bold mono uppercase text-pink-400';
+        hdrTd.style.cssText = 'border-bottom: 1px solid rgba(244,114,182,0.25); letter-spacing: 0.15em;';
+        hdrTd.textContent = '▸ ' + r._section;
+        hdrTr.appendChild(hdrTd);
+        tbody.appendChild(hdrTr);
+      }
+
       const tr = document.createElement('tr');
       tr.className = `border-t border-slate-700/30 transition ${idx % 2 === 0 ? '' : 'bg-slate-800/20'}`;
       tr.style.height = '40px';
+
+      // Kullanım Yeri
+      const kulTd = document.createElement('td');
+      kulTd.className = 'px-2 py-0 text-center align-middle text-xs mono font-semibold text-pink-300';
+      kulTd.style.borderRight = '1px solid rgba(71,85,105,0.4)';
+      kulTd.textContent = r.kullanim || '—';
+      tr.appendChild(kulTd);
 
       // Stok Kodu
       const stokTd = document.createElement('td');
@@ -2993,7 +3191,7 @@
     if (rows.length === 0) {
       const emptyTr = document.createElement('tr');
       const emptyTd = document.createElement('td');
-      emptyTd.setAttribute('colspan', '5');
+      emptyTd.setAttribute('colspan', '6');
       emptyTd.className = 'px-4 py-10 text-center text-slate-500 mono text-sm';
       emptyTd.textContent = '// Otomasyon sayfasından motor ve rezistans ekleyiniz';
       emptyTr.appendChild(emptyTd);
@@ -4593,7 +4791,7 @@
     if (rows && rows.length > 0) {
       rows.forEach(r => {
         const tr = document.createElement('tr');
-        tr.className = 'border-t border-slate-700/50 hover:bg-slate-800/30 transition';
+        tr.className = `border-t border-slate-700/50 ${r._bos ? 'opacity-30' : 'hover:bg-slate-800/30'} transition`;
         tr.style.height = '40px';
 
         // GİRİŞ
@@ -4658,28 +4856,25 @@
 
     if (state.makineTipi === 'Kabinli') {
       rows.push(
-        { giris: 'I0.0', girisKomutu: 'ACİL STOP BUTONU',          cikis: '', cikisKomutu: '' },
-        { giris: 'I0.1', girisKomutu: 'KAPAK SWİTCHİ',             cikis: '', cikisKomutu: '' },
-        { giris: 'I0.2', girisKomutu: 'FAZ SIRA RÖLESİ FAZ BİLGİSİ', cikis: '', cikisKomutu: '' },
-        { giris: 'I0.3', girisKomutu: 'START BUTONU',               cikis: '', cikisKomutu: '' },
-        { giris: 'I0.4', girisKomutu: 'STOP BUTONU',                cikis: '', cikisKomutu: '' }
+        { giris: '', girisKomutu: 'ACİL STOP BUTONU',          cikis: '', cikisKomutu: '' },
+        { giris: '', girisKomutu: 'KAPAK SWİTCHİ',             cikis: '', cikisKomutu: '' },
+        { giris: '', girisKomutu: 'FAZ SIRA RÖLESİ FAZ BİLGİSİ', cikis: '', cikisKomutu: '' },
+        { giris: '', girisKomutu: 'START BUTONU',               cikis: '', cikisKomutu: '' },
+        { giris: '', girisKomutu: 'STOP BUTONU',                cikis: '', cikisKomutu: '' }
       );
     } else if (state.makineTipi === 'Konveyör') {
       rows.push(
-        { giris: 'I0.0', girisKomutu: 'ACİL STOP (OMRON SI0)',         cikis: '', cikisKomutu: '' },
-        { giris: 'I0.1', girisKomutu: 'KAPAK KAPANDI BİLGİSİ (OMRON SO3)', cikis: '', cikisKomutu: '' },
-        { giris: 'I0.2', girisKomutu: 'FAZ SIRA RÖLESİ FAZ BİLGİSİ', cikis: '', cikisKomutu: '' }
+        { giris: '', girisKomutu: 'ACİL STOP (OMRON SI0)',         cikis: '', cikisKomutu: '' },
+        { giris: '', girisKomutu: 'KAPAK KAPANDI BİLGİSİ (OMRON SO3)', cikis: '', cikisKomutu: '' },
+        { giris: '', girisKomutu: 'FAZ SIRA RÖLESİ FAZ BİLGİSİ', cikis: '', cikisKomutu: '' }
       );
     }
 
     // Motor tablosundan motor adlarını ve koruma tipini oku
     let ioIndex = rows.length;
 
-    function ioAddr(idx) {
-      return `I${Math.floor(idx / 8)}.${idx % 8}`;
-    }
     function pushRow(komutu) {
-      rows.push({ giris: ioAddr(ioIndex), girisKomutu: komutu, cikis: '', cikisKomutu: '' });
+      rows.push({ giris: '', girisKomutu: komutu, cikis: '', cikisKomutu: '' });
       ioIndex++;
     }
 
@@ -4780,19 +4975,25 @@
       pushRow('YEDEK');
     }
 
+    // Adresleri CPU + Ek Modül layout'una göre ata
+    const _diLayout = getPlcIoLayout().diAddresses;
+    rows.forEach((r, i) => {
+      r.giris = _diLayout[i] || `I${Math.floor(i / 8)}.${i % 8}`;
+    });
+    // Kullanılmayan DI slotları için BOŞ GİRİŞ satırı ekle
+    while (_diLayout.length > 0 && rows.length < _diLayout.length) {
+      const i = rows.length;
+      rows.push({ giris: _diLayout[i], girisKomutu: 'BOŞ GİRİŞ', cikis: '', cikisKomutu: '', _bos: true });
+    }
+
     return rows;
   }
 
   function getPLCCikisRows() {
     const cikisRows = [];
-    let qIndex = 0;
 
-    function qAddr(idx) {
-      return `Q${Math.floor(idx / 8)}.${idx % 8}`;
-    }
     function pushCikis(komutu) {
-      cikisRows.push({ cikis: qAddr(qIndex), cikisKomutu: komutu });
-      qIndex++;
+      cikisRows.push({ cikis: '', cikisKomutu: komutu });
     }
 
     const motorRows = document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]');
@@ -4881,6 +5082,17 @@
       pushCikis('YEDEK');
     }
 
+    // Adresleri CPU + Ek Modül layout'una göre ata
+    const _doLayout = getPlcIoLayout().doAddresses;
+    cikisRows.forEach((r, i) => {
+      r.cikis = _doLayout[i] || `Q${Math.floor(i / 8)}.${i % 8}`;
+    });
+    // Kullanılmayan DO slotları için BOŞ ÇIKIŞ satırı ekle
+    while (_doLayout.length > 0 && cikisRows.length < _doLayout.length) {
+      const i = cikisRows.length;
+      cikisRows.push({ cikis: _doLayout[i], cikisKomutu: 'BOŞ ÇIKIŞ', _bos: true });
+    }
+
     return cikisRows;
   }
 
@@ -4929,16 +5141,128 @@
     cdd.dataset.value = val || '';
     cdd.querySelectorAll('.cdd-option').forEach(o => o.classList.toggle('cdd-selected', o.dataset.val === val));
     cdd.classList.remove('open');
+    if (cdd.id === 'plc-cpu-cdd') { updateEkModulOptions(); updatePlcModulIoCard(); if (document.getElementById('page-io')?.classList.contains('active')) renderIOPage(); }
+    else if (cdd.classList.contains('ek-modul-cdd') || cdd.classList.contains('plc-tc-cdd') || cdd.classList.contains('plc-analog-cdd')) { updatePlcModulIoCard(); if (document.getElementById('page-io')?.classList.contains('active')) renderIOPage(); }
   }
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.cdd')) document.querySelectorAll('.cdd.open').forEach(d => d.classList.remove('open'));
   });
+
+  const PLC_EK_MODUL_OPTIONS = {
+    siemens: [
+      { val: 'sm1223-di16dq16', label: 'SM 1223 DI 16 / DQ 16 (6ES7223-1BL32-0XB0)' },
+      { val: 'sm1221-di8',      label: 'SM 1221 DI 8 (6ES7221-1BF32-0XB0)' },
+    ],
+    omron: [
+      { val: 'cp1w-20edt1', label: 'CP1W-20EDT1 12DI/8DO' },
+      { val: 'cp1w-40edt1', label: 'CP1W-40EDT1 24DI/16DO' },
+    ],
+  };
+  const PLC_CPU_BRAND = {
+    's7-1215c': 'siemens',
+    's7-1214c': 'siemens',
+    'cp2e-n60dt1': 'omron',
+  };
+
+  const PLC_MODULE_IO = {
+    's7-1215c':        { di: 14, do: 10, ai: 0, ao: 0 },
+    's7-1214c':        { di: 14, do: 10, ai: 0, ao: 0 },
+    'cp2e-n60dt1':     { di: 36, do: 24, ai: 0, ao: 0 },
+    'sm1223-di16dq16': { di: 16, do: 16, ai: 0, ao: 0 },
+    'sm1221-di8':      { di: 8,  do: 0,  ai: 0, ao: 0 },
+    'cp1w-20edt1':     { di: 12, do: 8,  ai: 0, ao: 0 },
+    'cp1w-40edt1':     { di: 24, do: 16, ai: 0, ao: 0 },
+  };
+
+  function getPlcIoLayout() {
+    const cpuCdd = document.getElementById('plc-cpu-cdd');
+    const cpuVal = cpuCdd ? (cpuCdd.dataset.value || '') : '';
+    const modules = [];
+    if (cpuVal && PLC_MODULE_IO[cpuVal]) modules.push(PLC_MODULE_IO[cpuVal]);
+    document.querySelectorAll('.ek-modul-cdd').forEach(cdd => {
+      const v = cdd.dataset.value || '';
+      if (v && PLC_MODULE_IO[v]) modules.push(PLC_MODULE_IO[v]);
+    });
+    const diAddresses = [];
+    let diByte = 0;
+    modules.forEach(mod => {
+      for (let i = 0; i < mod.di; i++) diAddresses.push(`I${diByte + Math.floor(i / 8)}.${i % 8}`);
+      if (mod.di > 0) diByte += Math.ceil(mod.di / 8);
+    });
+    const doAddresses = [];
+    let doByte = 0;
+    modules.forEach(mod => {
+      for (let i = 0; i < mod.do; i++) doAddresses.push(`Q${doByte + Math.floor(i / 8)}.${i % 8}`);
+      if (mod.do > 0) doByte += Math.ceil(mod.do / 8);
+    });
+    return { diAddresses, doAddresses };
+  }
+
+  function updatePlcModulIoCard() {
+    const cpuCdd = document.getElementById('plc-cpu-cdd');
+    const cpuVal = cpuCdd ? (cpuCdd.dataset.value || '') : '';
+    const cpuIo = PLC_MODULE_IO[cpuVal] || { di: 0, do: 0, ai: 0, ao: 0 };
+    const cpuBadge = document.getElementById('plc-cpu-io-badge');
+    if (cpuBadge) {
+      cpuBadge.textContent = cpuVal ? `${cpuIo.di}DI / ${cpuIo.do}DO` : '';
+      cpuBadge.style.display = cpuVal ? '' : 'none';
+    }
+    let ekDi = 0, ekDo = 0, ekAi = 0, ekAo = 0;
+    document.querySelectorAll('.ek-modul-cdd').forEach(cdd => {
+      const v = cdd.dataset.value || '';
+      const io = PLC_MODULE_IO[v] || { di: 0, do: 0, ai: 0, ao: 0 };
+      ekDi += io.di; ekDo += io.do; ekAi += io.ai; ekAo += io.ao;
+      const card = cdd.closest('.ek-modul-card');
+      const badge = card ? card.querySelector('.ek-modul-io-badge') : null;
+      if (badge) {
+        badge.textContent = v ? `${io.di}DI / ${io.do}DO` : '';
+        badge.style.display = v ? '' : 'none';
+      }
+    });
+    let tcAi = 0, tcAo = 0, anaAi = 0, anaAo = 0;
+    document.querySelectorAll('.plc-tc-cdd').forEach(cdd => {
+      const io = PLC_MODULE_IO[cdd.dataset.value || ''] || { di: 0, do: 0, ai: 0, ao: 0 };
+      tcAi += io.ai; tcAo += io.ao;
+    });
+    document.querySelectorAll('.plc-analog-cdd').forEach(cdd => {
+      const io = PLC_MODULE_IO[cdd.dataset.value || ''] || { di: 0, do: 0, ai: 0, ao: 0 };
+      anaAi += io.ai; anaAo += io.ao;
+    });
+    const el = id => document.getElementById(id);
+    if (el('plc-modul-di')) el('plc-modul-di').textContent = cpuIo.di + ekDi;
+    if (el('plc-modul-do')) el('plc-modul-do').textContent = cpuIo.do + ekDo;
+    if (el('plc-modul-ai')) el('plc-modul-ai').textContent = cpuIo.ai + ekAi + tcAi + anaAi;
+    if (el('plc-modul-ao')) el('plc-modul-ao').textContent = cpuIo.ao + ekAo + tcAo + anaAo;
+  }
+
+  function updateEkModulOptions() {
+    const cpuCdd = document.getElementById('plc-cpu-cdd');
+    const brand = cpuCdd ? (PLC_CPU_BRAND[cpuCdd.dataset.value] || '') : '';
+    const opts = brand ? (PLC_EK_MODUL_OPTIONS[brand] || []) : [];
+    document.querySelectorAll('.ek-modul-cdd').forEach(cdd => {
+      const optDiv = cdd.querySelector('.cdd-options');
+      if (!optDiv) return;
+      const currentVal = cdd.dataset.value || '';
+      optDiv.innerHTML = `<div class="cdd-option" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div>`;
+      opts.forEach(o => {
+        const sel = currentVal === o.val ? ' cdd-selected' : '';
+        optDiv.insertAdjacentHTML('beforeend',
+          `<div class="cdd-option${sel}" data-val="${o.val}" onclick="cddSelect(this,'${o.val}','${o.label}')">${o.label}</div>`);
+      });
+      // Seçim artık listede yoksa sıfırla
+      if (currentVal && !opts.find(o => o.val === currentVal)) {
+        cdd.querySelector('.cdd-val').textContent = '-- Seçiniz --';
+        cdd.dataset.value = '';
+        optDiv.querySelector('.cdd-option').classList.add('cdd-selected');
+      }
+    });
+  }
   // ===== End Custom Dropdown =====
 
   function addEkModul() {
     const anchor = document.getElementById('ek-modul-anchor');
     const newCard = document.createElement('div');
-    newCard.className = 'rounded-xl border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col ek-modul-extra';
+    newCard.className = 'rounded-xl ek-modul-card border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col ek-modul-extra';
     newCard.style.minWidth = '230px';
     newCard.innerHTML = `
       <div class="flex items-center justify-between mb-2">
@@ -4946,18 +5270,19 @@
           <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
             <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
           </div>
-          <span class="label-tag mono text-[10px]">PLC Ek Modül</span>
+          <span class="label-tag mono text-[10px] text-emerald-400">PLC Ek Modül</span>
+          <span class="ek-modul-io-badge text-[9px] mono text-emerald-300 ml-1" style="display:none"></span>
         </div>
         <div class="flex items-center gap-1">
           <button onclick="addEkModul()" class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/40 transition-colors" title="Ek Modül Ekle">
             <i data-lucide="plus" class="w-3 h-3 text-emerald-400"></i>
           </button>
-          <button onclick="this.closest('.ek-modul-extra').remove()" class="w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/40 flex items-center justify-center hover:bg-rose-500/30 transition-colors" title="Kaldır">
+          <button onclick="this.closest('.ek-modul-extra').remove(); updatePlcModulIoCard();" class="w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/40 flex items-center justify-center hover:bg-rose-500/30 transition-colors" title="Kaldır">
             <i data-lucide="minus" class="w-3 h-3 text-rose-400"></i>
           </button>
         </div>
       </div>
-      <div class="cdd mt-auto" style="--cdd-color:#34d399">
+      <div class="cdd ek-modul-cdd mt-auto" style="--cdd-color:#34d399">
         <button class="cdd-trigger border border-emerald-500/30" onclick="cddToggle(this)">
           <span class="cdd-val">-- Seçiniz --</span>
           <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
@@ -4966,6 +5291,8 @@
       </div>`;
     anchor.insertAdjacentElement('afterend', newCard);
     lucide.createIcons();
+    updateEkModulOptions();
+    updatePlcModulIoCard();
   }
 
   function renderIOPage() {
@@ -5069,6 +5396,7 @@
     'btn-tepe-lambasi':    { valueId: 'val-tepe-lambasi',    cardColor: '#facc15', mode: 'varYok' },
     'btn-kurutma-unitesi': { valueId: 'val-kurutma-unitesi', cardColor: '#f87171', mode: 'varYok' },
     'btn-isin-bariyeri':   { valueId: 'val-isin-bariyeri',   cardColor: '#e879f9', mode: 'varYok' },
+    'btn-buton-tipi':      { valueId: 'val-buton-tipi',      cardColor: '#fb923c', mode: 'always' },
   };
 
   function syncSelectionCardVisuals() {
@@ -5169,6 +5497,16 @@
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
 
+  const btnButonTipi = document.getElementById('btn-buton-tipi');
+  const valButonTipi = document.getElementById('val-buton-tipi');
+  const butonTipiStates = ['Manuel', 'PLC', 'PLC + Manuel'];
+  btnButonTipi.addEventListener('click', () => {
+    const idx = butonTipiStates.indexOf(state.butonTipi);
+    state.butonTipi = butonTipiStates[(idx + 1) % butonTipiStates.length];
+    valButonTipi.textContent = state.butonTipi;
+    syncSelectionCardVisuals();
+  });
+
   syncSelectionCardVisuals();
 
   // Motor ekleme
@@ -5242,6 +5580,8 @@
     state.tepeLambasi = 'VAR';
     state.kurutmaUnitesi = 'VAR';
     state.isinBariyeri = 'YOK';
+    state.butonTipi = 'Manuel';
+    state.tmsSecimAkim = null;
     state.motors = [];
     state.rezistanslar = {};
     state.kurutmaRezistanslar = [];
@@ -5261,6 +5601,8 @@
     document.getElementById('val-kurutma-unitesi').textContent = 'VAR';
     const valIsinB = document.getElementById('val-isin-bariyeri');
     if (valIsinB) valIsinB.textContent = 'YOK';
+    const valButonB = document.getElementById('val-buton-tipi');
+    if (valButonB) valButonB.textContent = 'Manuel';
     syncSelectionCardVisuals();
     document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
     renderRezistansTable();
@@ -5875,6 +6217,8 @@
     document.getElementById('val-tepe-lambasi').textContent = state.tepeLambasi;
     document.getElementById('val-kurutma-unitesi').textContent = state.kurutmaUnitesi;
     valIsinBariyeri.textContent = state.isinBariyeri;
+    const valButonTipiEl = document.getElementById('val-buton-tipi');
+    if (valButonTipiEl) valButonTipiEl.textContent = state.butonTipi || 'Manuel';
     const labelIsin = document.getElementById('label-isin-bariyeri');
     if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
     syncSelectionCardVisuals();
