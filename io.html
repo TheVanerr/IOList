@@ -560,8 +560,8 @@
        </div>
       </div>
       <!-- PLC Ek Modül (ana) -->
-      <div id="ek-modul-anchor" class="rounded-xl ek-modul-card border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
-       <div class="flex items-center justify-between mb-2">
+      <div id="ek-modul-anchor" class="rounded-xl ek-modul-card border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:230px">
+       <div class="flex items-center justify-between gap-2 mb-2">
         <div class="flex items-center gap-2">
          <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
           <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
@@ -2707,6 +2707,28 @@
       tb.querySelectorAll('[data-rccb-akim]').forEach(sel => { if (sel.value) kaAkimCount++; });
     });
     rows.push({ stok: '10 16231', urunAdi: 'SWITCH BS1012 ANI HARK.1NA+1NK', birimFiyat: 0, adet: Math.max(1, kaAkimCount - 1), model: 'SABİT|SWITCH|SWITCH BS1012 ANI HARK.1NA+1NK', grupAdi: 'SABİT|SWITCH', kullanim: 'SWITCH', _fixedAdet: true });
+
+    // --- PLC GRUBU ---
+    function addPlcRow(kullanim, stok, urunAdi) {
+      rows.push({ stok, urunAdi, birimFiyat: 0, adet: 1, model: 'PLC|' + kullanim + '|' + urunAdi, grupAdi: 'PLC GRUBU', kullanim, _section: 'PLC GRUBU', _fixedAdet: true });
+    }
+    const hmiSelVal = document.getElementById('plc-hmi-cdd')?.dataset?.value || '';
+    if (hmiSelVal && PLC_PRODUCT_DATA[hmiSelVal]) addPlcRow('PLC HMI', PLC_PRODUCT_DATA[hmiSelVal].stok, PLC_PRODUCT_DATA[hmiSelVal].ad);
+    const cpuSelVal = document.getElementById('plc-cpu-cdd')?.dataset?.value || '';
+    if (cpuSelVal && PLC_PRODUCT_DATA[cpuSelVal]) addPlcRow('PLC CPU', PLC_PRODUCT_DATA[cpuSelVal].stok, PLC_PRODUCT_DATA[cpuSelVal].ad);
+    document.querySelectorAll('.ek-modul-cdd').forEach((cdd, i) => {
+      const v = cdd.dataset.value || '';
+      if (v && PLC_PRODUCT_DATA[v]) addPlcRow(`PLC EK MODÜL ${i + 1}`, PLC_PRODUCT_DATA[v].stok, PLC_PRODUCT_DATA[v].ad);
+    });
+    document.querySelectorAll('.plc-tc-cdd').forEach((cdd, i) => {
+      const v = cdd.dataset.value || '';
+      if (v && PLC_PRODUCT_DATA[v]) addPlcRow(`PLC TC MODÜL ${i + 1}`, PLC_PRODUCT_DATA[v].stok, PLC_PRODUCT_DATA[v].ad);
+    });
+    document.querySelectorAll('.plc-analog-cdd').forEach((cdd, i) => {
+      const v = cdd.dataset.value || '';
+      if (v && PLC_PRODUCT_DATA[v]) addPlcRow(`PLC ANALOG MODÜL ${i + 1}`, PLC_PRODUCT_DATA[v].stok, PLC_PRODUCT_DATA[v].ad);
+    });
+    // --- /PLC GRUBU ---
 
     // --- BUTON GRUBU ---
     function addBtn(kullanim, stok, urunAdi, adet) {
@@ -5306,12 +5328,23 @@
     cdd.dataset.value = val || '';
     cdd.querySelectorAll('.cdd-option').forEach(o => o.classList.toggle('cdd-selected', o.dataset.val === val));
     cdd.classList.remove('open');
-    if (cdd.id === 'plc-cpu-cdd') { updateEkModulOptions(); updatePlcModulIoCard(); if (document.getElementById('page-io')?.classList.contains('active')) renderIOPage(); }
+    if (cdd.id === 'plc-hmi-cdd') { updatePlcBrandCompatibility(); }
+    else if (cdd.id === 'plc-cpu-cdd') { updatePlcBrandCompatibility(); updatePlcModulIoCard(); if (document.getElementById('page-io')?.classList.contains('active')) renderIOPage(); }
     else if (cdd.classList.contains('ek-modul-cdd') || cdd.classList.contains('plc-tc-cdd') || cdd.classList.contains('plc-analog-cdd')) { updatePlcModulIoCard(); if (document.getElementById('page-io')?.classList.contains('active')) renderIOPage(); }
   }
   document.addEventListener('click', function(e) {
     if (!e.target.closest('.cdd')) document.querySelectorAll('.cdd.open').forEach(d => d.classList.remove('open'));
   });
+
+  const PLC_TC_OPTIONS = {
+    siemens: [
+      { val: 'sm1231-tc4ai', label: 'SM 1231 TC 4AI (6ES7 231-5QD32-0XB0)' },
+      { val: 'sm1231-tc8ai', label: 'SM 1231 TC 8AI (6ES7 231-5QF32-0XB0)' },
+    ],
+    omron: [
+      { val: 'cp1w-ts003', label: 'CP1W-TS003 (4AI)' },
+    ],
+  };
 
   const PLC_EK_MODUL_OPTIONS = {
     siemens: [
@@ -5329,14 +5362,48 @@
     'cp2e-n60dt1': 'omron',
   };
 
+  const PLC_CPU_OPTIONS = [
+    { val: 's7-1215c',    label: 'S7-1200 CPU 1215C DC/DC/DC (14DI/10DO)', brand: 'siemens' },
+    { val: 's7-1214c',    label: 'S7-1200 CPU 1214C DC/DC/DC (14DI/10DO)', brand: 'siemens' },
+    { val: 'cp2e-n60dt1', label: 'OMRON CP2E-N60DT1-D (36DI/24DO)',        brand: 'omron'   },
+  ];
+  const PLC_HMI_OPTIONS = [
+    { val: 'nb7w-tw01b', label: 'OMRON NB7W-TW01B HMI',           brand: 'omron'   },
+    { val: 'ktp900',     label: 'SIEMENS SIMATIC KTP900 BASIC 9"', brand: 'siemens' },
+    { val: 'ktp700',     label: 'SIEMENS SIMATIC KTP700 BASIC 7"', brand: 'siemens' },
+  ];
+  const PLC_HMI_BRAND = {
+    'nb7w-tw01b': 'omron',
+    'ktp900':     'siemens',
+    'ktp700':     'siemens',
+  };
+  const PLC_PRODUCT_DATA = {
+    's7-1215c':        { stok: '', ad: 'SIEMENS S7-1200 CPU 1215C DC/DC/DC (14DI/10DO)' },
+    's7-1214c':        { stok: '', ad: 'SIEMENS S7-1200 CPU 1214C DC/DC/DC (14DI/10DO)' },
+    'cp2e-n60dt1':     { stok: '', ad: 'OMRON CP2E-N60DT1-D (36DI/24DO)' },
+    'sm1223-di16dq16': { stok: '', ad: 'SIEMENS SM 1223 DI16/DQ16 (6ES7223-1BL32-0XB0)' },
+    'sm1221-di8':      { stok: '', ad: 'SIEMENS SM 1221 DI8 (6ES7221-1BF32-0XB0)' },
+    'cp1w-20edt1':     { stok: '', ad: 'OMRON CP1W-20EDT1 12DI/8DO' },
+    'cp1w-40edt1':     { stok: '', ad: 'OMRON CP1W-40EDT1 24DI/16DO' },
+    'nb7w-tw01b':      { stok: '', ad: 'OMRON NB7W-TW01B HMI' },
+    'ktp900':          { stok: '', ad: 'SIEMENS SIMATIC KTP900 BASIC 9"' },
+    'ktp700':          { stok: '', ad: 'SIEMENS SIMATIC KTP700 BASIC 7"' },
+    'sm1231-tc4ai':    { stok: '', ad: 'SIEMENS SM 1231 TC 4AI (6ES7 231-5QD32-0XB0)' },
+    'sm1231-tc8ai':    { stok: '', ad: 'SIEMENS SM 1231 TC 8AI (6ES7 231-5QF32-0XB0)' },
+    'cp1w-ts003':      { stok: '', ad: 'OMRON CP1W-TS003 (4AI)' },
+  };
+
   const PLC_MODULE_IO = {
     's7-1215c':        { di: 14, do: 10, ai: 0, ao: 0 },
     's7-1214c':        { di: 14, do: 10, ai: 0, ao: 0 },
     'cp2e-n60dt1':     { di: 36, do: 24, ai: 0, ao: 0 },
     'sm1223-di16dq16': { di: 16, do: 16, ai: 0, ao: 0 },
     'sm1221-di8':      { di: 8,  do: 0,  ai: 0, ao: 0 },
-    'cp1w-20edt1':     { di: 12, do: 8,  ai: 0, ao: 0 },
-    'cp1w-40edt1':     { di: 24, do: 16, ai: 0, ao: 0 },
+    'cp1w-20edt1':     { di: 12, do: 8,  ai: 0,  ao: 0 },
+    'cp1w-40edt1':     { di: 24, do: 16, ai: 0,  ao: 0 },
+    'sm1231-tc4ai':    { di: 0,  do: 0,  ai: 4,  ao: 0 },
+    'sm1231-tc8ai':    { di: 0,  do: 0,  ai: 8,  ao: 0 },
+    'cp1w-ts003':      { di: 0,  do: 0,  ai: 4,  ao: 0 },
   };
 
   function getPlcIoLayout() {
@@ -5400,9 +5467,38 @@
     if (el('plc-modul-ao')) el('plc-modul-ao').textContent = cpuIo.ao + ekAo + tcAo + anaAo;
   }
 
+  function getActivePlcBrand() {
+    const hmiVal = document.getElementById('plc-hmi-cdd')?.dataset?.value || '';
+    const cpuVal = document.getElementById('plc-cpu-cdd')?.dataset?.value || '';
+    if (hmiVal) return PLC_HMI_BRAND[hmiVal] || '';
+    if (cpuVal) return PLC_CPU_BRAND[cpuVal] || '';
+    return '';
+  }
+
+  function updateTcModulOptions() {
+    const brand = getActivePlcBrand();
+    const opts = brand ? (PLC_TC_OPTIONS[brand] || []) : [];
+    document.querySelectorAll('.plc-tc-cdd').forEach(cdd => {
+      const optDiv = cdd.querySelector('.cdd-options');
+      if (!optDiv) return;
+      const currentVal = cdd.dataset.value || '';
+      optDiv.innerHTML = `<div class="cdd-option" data-val="" onclick="cddSelect(this,'','-- Se\u00e7iniz --')">-- Se\u00e7iniz --</div>`;
+      opts.forEach(o => {
+        const sel = currentVal === o.val ? ' cdd-selected' : '';
+        optDiv.insertAdjacentHTML('beforeend',
+          `<div class="cdd-option${sel}" data-val="${o.val}" onclick="cddSelect(this,'${o.val}','${o.label}')">${o.label}</div>`);
+      });
+      if (currentVal && !opts.find(o => o.val === currentVal)) {
+        cdd.querySelector('.cdd-val').textContent = '-- Se\u00e7iniz --';
+        cdd.dataset.value = '';
+        optDiv.querySelector('.cdd-option').classList.add('cdd-selected');
+        updatePlcModulIoCard();
+      }
+    });
+  }
+
   function updateEkModulOptions() {
-    const cpuCdd = document.getElementById('plc-cpu-cdd');
-    const brand = cpuCdd ? (PLC_CPU_BRAND[cpuCdd.dataset.value] || '') : '';
+    const brand = getActivePlcBrand();
     const opts = brand ? (PLC_EK_MODUL_OPTIONS[brand] || []) : [];
     document.querySelectorAll('.ek-modul-cdd').forEach(cdd => {
       const optDiv = cdd.querySelector('.cdd-options');
@@ -5422,6 +5518,50 @@
       }
     });
   }
+
+  function updatePlcBrandCompatibility() {
+    const brand = getActivePlcBrand();
+    // HMI seçeneklerini filtrele
+    const hmiCdd = document.getElementById('plc-hmi-cdd');
+    if (hmiCdd) {
+      const optDiv = hmiCdd.querySelector('.cdd-options');
+      const currentVal = hmiCdd.dataset.value || '';
+      const available = brand ? PLC_HMI_OPTIONS.filter(o => o.brand === brand) : PLC_HMI_OPTIONS;
+      optDiv.innerHTML = `<div class="cdd-option${!currentVal ? ' cdd-selected' : ''}" data-val="" onclick="cddSelect(this,'','-- Se\u00e7iniz --')">-- Se\u00e7iniz --</div>`;
+      available.forEach(o => {
+        const sel = currentVal === o.val ? ' cdd-selected' : '';
+        const safeLabel = o.label.replace(/"/g, '&quot;');
+        optDiv.insertAdjacentHTML('beforeend',
+          `<div class="cdd-option${sel}" data-val="${o.val}" onclick="cddSelect(this,'${o.val}','${safeLabel}')">${o.label}</div>`);
+      });
+      if (currentVal && !available.find(o => o.val === currentVal)) {
+        hmiCdd.querySelector('.cdd-val').textContent = '-- Se\u00e7iniz --';
+        hmiCdd.dataset.value = '';
+      }
+    }
+    // CPU seçeneklerini filtrele
+    const cpuCdd = document.getElementById('plc-cpu-cdd');
+    if (cpuCdd) {
+      const optDiv = cpuCdd.querySelector('.cdd-options');
+      const currentVal = cpuCdd.dataset.value || '';
+      const available = brand ? PLC_CPU_OPTIONS.filter(o => o.brand === brand) : PLC_CPU_OPTIONS;
+      optDiv.innerHTML = `<div class="cdd-option${!currentVal ? ' cdd-selected' : ''}" data-val="" onclick="cddSelect(this,'','-- Se\u00e7iniz --')">-- Se\u00e7iniz --</div>`;
+      available.forEach(o => {
+        const sel = currentVal === o.val ? ' cdd-selected' : '';
+        const safeLabel = o.label.replace(/"/g, '&quot;');
+        optDiv.insertAdjacentHTML('beforeend',
+          `<div class="cdd-option${sel}" data-val="${o.val}" onclick="cddSelect(this,'${o.val}','${safeLabel}')">${o.label}</div>`);
+      });
+      if (currentVal && !available.find(o => o.val === currentVal)) {
+        cpuCdd.querySelector('.cdd-val').textContent = '-- Se\u00e7iniz --';
+        cpuCdd.dataset.value = '';
+        updatePlcModulIoCard();
+      }
+    }
+    // Ek Modül ve TC Modül seçeneklerini de güncelle
+    updateEkModulOptions();
+    updateTcModulOptions();
+  }
   // ===== End Custom Dropdown =====
 
   function addEkModul() {
@@ -5430,7 +5570,7 @@
     newCard.className = 'rounded-xl ek-modul-card border border-emerald-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col ek-modul-extra';
     newCard.style.minWidth = '230px';
     newCard.innerHTML = `
-      <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center justify-between gap-2 mb-2">
         <div class="flex items-center gap-2">
           <div class="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
             <i data-lucide="layers" class="w-3 h-3 text-emerald-400"></i>
@@ -5438,7 +5578,7 @@
           <span class="label-tag mono text-[10px] text-emerald-400">PLC Ek Modül</span>
           <span class="ek-modul-io-badge text-[9px] mono text-emerald-300 ml-1" style="display:none"></span>
         </div>
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1 flex-shrink-0">
           <button onclick="addEkModul()" class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center hover:bg-emerald-500/40 transition-colors" title="Ek Modül Ekle">
             <i data-lucide="plus" class="w-3 h-3 text-emerald-400"></i>
           </button>
@@ -5506,6 +5646,78 @@
   }
   // ===== /EMNİYET RÖLESİ OTOMATİK SEÇİM =====
 
+  // ===== TC MODÜL IO TABLOLARI =====
+  function getTcModulIoLayout() {
+    const aiAddresses = [];
+    let aiIdx = 0;
+    document.querySelectorAll('.plc-tc-cdd').forEach(cdd => {
+      const v = cdd.dataset.value || '';
+      const io = PLC_MODULE_IO[v] || { ai: 0, ao: 0 };
+      for (let i = 0; i < io.ai; i++) {
+        aiAddresses.push(`AI${Math.floor(aiIdx / 8)}.${aiIdx % 8}`);
+        aiIdx++;
+      }
+    });
+    const aoAddresses = [];
+    let aoIdx = 0;
+    document.querySelectorAll('.plc-analog-cdd').forEach(cdd => {
+      const v = cdd.dataset.value || '';
+      const io = PLC_MODULE_IO[v] || { ai: 0, ao: 0 };
+      for (let i = 0; i < io.ao; i++) {
+        aoAddresses.push(`AO${Math.floor(aoIdx / 8)}.${aoIdx % 8}`);
+        aoIdx++;
+      }
+    });
+    return { aiAddresses, aoAddresses };
+  }
+
+  function getTCRows() {
+    const girisRows = [];
+    const tankIsimleri = getTankIsimleri(state.tankSayisi);
+    // Her tank için 1 termokupl
+    for (let t = 0; t < state.tankSayisi; t++) {
+      girisRows.push({ giris: '', girisKomutu: `${t + 1}. Tank Isı Ölçer (Termokupl)` });
+    }
+    // Her kurutma rezistansı için 1 termokupl
+    const kurRowEls = document.querySelectorAll('#kur-tbody tr[id^="kur-row-"]');
+    kurRowEls.forEach((row, idx) => {
+      girisRows.push({ giris: '', girisKomutu: `${idx + 1}. Kurutma Rezistansı Termokupl` });
+    });
+
+    const { aiAddresses, aoAddresses } = getTcModulIoLayout();
+
+    // AI adresleri ata
+    girisRows.forEach((r, i) => {
+      r.giris = aiAddresses[i] || `AI${Math.floor(i / 8)}.${i % 8}`;
+    });
+    // Kullanılmayan AI slotları için BOŞ GİRİŞ
+    while (aiAddresses.length > 0 && girisRows.length < aiAddresses.length) {
+      const i = girisRows.length;
+      girisRows.push({ giris: aiAddresses[i], girisKomutu: 'BOŞ GİRİŞ', _bos: true });
+    }
+
+    // AO satırları (mevcut atama yok — BOŞ ÇIKIŞ)
+    const cikisRows = [];
+    while (aoAddresses.length > 0 && cikisRows.length < aoAddresses.length) {
+      const i = cikisRows.length;
+      cikisRows.push({ cikis: aoAddresses[i], cikisKomutu: 'BOŞ ÇIKIŞ', _bos: true });
+    }
+
+    // Merge
+    const len = Math.max(girisRows.length, cikisRows.length);
+    const merged = [];
+    for (let i = 0; i < len; i++) {
+      const g = girisRows[i]  || { giris: '', girisKomutu: '' };
+      const c = cikisRows[i] || { cikis: '',  cikisKomutu: '' };
+      merged.push({ giris: g.giris, girisKomutu: g.girisKomutu, cikis: c.cikis, cikisKomutu: c.cikisKomutu, _bos: !!(g._bos && (!c.cikisKomutu || c._bos)) });
+    }
+
+    const aiCount = girisRows.filter(r => !r._bos).length;
+    const aoCount = cikisRows.filter(r => !r._bos).length;
+    return { rows: merged, aiCount, aoCount };
+  }
+  // ===== END TC MODÜL IO TABLOLARI =====
+
   function renderIOPage() {
     const container = document.getElementById('io-content');
     if (!container) return;
@@ -5517,13 +5729,24 @@
     const plcRows = mergePLCRows(girisRows, cikisRows);
     container.appendChild(buildIOTable('PLC', '#fbbf24', 'circuit-board', plcRows));
 
-    // IO Sayısı güncelle
-    const diCount = girisRows.filter(r => r.girisKomutu && r.girisKomutu.trim() !== '').length;
-    const doCount = cikisRows.filter(r => r.cikisKomutu && r.cikisKomutu.trim() !== '').length;
+    // IO Sayısı güncelle (BOŞ GİRİŞ / BOŞ ÇIKIŞ satırları hariç)
+    const diCount = girisRows.filter(r => r.girisKomutu && r.girisKomutu.trim() !== '' && !r._bos).length;
+    const doCount = cikisRows.filter(r => r.cikisKomutu && r.cikisKomutu.trim() !== '' && !r._bos).length;
     const diEl = document.getElementById('plc-di-count');
     const doEl = document.getElementById('plc-do-count');
     if (diEl) diEl.textContent = diCount;
     if (doEl) doEl.textContent = doCount;
+
+    // TC Modül Tablosu
+    const tcData = getTCRows();
+    if (tcData.rows.length > 0) {
+      container.appendChild(buildIOTable('TC MODÜL', '#f97316', 'thermometer', tcData.rows));
+    }
+    // AI/AO sayısı güncelle
+    const aiEl = document.getElementById('plc-ai-count');
+    const aoEl = document.getElementById('plc-ao-count');
+    if (aiEl) aiEl.textContent = tcData.aiCount;
+    if (aoEl) aoEl.textContent = tcData.aoCount;
 
     // Safety PLC Tablosu — yalnızca Işın Bariyeri VAR ve Makine Tipi Kabinli ise
     if (state.isinBariyeri === 'VAR' && state.makineTipi === 'Kabinli') {
@@ -5722,8 +5945,7 @@
 
   syncSelectionCardVisuals();
   updateEmniyetRolesiCard();
-
-  // Motor ekleme
+  updatePlcBrandCompatibility();
   btnAddMotor.addEventListener('click', () => {
     const motorId = Date.now();
     state.motors.push({ id: motorId });
