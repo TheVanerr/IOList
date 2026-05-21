@@ -519,6 +519,24 @@
         </div>
        </div>
       </div>
+      <!-- PLC HMI -->
+      <div class="rounded-xl border border-teal-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+       <div class="flex items-center gap-2 mb-2">
+        <div class="w-6 h-6 rounded-md bg-teal-500/20 flex items-center justify-center border border-teal-500/40">
+         <i data-lucide="monitor" class="w-3 h-3 text-teal-400"></i>
+        </div>
+        <span class="label-tag mono text-[10px] text-teal-400">PLC HMI</span>
+       </div>
+       <div id="plc-hmi-cdd" class="cdd mt-auto" style="--cdd-color:#2dd4bf">
+        <button class="cdd-trigger border border-teal-500/30" onclick="cddToggle(this)">
+         <span class="cdd-val">-- Seçiniz --</span>
+         <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options">
+         <div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div>
+        </div></div>
+       </div>
+      </div>
       <!-- PLC CPU -->
       <div class="rounded-xl border border-blue-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
        <div class="flex items-center gap-2 mb-2">
@@ -595,20 +613,41 @@
         <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
        </div>
       </div>
-      <!-- Emniyet Rölesi -->
-      <div class="rounded-xl border border-rose-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
+      <!-- Emniyet Rölesi 1 -->
+      <div id="emniyet-card-1" class="rounded-xl border border-rose-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px">
        <div class="flex items-center gap-2 mb-2">
         <div class="w-6 h-6 rounded-md bg-rose-500/20 flex items-center justify-center border border-rose-500/40">
          <i data-lucide="shield-check" class="w-3 h-3 text-rose-400"></i>
         </div>
         <span class="label-tag mono text-[10px] text-rose-400">Emniyet Rölesi</span>
        </div>
-       <div class="cdd mt-auto" style="--cdd-color:#fb7185">
-        <button class="cdd-trigger border border-rose-500/30" onclick="cddToggle(this)">
-         <span class="cdd-val">-- Seçiniz --</span>
-         <i data-lucide="chevron-down" class="cdd-chevron w-3 h-3 text-slate-600"></i>
+       <div id="emniyet-cdd-1" class="cdd mt-auto" style="--cdd-color:#fb7185">
+        <button class="cdd-trigger border border-rose-500/30" style="cursor:default;pointer-events:none;opacity:0.85">
+         <span class="cdd-val">— Otomatik —</span>
+         <i data-lucide="lock" class="w-3 h-3 text-slate-500"></i>
         </button>
-        <div class="cdd-panel"><div class="cdd-options"><div class="cdd-option cdd-selected" data-val="" onclick="cddSelect(this,'','-- Seçiniz --')">-- Seçiniz --</div></div></div>
+        <div class="cdd-panel"><div class="cdd-options">
+         <div class="cdd-option" data-val="g9spn20s">EMNİYET RÖLESİ G9SPN20S OMRON G9SX</div>
+         <div class="cdd-option" data-val="g9sb2002aa">EMNİYET RÖLESİ G9SB2002AACDC241 OMRON G9SX</div>
+        </div></div>
+       </div>
+      </div>
+      <!-- Emniyet Rölesi 2 (sadece Konveyör + RFID VAR) -->
+      <div id="emniyet-card-2" class="rounded-xl border border-rose-500/30 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-3 py-2.5 flex-shrink-0 flex flex-col" style="min-width:200px;display:none">
+       <div class="flex items-center gap-2 mb-2">
+        <div class="w-6 h-6 rounded-md bg-rose-500/20 flex items-center justify-center border border-rose-500/40">
+         <i data-lucide="shield-check" class="w-3 h-3 text-rose-400"></i>
+        </div>
+        <span class="label-tag mono text-[10px] text-rose-400">Emniyet Rölesi 2</span>
+       </div>
+       <div id="emniyet-cdd-2" class="cdd mt-auto" style="--cdd-color:#fb7185">
+        <button class="cdd-trigger border border-rose-500/30" style="cursor:default;pointer-events:none;opacity:0.85">
+         <span class="cdd-val">— Otomatik —</span>
+         <i data-lucide="lock" class="w-3 h-3 text-slate-500"></i>
+        </button>
+        <div class="cdd-panel"><div class="cdd-options">
+         <div class="cdd-option" data-val="g9sb2002ca">EMNİYET RÖLESİ G9SB2002CACDC241 OMRON G9SX</div>
+        </div></div>
        </div>
       </div>
      </div>
@@ -2669,6 +2708,74 @@
     });
     rows.push({ stok: '10 16231', urunAdi: 'SWITCH BS1012 ANI HARK.1NA+1NK', birimFiyat: 0, adet: Math.max(1, kaAkimCount - 1), model: 'SABİT|SWITCH|SWITCH BS1012 ANI HARK.1NA+1NK', grupAdi: 'SABİT|SWITCH', kullanim: 'SWITCH', _fixedAdet: true });
 
+    // --- BUTON GRUBU ---
+    function addBtn(kullanim, stok, urunAdi, adet) {
+      rows.push({ stok, urunAdi, birimFiyat: 0, adet: adet || 1, model: 'BUTON|' + kullanim + '|' + urunAdi, grupAdi: 'BUTON GRUBU', kullanim, _section: 'BUTON GRUBU', _fixedAdet: true });
+    }
+    const mt = state.makineTipi;   // 'Kabinli' | 'Konveyör' | ...
+    const bt = state.butonTipi;    // 'Manuel' | 'PLC' | 'PLC + Manuel'
+    const isinVar = state.isinBariyeri === 'VAR';
+    const kapakAdet = isinVar ? 2 : 1;
+
+    if (mt === 'Kabinli' && bt === 'PLC') {
+      // ACİL STOP BUTONU
+      addBtn('ACİL STOP BUTONU', '10 03445', 'BUTON ACİL STOP MANTAR B200EE', 1);
+      addBtn('ACİL STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2 (2 ADET)', 2);
+      addBtn('ACİL STOP BUTONU', '', 'ACİL STOPA IŞIKLI LAMBA EKLENSİN (NOT)', 0);
+      // RESET BUTONU
+      addBtn('RESET BUTONU', '10 00272', 'BUTON START B100DM', 1);
+      addBtn('RESET BUTONU', '10 01375', 'SİNYAL LAMBA B7 B MAVİ LED Lİ BLOK 12-30V AC/DC', 1);
+      addBtn('RESET BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+    } else if (mt === 'Kabinli' && bt === 'PLC + Manuel') {
+      // START BUTONU
+      addBtn('START BUTONU', '10 00273', 'BUTON START B100DY', 1);
+      addBtn('START BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+      // STOP BUTONU
+      addBtn('STOP BUTONU', '10 00271', 'BUTON START B100DK', 1);
+      addBtn('STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2', 1);
+      // ACİL STOP BUTONU
+      addBtn('ACİL STOP BUTONU', '10 03445', 'BUTON ACİL STOP MANTAR B200EE', 1);
+      addBtn('ACİL STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2 (2 ADET)', 2);
+      addBtn('ACİL STOP BUTONU', '', 'ACİL STOPA IŞIKLI LAMBA EKLENSİN (NOT)', 0);
+      // RESET BUTONU
+      addBtn('RESET BUTONU', '10 00272', 'BUTON START B100DM', 1);
+      addBtn('RESET BUTONU', '10 01375', 'SİNYAL LAMBA B7 B MAVİ LED Lİ BLOK 12-30V AC/DC', 1);
+      addBtn('RESET BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+      // KAPAK AÇ BUTONU (ışın bariyeri varsa 2 adet)
+      addBtn('KAPAK AÇ BUTONU', '10 00273', 'BUTON START B100DY', kapakAdet);
+      addBtn('KAPAK AÇ BUTONU', '10 00267', 'KONTAK BLOK NO B1', kapakAdet);
+      addBtn('KAPAK AÇ BUTONU', '10 00268', 'KONTAK BLOK NC B2', kapakAdet);
+      // KAPAK KAPAT BUTONU (ışın bariyeri varsa 2 adet)
+      addBtn('KAPAK KAPAT BUTONU', '10 00271', 'BUTON START B100DK', kapakAdet);
+      addBtn('KAPAK KAPAT BUTONU', '10 00267', 'KONTAK BLOK NO B1', kapakAdet);
+      addBtn('KAPAK KAPAT BUTONU', '10 00268', 'KONTAK BLOK NC B2', kapakAdet);
+    } else if (mt === 'Konveyör' && bt === 'PLC') {
+      // ACİL STOP BUTONU
+      addBtn('ACİL STOP BUTONU', '10 03445', 'BUTON ACİL STOP MANTAR B200EE', 1);
+      addBtn('ACİL STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2 (2 ADET)', 2);
+      addBtn('ACİL STOP BUTONU', '', 'ACİL STOPA IŞIKLI LAMBA EKLENSİN (NOT)', 0);
+      // RESET BUTONU
+      addBtn('RESET BUTONU', '10 00272', 'BUTON START B100DM', 1);
+      addBtn('RESET BUTONU', '10 01375', 'SİNYAL LAMBA B7 B MAVİ LED Lİ BLOK 12-30V AC/DC', 1);
+      addBtn('RESET BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+    }
+    // --- /BUTON GRUBU ---
+
+    // --- EMNİYET GRUBU ---
+    const emnCfg = getEmniyetConfig();
+    function addEmn(kullanim, stok, urunAdi, adet) {
+      rows.push({ stok, urunAdi, birimFiyat: 0, adet: adet || 1, model: 'EMN|' + kullanim + '|' + urunAdi, grupAdi: 'EMNİYET GRUBU', kullanim, _section: 'EMNİYET GRUBU', _fixedAdet: true });
+    }
+    if (emnCfg.val1 && EMNIYET_DATA[emnCfg.val1]) {
+      const d = EMNIYET_DATA[emnCfg.val1];
+      addEmn('EMNİYET RÖLESİ', d.stok, d.ad, 1);
+    }
+    if (emnCfg.val2 && EMNIYET_DATA[emnCfg.val2]) {
+      const d = EMNIYET_DATA[emnCfg.val2];
+      addEmn('EMNİYET RÖLESİ 2', d.stok, d.ad, 1);
+    }
+    // --- /EMNİYET GRUBU ---
+
     // Bölüm etiketlenmemiş satırları GÜÇ DÖNÜŞTÜRME GRUBU olarak işaretle
     rows.forEach(r => { if (!r._section) r._section = 'GÜÇ DÖNÜŞTÜRME GRUBU'; });
 
@@ -3033,6 +3140,64 @@
     });
     const switchAdet = Math.max(1, kaAkimCount - 1);
     addFixed('10 16231', 'SWITCH BS1012 ANI HARK.1NA+1NK', 'SWITCH', switchAdet);
+
+    // --- BUTON GRUBU ---
+    function addBtn2(kullanim, stok, urunAdi, adet) {
+      rows.push({ stok, urunAdi, birimFiyat: 0, adet: adet || 1, model: 'BUTON|' + kullanim + '|' + urunAdi, grupAdi: 'BUTON GRUBU', kullanim, _section: 'BUTON GRUBU', _fixedAdet: true });
+    }
+    const mt2 = state.makineTipi;
+    const bt2 = state.butonTipi;
+    const isinVar2 = state.isinBariyeri === 'VAR';
+    const kapakAdet2 = isinVar2 ? 2 : 1;
+
+    if (mt2 === 'Kabinli' && bt2 === 'PLC') {
+      addBtn2('ACİL STOP BUTONU', '10 03445', 'BUTON ACİL STOP MANTAR B200EE', 1);
+      addBtn2('ACİL STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2 (2 ADET)', 2);
+      addBtn2('ACİL STOP BUTONU', '', 'ACİL STOPA IŞIKLI LAMBA EKLENSİN (NOT)', 0);
+      addBtn2('RESET BUTONU', '10 00272', 'BUTON START B100DM', 1);
+      addBtn2('RESET BUTONU', '10 01375', 'SİNYAL LAMBA B7 B MAVİ LED Lİ BLOK 12-30V AC/DC', 1);
+      addBtn2('RESET BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+    } else if (mt2 === 'Kabinli' && bt2 === 'PLC + Manuel') {
+      addBtn2('START BUTONU', '10 00273', 'BUTON START B100DY', 1);
+      addBtn2('START BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+      addBtn2('STOP BUTONU', '10 00271', 'BUTON START B100DK', 1);
+      addBtn2('STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2', 1);
+      addBtn2('ACİL STOP BUTONU', '10 03445', 'BUTON ACİL STOP MANTAR B200EE', 1);
+      addBtn2('ACİL STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2 (2 ADET)', 2);
+      addBtn2('ACİL STOP BUTONU', '', 'ACİL STOPA IŞIKLI LAMBA EKLENSİN (NOT)', 0);
+      addBtn2('RESET BUTONU', '10 00272', 'BUTON START B100DM', 1);
+      addBtn2('RESET BUTONU', '10 01375', 'SİNYAL LAMBA B7 B MAVİ LED Lİ BLOK 12-30V AC/DC', 1);
+      addBtn2('RESET BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+      addBtn2('KAPAK AÇ BUTONU', '10 00273', 'BUTON START B100DY', kapakAdet2);
+      addBtn2('KAPAK AÇ BUTONU', '10 00267', 'KONTAK BLOK NO B1', kapakAdet2);
+      addBtn2('KAPAK AÇ BUTONU', '10 00268', 'KONTAK BLOK NC B2', kapakAdet2);
+      addBtn2('KAPAK KAPAT BUTONU', '10 00271', 'BUTON START B100DK', kapakAdet2);
+      addBtn2('KAPAK KAPAT BUTONU', '10 00267', 'KONTAK BLOK NO B1', kapakAdet2);
+      addBtn2('KAPAK KAPAT BUTONU', '10 00268', 'KONTAK BLOK NC B2', kapakAdet2);
+    } else if (mt2 === 'Konveyör' && bt2 === 'PLC') {
+      addBtn2('ACİL STOP BUTONU', '10 03445', 'BUTON ACİL STOP MANTAR B200EE', 1);
+      addBtn2('ACİL STOP BUTONU', '10 00268', 'KONTAK BLOK NC B2 (2 ADET)', 2);
+      addBtn2('ACİL STOP BUTONU', '', 'ACİL STOPA IŞIKLI LAMBA EKLENSİN (NOT)', 0);
+      addBtn2('RESET BUTONU', '10 00272', 'BUTON START B100DM', 1);
+      addBtn2('RESET BUTONU', '10 01375', 'SİNYAL LAMBA B7 B MAVİ LED Lİ BLOK 12-30V AC/DC', 1);
+      addBtn2('RESET BUTONU', '10 00267', 'KONTAK BLOK NO B1', 1);
+    }
+    // --- /BUTON GRUBU ---
+
+    // --- EMNİYET GRUBU ---
+    const emnCfg2 = getEmniyetConfig();
+    function addEmn2(kullanim, stok, urunAdi, adet) {
+      rows.push({ stok, urunAdi, birimFiyat: 0, adet: adet || 1, model: 'EMN|' + kullanim + '|' + urunAdi, grupAdi: 'EMNİYET GRUBU', kullanim, _section: 'EMNİYET GRUBU', _fixedAdet: true });
+    }
+    if (emnCfg2.val1 && EMNIYET_DATA[emnCfg2.val1]) {
+      const d = EMNIYET_DATA[emnCfg2.val1];
+      addEmn2('EMNİYET RÖLESİ', d.stok, d.ad, 1);
+    }
+    if (emnCfg2.val2 && EMNIYET_DATA[emnCfg2.val2]) {
+      const d = EMNIYET_DATA[emnCfg2.val2];
+      addEmn2('EMNİYET RÖLESİ 2', d.stok, d.ad, 1);
+    }
+    // --- /EMNİYET GRUBU ---
 
     // Benzersiz satırları say ve adet birleştir
     const merged = [];
@@ -5295,6 +5460,52 @@
     updatePlcModulIoCard();
   }
 
+  // ===== EMNİYET RÖLESİ OTOMATİK SEÇİM =====
+  const EMNIYET_DATA = {
+    'g9spn20s':   { stok: '10 04538', ad: 'EMNİYET RÖLESİ G9SPN20S OMRON G9SX' },
+    'g9sb2002aa': { stok: '10 08330', ad: 'EMNİYET RÖLESİ G9SB2002AACDC241 OMRON G9SX' },
+    'g9sb2002ca': { stok: '10 13543', ad: 'EMNİYET RÖLESİ G9SB2002CACDC241 OMRON G9SX' },
+  };
+
+  function getEmniyetConfig() {
+    // Döndürür: { val1, val2 }  — val2 null ise 2. kart görünmez
+    const mt = state.makineTipi;
+    const ib = state.isinBariyeri; // 'VAR' | 'YOK'  (Konveyörde = RFID)
+    if (mt === 'Kabinli') {
+      return { val1: ib === 'VAR' ? 'g9spn20s' : 'g9sb2002aa', val2: null };
+    } else { // Konveyör
+      return { val1: 'g9sb2002aa', val2: ib === 'VAR' ? 'g9sb2002ca' : null };
+    }
+  }
+
+  function updateEmniyetRolesiCard() {
+    const cfg = getEmniyetConfig();
+    // Kart 1
+    const cdd1 = document.getElementById('emniyet-cdd-1');
+    if (cdd1) {
+      const d = EMNIYET_DATA[cfg.val1] || {};
+      cdd1.querySelector('.cdd-val').textContent = d.ad || '— Otomatik —';
+      cdd1.dataset.value = cfg.val1 || '';
+      cdd1.querySelectorAll('.cdd-option').forEach(o => o.classList.toggle('cdd-selected', o.dataset.val === cfg.val1));
+    }
+    // Kart 2
+    const card2 = document.getElementById('emniyet-card-2');
+    const cdd2  = document.getElementById('emniyet-cdd-2');
+    if (card2 && cdd2) {
+      if (cfg.val2) {
+        card2.style.display = '';
+        const d = EMNIYET_DATA[cfg.val2] || {};
+        cdd2.querySelector('.cdd-val').textContent = d.ad || '— Otomatik —';
+        cdd2.dataset.value = cfg.val2 || '';
+        cdd2.querySelectorAll('.cdd-option').forEach(o => o.classList.toggle('cdd-selected', o.dataset.val === cfg.val2));
+      } else {
+        card2.style.display = 'none';
+        cdd2.dataset.value = '';
+      }
+    }
+  }
+  // ===== /EMNİYET RÖLESİ OTOMATİK SEÇİM =====
+
   function renderIOPage() {
     const container = document.getElementById('io-content');
     if (!container) return;
@@ -5366,7 +5577,7 @@
       if (target === 'otomasyon') renderSensorTable();
       if (target === 'fiyatlar') renderFiyatlarTable(); // async — katalog Supabase'den yüklenir
       if (target === 'standart') renderStandartMakineler();
-      if (target === 'io') renderIOPage();
+      if (target === 'io') { renderIOPage(); updateEmniyetRolesiCard(); }
       if (target === 'malzeme') renderMalzemeTable();
     });
   });
@@ -5431,6 +5642,7 @@
     valIsinBariyeri.textContent = 'YOK';
     syncSelectionCardVisuals();
     renderSensorTable();
+    updateEmniyetRolesiCard();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
 
@@ -5494,6 +5706,7 @@
     state.isinBariyeri = state.isinBariyeri === 'VAR' ? 'YOK' : 'VAR';
     valIsinBariyeri.textContent = state.isinBariyeri;
     syncSelectionCardVisuals();
+    updateEmniyetRolesiCard();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
   });
 
@@ -5508,6 +5721,7 @@
   });
 
   syncSelectionCardVisuals();
+  updateEmniyetRolesiCard();
 
   // Motor ekleme
   btnAddMotor.addEventListener('click', () => {
