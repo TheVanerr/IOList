@@ -3728,7 +3728,7 @@
 
   // LYM OPSİYON DURUMU (module scope — renderStandartBOM erişimi için)
   let lymState = { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK', invertor:'YOK' };
-  let kbnState = { yagSiyirici:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', isinBariyeri:'YOK' };
+  let kbnState = { yagSiyirici:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', isinBariyeri:'YOK', otomatikDolum:'YOK' };
 
   // ===== STANDART MAKİNELER =====
   const STANDART_MAKINELER = [
@@ -4560,6 +4560,14 @@
           badgeText: 'VAR'
         });
       }
+      if (kbnState.otomatikDolum === 'VAR') {
+        renderKbnOptSection({
+          title: 'OTOMATİK DOLUM VARSA', color: '#fbbf24',
+          items: [
+          ],
+          badgeText: 'VAR'
+        });
+      }
     }
 
     // Toplam Pano Maliyeti satırı
@@ -4664,6 +4672,7 @@
       drenajPompasi:    v => v === 'VAR' ? 1.5  : 0,
       gercekZamanSaati: () => 0,
       isinBariyeri:     () => 0,
+      otomatikDolum:    () => 0,
     };
     const kbnOptionAmp = {
       yagSiyirici:      v => v === 'VAR' ? 0.5  : 0,
@@ -4671,6 +4680,7 @@
       drenajPompasi:    v => v === 'VAR' ? 4.0  : 0,
       gercekZamanSaati: () => 0,
       isinBariyeri:     () => 0,
+      otomatikDolum:    () => 0,
     };
 
     // === MODEL SEÇİCİ ===
@@ -5052,6 +5062,7 @@
       drenajPompasi:    { bg: 'rgba(45,212,191,0.12)',  border: 'rgba(45,212,191,0.3)',  iconCls: 'text-teal-400',    active: '#2dd4bf' },
       gercekZamanSaati: { bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.3)', iconCls: 'text-violet-400',  active: '#a78bfa' },
       isinBariyeri:     { bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)', iconCls: 'text-red-400',     active: '#f87171' },
+      otomatikDolum:    { bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.3)',  iconCls: 'text-amber-400',   active: '#fbbf24' },
     };
     const KBN_OPTION_YOK_COLOR = '#22d3ee';
 
@@ -5184,6 +5195,7 @@
     kbnOptionsRow.appendChild(makeKbnToggleBtn('drenajPompasi',    'Drenaj Pompası',      'droplet',   ['YOK', 'VAR']));
     kbnOptionsRow.appendChild(makeKbnToggleBtn('gercekZamanSaati', 'Gerçek Zaman Saati', 'clock',     ['YOK', 'VAR']));
     kbnOptionsRow.appendChild(makeKbnToggleBtn('isinBariyeri',     'Işın Bariyeri',       'scan-line', ['YOK', 'VAR']));
+    kbnOptionsRow.appendChild(makeKbnToggleBtn('otomatikDolum',    'Otomatik Dolum',      'glass-water', ['YOK', 'VAR']));
 
     selRow.appendChild(lymOptionsRow);
     selRow.appendChild(kbnOptionsRow);
@@ -5221,7 +5233,7 @@
         if (typeof btn._applyVisual === 'function') btn._applyVisual();
       });
       // KBN opsiyonlarını sıfırla
-      Object.assign(kbnState, { yagSiyirici:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', isinBariyeri:'YOK' });
+      Object.assign(kbnState, { yagSiyirici:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', isinBariyeri:'YOK', otomatikDolum:'YOK' });
       kbnOptionsRow.querySelectorAll('.option-btn').forEach(btn => {
         const optKey = btn.dataset.optKey;
         if (optKey) kbnState[optKey] = 'YOK';
