@@ -1,10 +1,9 @@
-name: Supabase Keep-Alive
+﻿name: Supabase Keep-Alive
 
 on:
   schedule:
-    # Her 3 günde bir saat 08:00 UTC'de çalışır
     - cron: '0 8 */3 * *'
-  workflow_dispatch: # Elle de tetiklenebilir
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,46 +12,41 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Repoyu tam geçmişle al
+      - name: Repoyu tam gecmisle al
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Gerekirse boş keep-alive commit oluştur
+      - name: Gerekirse bos keep-alive commit olustur
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-
           LAST_COMMIT_EPOCH=$(git log -1 --format=%ct)
           NOW_EPOCH=$(date -u +%s)
           AGE_DAYS=$(((NOW_EPOCH - LAST_COMMIT_EPOCH) / 86400))
-
-          echo "Son commit yaşı: ${AGE_DAYS} gün"
-
-          # GitHub Actions schedule güvenliği için 60 güne yaklaşmadan boş commit at.
+          echo "Son commit yasi: ${AGE_DAYS} gun"
           if [ "$AGE_DAYS" -ge 55 ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git commit --allow-empty -m "chore: keep repo active [skip ci]"
             git push origin "HEAD:${GITHUB_REF_NAME}"
-            echo "Boş keep-alive commit gönderildi."
+            echo "Bos keep-alive commit gonderildi."
           else
-            echo "Boş commit gerekmedi."
+            echo "Bos commit gerekmedi."
           fi
 
       - name: Supabase'e ping at
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
+          SUPABASE_URL="https://gkeqdwsxukgejwnoenwk.supabase.co"
+          SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZXFkd3N4dWtnZWp3bm9lbndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MjE0NTcsImV4cCI6MjA5NDE5NzQ1N30.UQ1nDc64mEt3cpdcCm1JK_TBW88AC44yha1J4aWreVo"
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             "${SUPABASE_URL}/rest/v1/standart_bom?select=id&limit=1" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
           echo "HTTP Status: $STATUS"
           if [ "$STATUS" = "000" ]; then
-            echo "Bağlantı kurulamadı!"
+            echo "Baglanti kurulamadi!"
             exit 1
           fi
-          echo "Supabase aktif, ping başarılı (HTTP $STATUS)."
+          echo "Supabase aktif, ping basarili (HTTP $STATUS)."
