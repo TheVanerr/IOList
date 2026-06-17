@@ -649,6 +649,18 @@
                         },
                         {
                             "grup":  "KONTAK GRUBU",
+                            "stokKodu":  "10 00244",
+                            "urunAdi":  "TERMİK RÖLESİ LR2K0306 0,80-1,2A",
+                            "adet":  1
+                        },
+                        {
+                            "grup":  "KONTAK GRUBU",
+                            "stokKodu":  "10 02314",
+                            "urunAdi":  "KONTAKTÖR LC1K0610M7 220V",
+                            "adet":  1
+                        },
+                        {
+                            "grup":  "KONTAK GRUBU",
                             "stokKodu":  "10 01331",
                             "urunAdi":  "KONTAKTÖR LC1K0910M7 220V",
                             "adet":  2
@@ -663,7 +675,7 @@
                             "grup":  "KONTAK GRUBU",
                             "stokKodu":  "10 00238",
                             "urunAdi":  "YARDIMCI KONTAK LA1KN20",
-                            "adet":  1
+                            "adet":  2
                         },
                         {
                             "grup":  "GÜÇ KONTROL GRUBU",
@@ -801,6 +813,18 @@
                         },
                         {
                             "grup":  "KONTAK GRUBU",
+                            "stokKodu":  "10 00244",
+                            "urunAdi":  "TERMİK RÖLESİ LR2K0306 0,80-1,2A",
+                            "adet":  1
+                        },
+                        {
+                            "grup":  "KONTAK GRUBU",
+                            "stokKodu":  "10 02314",
+                            "urunAdi":  "KONTAKTÖR LC1K0610M7 220V",
+                            "adet":  1
+                        },
+                        {
+                            "grup":  "KONTAK GRUBU",
                             "stokKodu":  "10 01331",
                             "urunAdi":  "KONTAKTÖR LC1K0910M7 220V",
                             "adet":  2
@@ -815,7 +839,7 @@
                             "grup":  "KONTAK GRUBU",
                             "stokKodu":  "10 00238",
                             "urunAdi":  "YARDIMCI KONTAK LA1KN20",
-                            "adet":  1
+                            "adet":  2
                         },
                         {
                             "grup":  "GÜÇ KONTROL GRUBU",
@@ -953,6 +977,18 @@
                         },
                         {
                             "grup":  "KONTAK GRUBU",
+                            "stokKodu":  "10 00244",
+                            "urunAdi":  "TERMİK RÖLESİ LR2K0306 0,80-1,2A",
+                            "adet":  1
+                        },
+                        {
+                            "grup":  "KONTAK GRUBU",
+                            "stokKodu":  "10 02314",
+                            "urunAdi":  "KONTAKTÖR LC1K0610M7 220V",
+                            "adet":  1
+                        },
+                        {
+                            "grup":  "KONTAK GRUBU",
                             "stokKodu":  "10 01331",
                             "urunAdi":  "KONTAKTÖR LC1K0910M7 220V",
                             "adet":  2
@@ -967,7 +1003,7 @@
                             "grup":  "KONTAK GRUBU",
                             "stokKodu":  "10 00238",
                             "urunAdi":  "YARDIMCI KONTAK LA1KN20",
-                            "adet":  1
+                            "adet":  2
                         },
                         {
                             "grup":  "GÜÇ KONTROL GRUBU",
