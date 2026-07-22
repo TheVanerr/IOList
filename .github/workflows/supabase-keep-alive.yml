@@ -56,9 +56,10 @@ jobs:
           APP_SUPABASE_URL="${APP_SUPABASE_CONFIG[0]:-}"
           APP_SUPABASE_KEY="${APP_SUPABASE_CONFIG[1]:-}"
           BASE_URL="${APP_SUPABASE_URL:-${SUPABASE_URL:-https://gkeqdwsxukgejwnoenwk.supabase.co}}"
+          # Use the public app config first so the keep-alive ping cannot drift from io.html.
           ANON_KEY="${APP_SUPABASE_KEY:-${SUPABASE_ANON_KEY:-}}"
           if [ -z "${ANON_KEY}" ]; then
-            echo "Supabase anon key bulunamadi. io.html veya SUPABASE_ANON_KEY ayarini kontrol edin."
+            echo "Supabase anon key not found. Check io.html or the SUPABASE_ANON_KEY setting."
             exit 1
           fi
           PRIMARY="${SUPABASE_PING_TABLE:-urun_katalogu}"
