@@ -46,29 +46,33 @@ jobs:
           set -euo pipefail
           # io.html stores SUPA_URL and SUPA_KEY as single-line JavaScript const assignments.
           # GitHub-hosted Ubuntu runners include python3, which we use to read the committed app config.
-          mapfile -t APP_SUPABASE_CONFIG < <(python3 - <<'PY'
+          declare -A APP_SUPABASE_CONFIG=()
+          while IFS=$'\t' read -r name value; do
+            [ -n "${name}" ] || continue
+            APP_SUPABASE_CONFIG["${name}"]="${value}"
+          done < <(python3 - <<'PY'
           import ast, pathlib, re, sys
           path = pathlib.Path("io.html")
           text = path.read_text(encoding="utf-8") if path.exists() else ""
           for name in ("SUPA_URL", "SUPA_KEY"):
-              match = re.search(rf"const\s+{name}\s*=\s*(.+?)\s*;", text)
+              match = re.search(rf"^[ 	]*const\s+{name}\s*=\s*(.+?);\s*$", text, re.MULTILINE)
               if not match:
-                  print("")
                   print(f"warning: {name} not found in io.html, will attempt fallback to GitHub secrets", file=sys.stderr)
                   continue
               try:
-                  print(ast.literal_eval(match.group(1)))
+                  value = ast.literal_eval(match.group(1))
               except (SyntaxError, ValueError):
-                  print("")
                   print(f"warning: {name} in io.html could not be parsed, will attempt fallback to GitHub secrets", file=sys.stderr)
+                  continue
+              print(f"{name}\t{value}")
           PY
           )
-          if [ "${#APP_SUPABASE_CONFIG[@]}" -lt 2 ]; then
-            echo "Supabase config extraction failed. Ensure python3 is available on the runner."
+          APP_SUPABASE_URL="${APP_SUPABASE_CONFIG[SUPA_URL]:-}"
+          APP_SUPABASE_KEY="${APP_SUPABASE_CONFIG[SUPA_KEY]:-}"
+          if [ -z "${APP_SUPABASE_URL}" ] && [ -z "${APP_SUPABASE_KEY}" ] && [ -z "${SUPABASE_URL:-}" ] && [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "Supabase config could not be read from io.html and no GitHub secrets were provided."
             exit 1
           fi
-          APP_SUPABASE_URL="${APP_SUPABASE_CONFIG[0]:-}"
-          APP_SUPABASE_KEY="${APP_SUPABASE_CONFIG[1]:-}"
           BASE_URL="${APP_SUPABASE_URL:-${SUPABASE_URL:-}}"
           if [ -z "${BASE_URL}" ]; then
             echo "Supabase URL not found. Check io.html or the SUPABASE_URL GitHub secret."
