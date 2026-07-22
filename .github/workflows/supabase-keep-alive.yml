@@ -46,8 +46,8 @@ jobs:
           set -euo pipefail
 
           # io.html'den kimlik bilgilerini oku (birincil kaynak)
-          HTML_URL=$(grep -oP "const SUPA_URL = '\K[^']+" io.html 2>/dev/null || true)
-          HTML_KEY=$(grep -oP "const SUPA_KEY = '\K[^']+" io.html 2>/dev/null || true)
+          HTML_URL=$(grep -oP "const\s+SUPA_URL\s*=\s*'\K[^']+" io.html 2>/dev/null || true)
+          HTML_KEY=$(grep -oP "const\s+SUPA_KEY\s*=\s*'\K[^']+" io.html 2>/dev/null || true)
           [ -n "${HTML_URL}" ] && echo "URL io.html'den alindi." || echo "URL io.html'de bulunamadi, yedek kullaniliyor."
           [ -n "${HTML_KEY}" ] && echo "KEY io.html'den alindi." || echo "KEY io.html'de bulunamadi, SUPABASE_ANON_KEY secret kullaniliyor."
 
