@@ -2,8 +2,21 @@
 <html lang="tr" class="h-full">
  <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Elektrik Panosu IO Listesi</title>
+  <!-- ===== PWA ===== -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#b71c1c">
+  <meta name="color-scheme" content="dark light">
+  <meta name="application-name" content="IO Listesi">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IO Listesi">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- ===== /PWA ===== -->
   <script>/* _sdk/element_sdk.js - optional, ignore if 404 */</script>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
@@ -8035,6 +8048,17 @@
     </div>
   </div>
 </div>
+
+<!-- ===== PWA: Service Worker kaydi ===== -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function (e) {
+        console.warn('SW kaydi basarisiz:', e);
+      });
+    });
+  }
+</script>
 
 </body>
 </html>
