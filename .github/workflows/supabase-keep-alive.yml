@@ -45,21 +45,28 @@ jobs:
         run: |
           set -euo pipefail
           # io.html stores SUPA_URL and SUPA_KEY as single-line JavaScript const assignments.
+          # GitHub-hosted Ubuntu runners include python3, which we use to read the committed app config.
           mapfile -t APP_SUPABASE_CONFIG < <(python3 - <<'PY'
-          import pathlib, re, sys
+          import ast, pathlib, re, sys
           path = pathlib.Path("io.html")
           text = path.read_text(encoding="utf-8") if path.exists() else ""
           for name in ("SUPA_URL", "SUPA_KEY"):
-              # Match either a single-quoted or double-quoted JS string and allow escaped characters.
-              pattern = rf"const\s+{name}\s*=\s*(?:'(?P<single>(?:\\.|[^'\\])*)'|\"(?P<double>(?:\\.|[^\"\\])*)\")\s*;"
-              match = re.search(pattern, text)
-              if match:
-                  print(match.group("single") if match.group("single") is not None else match.group("double"))
-              else:
+              match = re.search(rf"const\s+{name}\s*=\s*(.+?)\s*;", text)
+              if not match:
                   print("")
                   print(f"warning: {name} not found in io.html, will attempt fallback to GitHub secrets", file=sys.stderr)
+                  continue
+              try:
+                  print(ast.literal_eval(match.group(1)))
+              except (SyntaxError, ValueError):
+                  print("")
+                  print(f"warning: {name} in io.html could not be parsed, will attempt fallback to GitHub secrets", file=sys.stderr)
           PY
           )
+          if [ "${#APP_SUPABASE_CONFIG[@]}" -lt 2 ]; then
+            echo "Supabase config extraction failed. Ensure python3 is available on the runner."
+            exit 1
+          fi
           APP_SUPABASE_URL="${APP_SUPABASE_CONFIG[0]:-}"
           APP_SUPABASE_KEY="${APP_SUPABASE_CONFIG[1]:-}"
           BASE_URL="${APP_SUPABASE_URL:-${SUPABASE_URL:-}}"
