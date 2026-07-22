@@ -47,6 +47,10 @@ jobs:
           BASE_URL="${SUPABASE_URL:-https://gkeqdwsxukgejwnoenwk.supabase.co}"
           HTML_KEY=$(grep -oP "const SUPA_KEY\\s*=\\s*'\\K[^']+" io.html 2>/dev/null || true)
           ANON_KEY="${HTML_KEY:-${SUPABASE_ANON_KEY:-}}"
+          if [ -z "${ANON_KEY}" ]; then
+            echo "HATA: Supabase API anahtari bulunamadi. io.html SUPA_KEY veya SUPABASE_ANON_KEY secretini ayarlayin."
+            exit 1
+          fi
           PRIMARY="${SUPABASE_PING_TABLE:-urun_katalogu}"
           FALLBACK="${SUPABASE_PING_FALLBACK:-projects}"
           TABLES="${PRIMARY} ${FALLBACK}"
