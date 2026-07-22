@@ -38,14 +38,14 @@ jobs:
 
       - name: Supabase'e ping at
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SUPABASE_PING_TABLE: ${{ vars.SUPABASE_PING_TABLE }}
           SUPABASE_PING_FALLBACK: ${{ vars.SUPABASE_PING_FALLBACK }}
         run: |
           set -euo pipefail
-          BASE_URL="${SUPABASE_URL:-https://gkeqdwsxukgejwnoenwk.supabase.co}"
-          ANON_KEY="${SUPABASE_ANON_KEY:-sb_publishable_g8CzSE4bCv-L5gjDOTPWxw_RfTRFv9B}"
+          # Publishable key browser-safe (io.html'de de public); secret'a bagli degil,
+          # boylece eski/gecersiz secret degeri ping'i bozamaz.
+          BASE_URL="https://gkeqdwsxukgejwnoenwk.supabase.co"
+          ANON_KEY="sb_publishable_g8CzSE4bCv-L5gjDOTPWxw_RfTRFv9B"
           PRIMARY="${SUPABASE_PING_TABLE:-urun_katalogu}"
           FALLBACK="${SUPABASE_PING_FALLBACK:-projects}"
           TABLES="${PRIMARY} ${FALLBACK}"
