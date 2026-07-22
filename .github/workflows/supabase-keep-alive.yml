@@ -44,6 +44,7 @@ jobs:
           SUPABASE_PING_FALLBACK: ${{ vars.SUPABASE_PING_FALLBACK }}
         run: |
           set -euo pipefail
+          # io.html stores SUPA_URL and SUPA_KEY as single-line JavaScript const assignments.
           mapfile -t APP_SUPABASE_CONFIG < <(python3 - <<'PY'
           import pathlib, re
           path = pathlib.Path("io.html")
@@ -57,11 +58,17 @@ jobs:
           APP_SUPABASE_KEY="${APP_SUPABASE_CONFIG[1]:-}"
           BASE_URL="${APP_SUPABASE_URL:-${SUPABASE_URL:-https://gkeqdwsxukgejwnoenwk.supabase.co}}"
           # Use the public app config first so the keep-alive ping cannot drift from io.html.
-          ANON_KEY="${APP_SUPABASE_KEY:-${SUPABASE_ANON_KEY:-}}"
+          ANON_KEY_SOURCE="io.html"
+          ANON_KEY="${APP_SUPABASE_KEY:-}"
           if [ -z "${ANON_KEY}" ]; then
-            echo "Supabase anon key not found. Check io.html or the SUPABASE_ANON_KEY setting."
+            ANON_KEY_SOURCE="SUPABASE_ANON_KEY GitHub secret"
+            ANON_KEY="${SUPABASE_ANON_KEY:-}"
+          fi
+          if [ -z "${ANON_KEY}" ]; then
+            echo "Supabase anon key not found. Check io.html or the SUPABASE_ANON_KEY GitHub secret."
             exit 1
           fi
+          echo "Supabase anon key source: ${ANON_KEY_SOURCE}"
           PRIMARY="${SUPABASE_PING_TABLE:-urun_katalogu}"
           FALLBACK="${SUPABASE_PING_FALLBACK:-projects}"
           TABLES="${PRIMARY} ${FALLBACK}"
