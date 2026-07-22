@@ -50,12 +50,13 @@ jobs:
           path = pathlib.Path("io.html")
           text = path.read_text(encoding="utf-8") if path.exists() else ""
           for name in ("SUPA_URL", "SUPA_KEY"):
+              # Match a quoted JS string, preserve the opening quote type, and allow escaped characters.
               match = re.search(rf"const\s+{name}\s*=\s*(['\"])(?P<value>(?:\\.|(?!\1).)*)\1\s*;", text)
               if match:
                   print(match.group("value"))
               else:
                   print("")
-                  print(f"warning: {name} not found in io.html", file=sys.stderr)
+                  print(f"warning: {name} not found in io.html, will attempt fallback to GitHub secrets", file=sys.stderr)
           PY
           )
           APP_SUPABASE_URL="${APP_SUPABASE_CONFIG[0]:-}"
