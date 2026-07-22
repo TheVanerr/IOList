@@ -51,9 +51,10 @@ jobs:
           text = path.read_text(encoding="utf-8") if path.exists() else ""
           for name in ("SUPA_URL", "SUPA_KEY"):
               # Match either a single-quoted or double-quoted JS string and allow escaped characters.
-              match = re.search(rf"const\s+{name}\s*=\s*(?:'(?P<single>(?:\\.|[^'\\])*)'|\"(?P<double>(?:\\.|[^\"\\])*)\")\s*;", text)
+              pattern = rf"const\s+{name}\s*=\s*(?:'(?P<single>(?:\\.|[^'\\])*)'|\"(?P<double>(?:\\.|[^\"\\])*)\")\s*;"
+              match = re.search(pattern, text)
               if match:
-                  print(match.group("single") or match.group("double") or "")
+                  print(match.group("single") if match.group("single") is not None else match.group("double"))
               else:
                   print("")
                   print(f"warning: {name} not found in io.html, will attempt fallback to GitHub secrets", file=sys.stderr)
