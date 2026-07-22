@@ -2,7 +2,8 @@
 
 on:
   schedule:
-    - cron: '0 8 */3 * *'
+    # Free tier: hafta boyunca neredeyse her gun DB istegi gerekir (3 gunde bir yetersiz)
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -37,16 +38,33 @@ jobs:
           fi
 
       - name: Supabase'e ping at
+        env:
+          SUPABASE_URL: https://gkeqdwsxukgejwnoenwk.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZXFkd3N4dWtnZWp3bm9lbndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MjE0NTcsImV4cCI6MjA5NDE5NzQ1N30.UQ1nDc64mEt3cpdcCm1JK_TBW88AC44yha1J4aWreVo
         run: |
-          SUPABASE_URL="https://gkeqdwsxukgejwnoenwk.supabase.co"
-          SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZXFkd3N4dWtnZWp3bm9lbndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MjE0NTcsImV4cCI6MjA5NDE5NzQ1N30.UQ1nDc64mEt3cpdcCm1JK_TBW88AC44yha1J4aWreVo"
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${SUPABASE_URL}/rest/v1/standart_bom?select=id&limit=1" \
-            -H "apikey: ${SUPABASE_ANON_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}")
-          echo "HTTP Status: $STATUS"
-          if [ "$STATUS" = "000" ]; then
-            echo "Baglanti kurulamadi!"
+          set -euo pipefail
+          URL="${SUPABASE_URL}/rest/v1/standart_bom?select=id&limit=1"
+          STATUS="000"
+          for attempt in 1 2 3; do
+            STATUS=$(curl -sS -o /tmp/sb-body -w "%{http_code}" \
+              --connect-timeout 15 --max-time 30 \
+              "${URL}" \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              -H "Accept: application/json") || STATUS="000"
+            echo "Deneme ${attempt}: HTTP ${STATUS}"
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "206" ]; then
+              echo "Supabase aktif, ping basarili."
+              exit 0
+            fi
+            if [ "$STATUS" = "000" ]; then
+              sleep 10
+              continue
+            fi
+            echo "Beklenmeyen yanit:"
+            head -c 500 /tmp/sb-body || true
+            echo
             exit 1
-          fi
-          echo "Supabase aktif, ping basarili (HTTP $STATUS)."
+          done
+          echo "Proje ulasilamiyor (HTTP ${STATUS}). Muhtemelen Supabase paused — Dashboard'dan Restore Project yapin."
+          exit 1
