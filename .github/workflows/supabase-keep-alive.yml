@@ -46,12 +46,16 @@ jobs:
           set -euo pipefail
           # io.html stores SUPA_URL and SUPA_KEY as single-line JavaScript const assignments.
           mapfile -t APP_SUPABASE_CONFIG < <(python3 - <<'PY'
-          import pathlib, re
+          import pathlib, re, sys
           path = pathlib.Path("io.html")
           text = path.read_text(encoding="utf-8") if path.exists() else ""
           for name in ("SUPA_URL", "SUPA_KEY"):
-              match = re.search(rf"const\s+{name}\s*=\s*(['\"])(.*?)\1\s*;", text)
-              print(match.group(2) if match else "")
+              match = re.search(rf"const\s+{name}\s*=\s*(['\"])(?P<value>(?:\\.|(?!\1).)*)\1\s*;", text)
+              if match:
+                  print(match.group("value"))
+              else:
+                  print("")
+                  print(f"warning: {name} not found in io.html", file=sys.stderr)
           PY
           )
           APP_SUPABASE_URL="${APP_SUPABASE_CONFIG[0]:-}"
