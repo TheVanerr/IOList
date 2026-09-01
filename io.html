@@ -57,6 +57,64 @@
   #standart-bom-container table td:nth-child(2) input {
     text-align: center !important;
   }
+  .standart-bom-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    background: rgba(30, 41, 59, 0.9);
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: ui-monospace, monospace;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .standart-bom-action-btn:hover {
+    color: #e2e8f0;
+    border-color: rgba(148, 163, 184, 0.5);
+    background: rgba(51, 65, 85, 0.9);
+  }
+  .standart-bom-action-btn.copy:hover { color: #34d399; border-color: rgba(52, 211, 153, 0.5); }
+  .standart-bom-action-btn.excel:hover { color: #38bdf8; border-color: rgba(56, 189, 248, 0.5); }
+  .standart-bom-action-btn.menu:hover { color: #c4b5fd; border-color: rgba(196, 181, 253, 0.5); }
+  .standart-bom-menu-wrap { position: relative; }
+  .standart-bom-menu-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 190px;
+    padding: 0.375rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(71, 85, 105, 0.8);
+    background: rgba(15, 23, 42, 0.98);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    z-index: 60;
+  }
+  .standart-bom-menu-wrap.open .standart-bom-menu-panel { display: block; }
+  .standart-bom-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: ui-monospace, monospace;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .standart-bom-menu-item:hover { background: rgba(51, 65, 85, 0.8); color: #f8fafc; }
+  .standart-bom-menu-item.violet:hover { color: #c4b5fd; }
+  .standart-bom-menu-item.sky:hover { color: #7dd3fc; }
   .nav-btn {
     transition: all 0.2s ease;
   }
@@ -91,6 +149,256 @@
     box-shadow: 0 8px 24px rgba(14, 165, 233, 0.2);
   }
   .option-btn:active { transform: translateY(0); }
+  /* ===== Standart KPI + Settings Panel ===== */
+  .standart-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 280px;
+  }
+  .standart-stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.625rem;
+    min-width: 0;
+  }
+  .standart-stat-card .stat-label {
+    font-size: 0.625rem;
+    font-family: ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+  .standart-stat-card .stat-kw {
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    line-height: 1.2;
+  }
+  .standart-stat-card .stat-amp {
+    font-size: 0.6875rem;
+    font-family: ui-monospace, monospace;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+  .standart-stat-card.is-total-power {
+    background: rgba(6, 78, 59, 0.35) !important;
+    border-color: rgba(52, 211, 153, 0.45) !important;
+  }
+  .standart-stat-card.is-total-amp {
+    background: rgba(30, 58, 138, 0.35) !important;
+    border-color: rgba(96, 165, 250, 0.45) !important;
+  }
+  .standart-stat-card .stat-note {
+    font-size: 0.625rem;
+    color: #64748b;
+    font-family: ui-monospace, monospace;
+    margin-top: 0.125rem;
+  }
+  .standart-options-panel {
+    border: 1px solid rgba(71, 85, 105, 0.55);
+    border-radius: 0.875rem;
+    background: rgba(15, 23, 42, 0.45);
+    overflow: hidden;
+  }
+  .standart-options-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid rgba(71, 85, 105, 0.45);
+    background: rgba(30, 41, 59, 0.55);
+  }
+  .standart-options-title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+  }
+  .standart-options-badge {
+    font-size: 0.625rem;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    background: rgba(52, 211, 153, 0.12);
+    color: #6ee7b7;
+    border: 1px solid rgba(52, 211, 153, 0.25);
+  }
+  .standart-options-badge.empty {
+    background: rgba(71, 85, 105, 0.25);
+    color: #64748b;
+    border-color: rgba(71, 85, 105, 0.45);
+  }
+  .standart-options-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .standart-option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.875rem;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.45);
+    transition: background 0.15s ease;
+    cursor: default;
+    min-height: 52px;
+  }
+  .standart-option-row.option-btn {
+    background: transparent;
+    border: none;
+    transform: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .standart-option-row.option-btn::before { display: none; }
+  .standart-option-row.option-btn:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: transparent;
+  }
+  .standart-option-row.is-toggle {
+    cursor: pointer;
+    user-select: none;
+  }
+  .standart-option-row.is-toggle:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .standart-option-row.is-toggle:active {
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .standart-option-row:last-child { border-bottom: none; }
+  .standart-option-row.is-active { background: rgba(255, 255, 255, 0.02); }
+  .standart-option-left {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+    flex: 1;
+  }
+  .standart-option-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .standart-option-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: ui-monospace, monospace;
+    color: #e2e8f0;
+    line-height: 1.25;
+  }
+  .standart-option-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  .opt-segmented {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1875rem;
+    border-radius: 0.625rem;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(71, 85, 105, 0.65);
+    gap: 0.125rem;
+  }
+  .opt-segment {
+    border: 1px solid transparent;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    padding: 0.3125rem 0.625rem;
+    border-radius: 0.4375rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+  .opt-segment:hover { color: #cbd5e1; background: rgba(255,255,255,0.04); }
+  .opt-segment.active {
+    font-weight: 800;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+  .opt-status-pill {
+    min-width: 3.25rem;
+    padding: 0.4375rem 0.875rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(71, 85, 105, 0.65);
+    background: rgba(15, 23, 42, 0.85);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    font-family: ui-monospace, monospace;
+    text-align: center;
+    line-height: 1.2;
+    pointer-events: none;
+  }
+  .opt-status-pill.wide {
+    min-width: 5.5rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+  }
+  .opt-toggle-switch {
+    position: relative;
+    width: 3.25rem;
+    height: 1.875rem;
+    border-radius: 9999px;
+    background: rgba(51, 65, 85, 0.85);
+    border: 1px solid rgba(100, 116, 139, 0.55);
+    flex-shrink: 0;
+    pointer-events: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .opt-toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 9999px;
+    background: #94a3b8;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .opt-toggle-switch.on {
+    background: color-mix(in srgb, var(--toggle-color, #34d399) 35%, rgba(15, 23, 42, 0.9));
+    border-color: color-mix(in srgb, var(--toggle-color, #34d399) 65%, transparent);
+  }
+  .opt-toggle-switch.on::after {
+    transform: translateX(1.375rem);
+    background: var(--toggle-color, #34d399);
+  }
+  .standart-basinc-inp {
+    width: 4.5rem;
+    padding: 0.3125rem 0.375rem;
+    border-radius: 0.4375rem;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #7dd3fc;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+    text-align: center;
+  }
+  .standart-basinc-inp:focus { outline: none; border-color: #38bdf8; }
+  .standart-basinc-inp::-webkit-outer-spin-button,
+  .standart-basinc-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .standart-basinc-inp { -moz-appearance: textfield; appearance: textfield; }
   .lym-basinc-inp::-webkit-outer-spin-button,
   .lym-basinc-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   .lym-basinc-inp { -moz-appearance: textfield; appearance: textfield; }
@@ -299,9 +607,7 @@
         <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
        </div>
        <h1 class="text-lg font-bold text-white tracking-tight">PANO IO KONFİGÜRATÖR</h1>
-       <button id="btn-standart-listele" style="display:none" class="px-3 py-2 rounded-lg bg-slate-800 border border-emerald-700/50 hover:border-emerald-400 hover:bg-emerald-900/30 text-emerald-400 transition text-xs font-semibold mono flex items-center gap-1.5">
-        <i data-lucide="table-2" class="w-3.5 h-3.5"></i> Listele
-       </button>
+       <button id="btn-standart-listele" style="display:none" class="hidden" aria-hidden="true"></button>
       </div>
       <!-- Aksiyon butonları — başlığın hemen sağında -->
       <div class="flex items-center gap-1.5">
@@ -4016,6 +4322,213 @@
     if (totalEl) totalEl.textContent = total.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
   }
 
+  function buildStandartClipboardText() {
+    const lines = [];
+    const select = document.getElementById('standart-model-select');
+    const modelAdi = select ? select.value : '';
+    if (modelAdi) {
+      lines.push(modelAdi);
+      lines.push('');
+    }
+
+    const infoSection = document.getElementById('lym-info-section');
+    if (infoSection && infoSection.style.display !== 'none') {
+      const cardData = [];
+      infoSection.querySelectorAll('.standart-stat-card').forEach(card => {
+        const lbl = card.querySelector('.stat-label')?.textContent.trim();
+        const kw = card.querySelector('.stat-kw')?.textContent.trim() || '';
+        const amp = card.querySelector('.stat-amp')?.textContent.trim() || '';
+        if (lbl) cardData.push({ label: lbl, kw, amp });
+      });
+      if (cardData.length > 0) {
+        lines.push('Bileşenler');
+        lines.push(cardData.map(c => c.label).join('\t'));
+        lines.push('kW');
+        lines.push(cardData.map(c => c.kw).join('\t'));
+        lines.push('Akım');
+        lines.push(cardData.map(c => c.amp).join('\t'));
+        lines.push('');
+      }
+    }
+
+    ['lym-options-row', 'kbn-options-row'].forEach(rowId => {
+      const optRow = document.getElementById(rowId);
+      if (!optRow || optRow.style.display === 'none') return;
+      const optLabels = [];
+      const optVals = [];
+      optRow.querySelectorAll('.option-btn').forEach(btn => {
+        const lbl = btn.querySelector('.label-tag')?.textContent.trim();
+        const val = btn.querySelector('.value-tag')?.textContent.trim() || '-';
+        if (lbl) {
+          optLabels.push(lbl);
+          optVals.push(val);
+        }
+      });
+      if (optLabels.length > 0) {
+        lines.push('Opsiyonlar');
+        lines.push(optLabels.join('\t'));
+        lines.push(optVals.join('\t'));
+        lines.push('');
+      }
+    });
+
+    const bomContainer = document.getElementById('standart-bom-container');
+    if (bomContainer) {
+      const bomTables = Array.from(bomContainer.querySelectorAll('table'))
+        .filter(t => !t.closest('[id="standart-edit-tbody"]') && !t.querySelector('[id="standart-edit-tbody"]') && t.querySelector('tbody'));
+
+      bomTables.forEach((table, tIdx) => {
+        const optSec = table.closest('.rounded-xl.overflow-hidden.mb-4');
+        const optTitle = optSec?.querySelector('.text-xs.font-bold.mono.uppercase')?.textContent.trim();
+        if (optTitle && tIdx > 0) {
+          lines.push(optTitle);
+        } else if (tIdx === 0) {
+          const secTitleEl = bomContainer.querySelector('span.font-bold.mono');
+          lines.push(secTitleEl ? secTitleEl.textContent.trim() : ('Malzeme Tablosu — ' + modelAdi));
+        }
+
+        const ths = table.querySelectorAll('thead th');
+        if (ths.length > 0) {
+          lines.push(Array.from(ths).map(th => th.textContent.trim()).join('\t'));
+        }
+
+        table.querySelectorAll('tbody tr').forEach(row => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length === 0) return;
+          if (cells.length === 1 && cells[0].querySelector('button')) return;
+          if (cells.length === 1) {
+            lines.push(cells[0].textContent.trim());
+            return;
+          }
+          lines.push(Array.from(cells).map(cell => {
+            const inp = cell.querySelector('input');
+            return (inp ? inp.value : cell.textContent.trim()).replace(/\t/g, ' ');
+          }).join('\t'));
+        });
+        lines.push('');
+      });
+
+      const totalEl = document.getElementById('sbom-grand-total');
+      if (totalEl) {
+        lines.push('Toplam Pano Maliyeti:\t' + totalEl.textContent.trim());
+      }
+    }
+
+    return lines.join('\n').trim();
+  }
+
+  async function copyStandartToClipboard() {
+    const text = buildStandartClipboardText();
+    if (!text) {
+      showToast('Kopyalanacak veri bulunamadı', 'error');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Tablo panoya kopyalandı — Excel\'e yapıştırabilirsiniz ✓');
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast('Tablo panoya kopyalandı — Excel\'e yapıştırabilirsiniz ✓');
+      } catch (err) {
+        showToast('Panoya kopyalanamadı: ' + err.message, 'error');
+      }
+      ta.remove();
+    }
+  }
+
+  function closeAllStandartMenus() {
+    document.querySelectorAll('.standart-bom-menu-wrap.open').forEach(el => el.classList.remove('open'));
+  }
+
+  function updateStandartBomAdminMenu() {
+    const wrap = document.getElementById('standart-bom-admin-menu');
+    if (!wrap) return;
+    wrap.style.display = (typeof isAdmin === 'function' && isAdmin()) ? '' : 'none';
+  }
+
+  function appendStandartBomToolbar(headerRow, accentColor, rowCount) {
+    const actionsWrap = document.createElement('div');
+    actionsWrap.className = 'flex items-center gap-2 flex-wrap justify-end';
+
+    const countBadge = document.createElement('span');
+    countBadge.id = 'standart-bom-count-badge';
+    countBadge.className = 'px-2.5 py-0.5 rounded-full text-xs mono font-semibold';
+    countBadge.style.background = accentColor + '20';
+    countBadge.style.color = accentColor;
+    countBadge.textContent = rowCount + ' Kalem';
+    actionsWrap.appendChild(countBadge);
+
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'standart-bom-action-btn copy';
+    copyBtn.title = 'Excel\'e yapıştırmak için panoya kopyala';
+    copyBtn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i> Kopyala';
+    copyBtn.addEventListener('click', () => copyStandartToClipboard());
+    actionsWrap.appendChild(copyBtn);
+
+    const excelBtn = document.createElement('button');
+    excelBtn.type = 'button';
+    excelBtn.className = 'standart-bom-action-btn excel';
+    excelBtn.title = 'Excel dosyası indir';
+    excelBtn.innerHTML = '<i data-lucide="sheet" class="w-3.5 h-3.5"></i> Excel';
+    excelBtn.addEventListener('click', () => exportStandartToExcel());
+    actionsWrap.appendChild(excelBtn);
+
+    const menuWrap = document.createElement('div');
+    menuWrap.id = 'standart-bom-admin-menu';
+    menuWrap.className = 'standart-bom-menu-wrap';
+    menuWrap.style.display = 'none';
+
+    const menuBtn = document.createElement('button');
+    menuBtn.type = 'button';
+    menuBtn.className = 'standart-bom-action-btn menu';
+    menuBtn.title = 'Yönetici işlemleri';
+    menuBtn.innerHTML = '<i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>';
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = menuWrap.classList.contains('open');
+      closeAllStandartMenus();
+      if (!wasOpen) menuWrap.classList.add('open');
+    });
+    menuWrap.appendChild(menuBtn);
+
+    const menuPanel = document.createElement('div');
+    menuPanel.className = 'standart-bom-menu-panel';
+
+    const editItem = document.createElement('button');
+    editItem.type = 'button';
+    editItem.className = 'standart-bom-menu-item violet';
+    editItem.innerHTML = '<i data-lucide="pencil" class="w-3.5 h-3.5"></i> Düzenle';
+    editItem.addEventListener('click', () => {
+      closeAllStandartMenus();
+      openStandartEditModal();
+    });
+    menuPanel.appendChild(editItem);
+
+    const supabaseItem = document.createElement('button');
+    supabaseItem.type = 'button';
+    supabaseItem.className = 'standart-bom-menu-item sky';
+    supabaseItem.innerHTML = '<i data-lucide="upload" class="w-3.5 h-3.5"></i> JSON → Supabase';
+    supabaseItem.addEventListener('click', () => {
+      closeAllStandartMenus();
+      uploadAllToSupabase();
+    });
+    menuPanel.appendChild(supabaseItem);
+
+    menuWrap.appendChild(menuPanel);
+    actionsWrap.appendChild(menuWrap);
+
+    headerRow.appendChild(actionsWrap);
+    updateStandartBomAdminMenu();
+    lucide.createIcons();
+  }
+
   async function renderStandartBOM(model) {
     const container = document.getElementById('standart-bom-container');
     if (!container) return;
@@ -4053,7 +4566,7 @@
         if (['1000274', '1000275', '1000276'].includes(stok)) return false;
         return true;
       });
-      // Gerçek Zaman Saati varsa BUTON MANDAL B100SL20Y → B101S30 1-0-2 ile değiştir
+      // Zamanlayıcılı Isıtma Sistemi varsa BUTON MANDAL B100SL20Y → B101S30 1-0-2 ile değiştir
       if (lymState.gercekZamanSaati === 'VAR') {
         rows = rows.map(r => r.stokKodu === '10 00263'
           ? { ...r, stokKodu: '10 02613', urunAdi: 'BUTON MANDAL B101S30 1-0-2' }
@@ -4137,13 +4650,17 @@
     titleText.textContent = 'Malzeme Tablosu — ' + model;
     titleLeft.appendChild(titleIcon);
     titleLeft.appendChild(titleText);
-    const countBadge = document.createElement('span');
-    countBadge.className = 'px-2.5 py-0.5 rounded-full text-xs mono font-semibold';
-    countBadge.style.background = accentColor + '20';
-    countBadge.style.color = accentColor;
-    countBadge.textContent = rows.length + ' Kalem';
     headerRow.appendChild(titleLeft);
-    headerRow.appendChild(countBadge);
+    if (standartEditMode) {
+      const countBadge = document.createElement('span');
+      countBadge.className = 'px-2.5 py-0.5 rounded-full text-xs mono font-semibold';
+      countBadge.style.background = accentColor + '20';
+      countBadge.style.color = accentColor;
+      countBadge.textContent = rows.length + ' Kalem';
+      headerRow.appendChild(countBadge);
+    } else {
+      appendStandartBomToolbar(headerRow, accentColor, rows.length);
+    }
     container.appendChild(headerRow);
 
     // === DÜZENLEME MODU ===
@@ -4415,9 +4932,9 @@
       const isEgzos = lymState.egzosFani === 'VAR';
       const kurutmaTip = lymState.kurutmaFani;
 
-      if (lymState.yagSiyirici === 'VAR') {
+      if (lymState.yagSiyirici === 'Normal') {
         renderLymOptionSection({
-          title: 'YAĞ SIYIRICI VARSA', color: '#fb923c',
+          title: 'YAĞ SIYIRICI NORMAL', color: '#fb923c',
           items: [
             { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 1 },
             { stokKodu: '10 02314', urunAdi: 'KONTAKTÖR LC1K0610M7 220V', adet: 1 },
@@ -4425,7 +4942,22 @@
             { stokKodu: '10 00279', urunAdi: 'SİNYAL LAMBASI S14B BEYAZ 220V', adet: 1 },
             { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
           ],
-          badgeText: 'VAR'
+          badgeText: 'Normal'
+        });
+      }
+
+      if (lymState.yagSiyirici === 'Zamanlayıcılı') {
+        renderLymOptionSection({
+          title: 'YAĞ SIYIRICI ZAMANLAYICILI', color: '#fb923c',
+          items: [
+            { stokKodu: '10 00243', urunAdi: 'TERMİK RÖLESİ LR2K0305 0,54-0,8A', adet: 1 },
+            { stokKodu: '10 02314', urunAdi: 'KONTAKTÖR LC1K0610M7 220V', adet: 1 },
+            { stokKodu: '10 02613', urunAdi: 'BUTON MANDAL B101S30 1-0-2', adet: 1 },
+            { stokKodu: '10 00279', urunAdi: 'SİNYAL LAMBASI S14B BEYAZ 220V', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 2 },
+            { stokKodu: '10 18816', urunAdi: 'DİJİTAL ZAMANLAYICI THEBEN SELECTA 174 TOP3', adet: 1 },
+          ],
+          badgeText: 'Zamanlayıcılı'
         });
       }
 
@@ -4434,6 +4966,7 @@
           title: 'İNTERLOCK KİLİT VARSA', color: '#fbbf24',
           items: [
             { stokKodu: '10 01337', urunAdi: 'MİNYATÜR RÖLE RSB2A080P7 2 KUTUPLU 8 PİNLİ', adet: 1 },
+            { stokKodu: '10 02306', urunAdi: 'RÖLE SOKETİ RSZE1S48M 8 PİNLİ', adet: 1 },
             { stokKodu: '10 00268', urunAdi: 'KONTAK BLOK NC B2', adet: 1 },
             { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
           ],
@@ -4550,9 +5083,10 @@
 
       if (lymState.gercekZamanSaati === 'VAR') {
         renderLymOptionSection({
-          title: 'GERÇEK ZAMAN SAATİ VARSA', color: '#a78bfa',
+          title: 'ZAMANLAYICILI ISITMA SİSTEMİ VARSA', color: '#a78bfa',
           items: [
             { stokKodu: '10 18816', urunAdi: 'DİJİTAL ZAMANLAYICI THEBEN SELECTA 174 TOP3', adet: 1 },
+            { stokKodu: '10 00267', urunAdi: 'KONTAK BLOK NO B1', adet: 1 },
           ],
           badgeText: 'VAR'
         });
@@ -4808,9 +5342,11 @@
       ]},
     };
 
+    const lymYagSiyiriciActive = v => v === 'Normal' || v === 'Zamanlayıcılı';
+
     const lymOptionKw = {
       interlockKilit:   ()  => 0,
-      yagSiyirici:      v   => v === 'VAR' ? 0.09 : 0,
+      yagSiyirici:      v   => lymYagSiyiriciActive(v) ? 0.09 : 0,
       egzosFani:        v   => v === 'VAR' ? 0.37 : 0,
       kurutmaFani:      v   => ({ 'Normal Tip': 6.37, 'Blower Tip': 10, 'Yoğuşturmalı Tip': 6.37 }[v] || 0),
       drenajPompasi:    v   => v === 'VAR' ? 1.5 : 0,
@@ -4822,7 +5358,7 @@
 
     const lymOptionAmp = {
       interlockKilit:   ()  => 0,
-      yagSiyirici:      v   => v === 'VAR' ? 0.5  : 0,
+      yagSiyirici:      v   => lymYagSiyiriciActive(v) ? 0.5  : 0,
       egzosFani:        v   => v === 'VAR' ? 1.6  : 0,
       kurutmaFani:      v   => ({ 'Normal Tip': 10.84, 'Blower Tip': 17.03, 'Yoğuşturmalı Tip': 10.84 }[v] || 0),
       drenajPompasi:    v   => v === 'VAR' ? 4.0  : 0,
@@ -4979,21 +5515,148 @@
     // === LYM BİLGİ KARTLARI (select'in hemen sağında) ===
     const lymInfoSection = document.createElement('div');
     lymInfoSection.id = 'lym-info-section';
-    lymInfoSection.className = 'flex flex-wrap items-center gap-2';
+    lymInfoSection.className = 'standart-stats-grid';
     lymInfoSection.style.display = 'none';
     topRow.appendChild(lymInfoSection);
 
     selRow.appendChild(topRow);
 
-    // === LYM OPSİYONLAR — 2. satır (tam genişlik, gözle görülür kap) ===
-    const lymOptionsRow = document.createElement('div');
-    lymOptionsRow.id = 'lym-options-row';
-    lymOptionsRow.className = 'flex flex-wrap gap-3 p-3 rounded-xl border border-slate-700/50 bg-slate-800/30';
-    lymOptionsRow.style.display = 'none';
+    // === LYM OPSİYONLAR — settings panel + segmented controls ===
+    function createOptionsPanel(id, title) {
+      const panel = document.createElement('div');
+      panel.id = id;
+      panel.className = 'standart-options-panel';
+      panel.style.display = 'none';
+      const header = document.createElement('div');
+      header.className = 'standart-options-header';
+      const titleEl = document.createElement('span');
+      titleEl.className = 'standart-options-title';
+      titleEl.textContent = title;
+      const badge = document.createElement('span');
+      badge.className = 'standart-options-badge empty';
+      badge.textContent = '0 aktif';
+      header.appendChild(titleEl);
+      header.appendChild(badge);
+      const body = document.createElement('div');
+      body.className = 'standart-options-body';
+      panel.appendChild(header);
+      panel.appendChild(body);
+      return { panel, body, badge };
+    }
+
+    function updateOptionsPanelBadge(badgeEl, stateObj) {
+      if (!badgeEl) return;
+      const count = Object.values(stateObj).filter(v => v !== 'YOK').length;
+      badgeEl.textContent = count === 0 ? '0 aktif' : count + ' aktif';
+      badgeEl.classList.toggle('empty', count === 0);
+    }
+
+    function optSegLabel(state) {
+      if (state === 'Normal Tip') return 'Normal';
+      if (state === 'Blower Tip') return 'Blower';
+      if (state === 'Yoğuşturmalı Tip') return 'Yoğuş.';
+      if (state === 'Zamanlayıcılı') return 'Zaman.';
+      return state;
+    }
+
+    function buildComponentStatCard(c, pal) {
+      const card = document.createElement('div');
+      card.className = 'standart-stat-card';
+      card.style.background = pal.bg;
+      card.style.border = '1px solid ' + pal.border;
+      const lbl = document.createElement('div');
+      lbl.className = 'stat-label';
+      lbl.style.color = pal.lbl;
+      lbl.textContent = c.label;
+      card.appendChild(lbl);
+      const kwEl = document.createElement('div');
+      kwEl.className = 'stat-kw';
+      kwEl.style.color = pal.val;
+      kwEl.textContent = c.kw + ' kW';
+      card.appendChild(kwEl);
+      const aEl = document.createElement('div');
+      aEl.className = 'stat-amp';
+      aEl.style.color = pal.lbl;
+      aEl.textContent = (typeof c.a === 'number' ? c.a.toFixed(2) : c.a) + ' A';
+      card.appendChild(aEl);
+      return card;
+    }
+
+    function buildTotalPowerCard(valueId) {
+      const card = document.createElement('div');
+      card.className = 'standart-stat-card is-total-power';
+      const lbl = document.createElement('div');
+      lbl.className = 'stat-label text-emerald-400 flex items-center gap-1';
+      const icon = document.createElement('i');
+      icon.setAttribute('data-lucide', 'zap');
+      icon.className = 'w-3 h-3';
+      lbl.appendChild(icon);
+      lbl.appendChild(document.createTextNode('Makine Gücü'));
+      card.appendChild(lbl);
+      const val = document.createElement('div');
+      val.id = valueId || 'lym-makine-gucu-val';
+      val.className = 'stat-kw text-emerald-400';
+      card.appendChild(val);
+      const note = document.createElement('div');
+      note.className = 'stat-note';
+      note.textContent = 'standart + opsiyonlar';
+      card.appendChild(note);
+      return card;
+    }
+
+    function buildTotalAmpCard(valueId) {
+      const card = document.createElement('div');
+      card.className = 'standart-stat-card is-total-amp';
+      const lbl = document.createElement('div');
+      lbl.className = 'stat-label text-blue-400 flex items-center gap-1';
+      const icon = document.createElement('i');
+      icon.setAttribute('data-lucide', 'activity');
+      icon.className = 'w-3 h-3';
+      lbl.appendChild(icon);
+      lbl.appendChild(document.createTextNode('Makine Akımı'));
+      card.appendChild(lbl);
+      const val = document.createElement('div');
+      val.id = valueId || 'lym-makine-akim-val';
+      val.className = 'stat-kw text-blue-400';
+      card.appendChild(val);
+      const note = document.createElement('div');
+      note.className = 'stat-note';
+      note.textContent = 'standart + opsiyonlar';
+      card.appendChild(note);
+      return card;
+    }
+
+    function buildStaticTotalCard(totalKw, totalA) {
+      const card = document.createElement('div');
+      card.className = 'standart-stat-card is-total-power';
+      const lbl = document.createElement('div');
+      lbl.className = 'stat-label text-emerald-400 flex items-center gap-1';
+      const icon = document.createElement('i');
+      icon.setAttribute('data-lucide', 'zap');
+      icon.className = 'w-3 h-3';
+      lbl.appendChild(icon);
+      lbl.appendChild(document.createTextNode('Toplam Güç'));
+      card.appendChild(lbl);
+      const kwEl = document.createElement('div');
+      kwEl.className = 'stat-kw text-emerald-400';
+      kwEl.textContent = totalKw.toFixed(2) + ' kW';
+      card.appendChild(kwEl);
+      const aEl = document.createElement('div');
+      aEl.className = 'stat-amp text-emerald-300';
+      aEl.textContent = totalA.toFixed(2) + ' A';
+      card.appendChild(aEl);
+      return card;
+    }
+
+    const lymOptionsPanel = createOptionsPanel('lym-options-row', 'LYM Opsiyonları');
+    const lymOptionsRow = lymOptionsPanel.panel;
+    const lymOptBody = lymOptionsPanel.body;
+    const lymOptBadge = lymOptionsPanel.badge;
 
     // Modül seviyesi lymState'i sıfırla (sayfa her yenilendiğinde)
     Object.assign(lymState, { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK', invertor:'YOK', basincPompa:'YOK' });
     const kurutmaFaniStates = ['YOK', 'Normal Tip', 'Blower Tip', 'Yoğuşturmalı Tip'];
+    const yagSiyiriciStates = ['YOK', 'Normal', 'Zamanlayıcılı'];
 
     const optColors = {
       interlockKilit:   { bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.3)',  iconCls: 'text-amber-400',   active: '#fbbf24' },
@@ -5069,54 +5732,10 @@
       lymInfoSection.innerHTML = '';
       const cfg = otherModelConfig[model];
       if (!cfg) return;
-      const acc = getModelGrupRenk(model);
-      cfg.cards.forEach((c, i) => {
-        const pal = cardPalette[i % cardPalette.length];
-        const card = document.createElement('div');
-        card.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-        card.style.background = pal.bg;
-        card.style.border = '1px solid ' + pal.border;
-        const lbl = document.createElement('div');
-        lbl.className = 'text-[10px] mono uppercase tracking-wide mb-1 font-semibold';
-        lbl.style.color = pal.lbl;
-        lbl.textContent = c.label;
-        card.appendChild(lbl);
-        const kwEl = document.createElement('div');
-        kwEl.className = 'text-sm font-bold mono';
-        kwEl.style.color = pal.val;
-        kwEl.textContent = c.kw + ' kW';
-        card.appendChild(kwEl);
-        const aEl = document.createElement('div');
-        aEl.className = 'text-[11px] mono font-medium';
-        aEl.style.color = pal.lbl;
-        aEl.textContent = c.a.toFixed(2) + ' A';
-        card.appendChild(aEl);
-        lymInfoSection.appendChild(card);
-      });
-      // Toplam kart
+      cfg.cards.forEach((c, i) => lymInfoSection.appendChild(buildComponentStatCard(c, cardPalette[i % cardPalette.length])));
       const totalKw = cfg.cards.reduce((s, c) => s + c.kw, 0);
-      const totalA  = cfg.cards.reduce((s, c) => s + c.a, 0);
-      const sep = document.createElement('div');
-      sep.style.cssText = 'width:1px;align-self:stretch;background:rgba(71,85,105,0.4);margin:0 4px';
-      lymInfoSection.appendChild(sep);
-      const totCard = document.createElement('div');
-      totCard.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-      totCard.style.background = 'rgba(6,78,59,0.35)';
-      totCard.style.border = '1px solid rgba(52,211,153,0.4)';
-      const totLbl = document.createElement('div');
-      totLbl.className = 'text-[10px] mono text-emerald-400 uppercase tracking-wide mb-1 flex items-center gap-1 font-semibold';
-      const zi = document.createElement('i'); zi.setAttribute('data-lucide','zap'); zi.className = 'w-3 h-3';
-      totLbl.appendChild(zi); totLbl.appendChild(document.createTextNode('Toplam Güç'));
-      totCard.appendChild(totLbl);
-      const totKw = document.createElement('div');
-      totKw.className = 'text-base font-bold text-emerald-400 mono';
-      totKw.textContent = totalKw.toFixed(2) + ' kW';
-      totCard.appendChild(totKw);
-      const totA = document.createElement('div');
-      totA.className = 'text-[11px] text-emerald-300 mono font-medium';
-      totA.textContent = totalA.toFixed(2) + ' A';
-      totCard.appendChild(totA);
-      lymInfoSection.appendChild(totCard);
+      const totalA = cfg.cards.reduce((s, c) => s + c.a, 0);
+      lymInfoSection.appendChild(buildStaticTotalCard(totalKw, totalA));
       lucide.createIcons();
     }
 
@@ -5124,225 +5743,152 @@
       lymInfoSection.innerHTML = '';
       const cfg = lymModelConfig[model];
       if (!cfg) return;
-
-      cfg.cards.forEach((c, i) => {
-        const pal = cardPalette[i % cardPalette.length];
-        const card = document.createElement('div');
-        card.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-        card.style.background = pal.bg;
-        card.style.border = '1px solid ' + pal.border;
-
-        const lbl = document.createElement('div');
-        lbl.className = 'text-[10px] mono uppercase tracking-wide mb-1 font-semibold';
-        lbl.style.color = pal.lbl;
-        lbl.textContent = c.label;
-        card.appendChild(lbl);
-
-        const kwEl = document.createElement('div');
-        kwEl.className = 'text-sm font-bold mono';
-        kwEl.style.color = pal.val;
-        kwEl.textContent = c.kw + ' kW';
-        card.appendChild(kwEl);
-
-        const aEl = document.createElement('div');
-        aEl.className = 'text-[11px] mono font-medium';
-        aEl.style.color = pal.lbl;
-        aEl.textContent = c.a + ' A';
-        card.appendChild(aEl);
-
-        lymInfoSection.appendChild(card);
-      });
-
-      // Ayırıcı
-      const sep = document.createElement('div');
-      sep.style.cssText = 'width:1px;align-self:stretch;background:rgba(71,85,105,0.4);margin:0 4px';
-      lymInfoSection.appendChild(sep);
-
-      // Makine Gücü kartı
-      const gcCard = document.createElement('div');
-      gcCard.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-      gcCard.style.background = 'rgba(6,78,59,0.35)';
-      gcCard.style.border = '1px solid rgba(52,211,153,0.4)';
-
-      const gcLbl = document.createElement('div');
-      gcLbl.className = 'text-[10px] mono text-emerald-400 uppercase tracking-wide mb-1 flex items-center gap-1';
-      const gcIcon = document.createElement('i');
-      gcIcon.setAttribute('data-lucide', 'zap');
-      gcIcon.className = 'w-3 h-3';
-      gcLbl.appendChild(gcIcon);
-      gcLbl.appendChild(document.createTextNode('Makine Gücü'));
-      gcCard.appendChild(gcLbl);
-
-      const gcVal = document.createElement('div');
-      gcVal.id = 'lym-makine-gucu-val';
-      gcVal.className = 'text-base font-bold text-emerald-400 mono';
-      gcCard.appendChild(gcVal);
-
-      const gcNote = document.createElement('div');
-      gcNote.className = 'text-[10px] text-slate-500 mono';
-      gcNote.textContent = 'standart + opsiyonlar';
-      gcCard.appendChild(gcNote);
-
-      lymInfoSection.appendChild(gcCard);
-
-      // Makine Akımı kartı
-      const gaCard = document.createElement('div');
-      gaCard.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-      gaCard.style.background = 'rgba(30,58,138,0.35)';
-      gaCard.style.border = '1px solid rgba(96,165,250,0.4)';
-
-      const gaLbl = document.createElement('div');
-      gaLbl.className = 'text-[10px] mono text-blue-400 uppercase tracking-wide mb-1 flex items-center gap-1';
-      const gaIcon = document.createElement('i');
-      gaIcon.setAttribute('data-lucide', 'activity');
-      gaIcon.className = 'w-3 h-3';
-      gaLbl.appendChild(gaIcon);
-      gaLbl.appendChild(document.createTextNode('Makine Akımı'));
-      gaCard.appendChild(gaLbl);
-
-      const gaVal = document.createElement('div');
-      gaVal.id = 'lym-makine-akim-val';
-      gaVal.className = 'text-base font-bold text-blue-400 mono';
-      gaCard.appendChild(gaVal);
-
-      const gaNote = document.createElement('div');
-      gaNote.className = 'text-[10px] text-slate-500 mono';
-      gaNote.textContent = 'standart + opsiyonlar';
-      gaCard.appendChild(gaNote);
-
-      lymInfoSection.appendChild(gaCard);
-
+      cfg.cards.forEach((c, i) => lymInfoSection.appendChild(buildComponentStatCard(c, cardPalette[i % cardPalette.length])));
+      lymInfoSection.appendChild(buildTotalPowerCard('lym-makine-gucu-val'));
+      lymInfoSection.appendChild(buildTotalAmpCard('lym-makine-akim-val'));
       updateMakinaGucu();
       lucide.createIcons();
     }
 
-    function makeLymToggleBtn(key, label, icon, states) {
-      const col = optColors[key];
-      const wrap = document.createElement('button');
-      wrap.className = 'option-btn rounded-lg px-3 py-2 text-left flex-shrink-0 flex flex-col justify-evenly';
-      wrap.style.minWidth = '130px';
-      wrap.style.minHeight = '94px';
-      wrap.dataset.optKey = key;
+    function makeStandartOptionRow(config) {
+      const { stateObj, key, label, icon, states, col, yokColor, onChange, panelBadge } = config;
+      const isBinary = states.length === 2 && states.includes('YOK') && states.includes('VAR');
+      const row = document.createElement('div');
+      row.className = 'standart-option-row option-btn is-toggle';
+      row.dataset.optKey = key;
 
-      const valueRow = document.createElement('div');
-      valueRow.className = 'flex items-center justify-center gap-2';
-
-      const leftSym = document.createElement('div');
-      leftSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
-      leftSym.style.background = col.bg;
-      leftSym.style.border = '1px solid ' + col.border;
+      const left = document.createElement('div');
+      left.className = 'standart-option-left';
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'standart-option-icon';
+      iconWrap.style.background = col.bg;
+      iconWrap.style.border = '1px solid ' + col.border;
       const iEl = document.createElement('i');
       iEl.setAttribute('data-lucide', icon);
       iEl.className = 'w-3.5 h-3.5 ' + col.iconCls;
-      leftSym.appendChild(iEl);
-
-      const rightSym = document.createElement('div');
-      rightSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
-      rightSym.style.background = 'rgba(15,23,42,0.35)';
-      rightSym.style.border = '1px solid ' + col.active + '80';
-      const refreshI = document.createElement('i');
-      refreshI.setAttribute('data-lucide', 'refresh-cw');
-      refreshI.className = 'w-3.5 h-3.5';
-      refreshI.style.color = col.active;
-      rightSym.appendChild(refreshI);
-
-      const valEl = document.createElement('div');
-      valEl.className = 'text-base font-bold value-tag tracking-wide text-center min-w-[52px]';
-      valEl.textContent = lymState[key];
-
-      valueRow.appendChild(leftSym);
-      valueRow.appendChild(valEl);
-      valueRow.appendChild(rightSym);
-      wrap.appendChild(valueRow);
-
+      iconWrap.appendChild(iEl);
       const labelEl = document.createElement('div');
-      labelEl.className = 'label-tag option-name-tag mono text-[12px] text-center';
-      labelEl.style.color = col.active;
+      labelEl.className = 'standart-option-label label-tag';
       labelEl.textContent = label;
-      wrap.appendChild(labelEl);
+      left.appendChild(iconWrap);
+      left.appendChild(labelEl);
+
+      const right = document.createElement('div');
+      right.className = 'standart-option-right';
+      const valHidden = document.createElement('span');
+      valHidden.className = 'value-tag';
+      valHidden.style.cssText = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
+      valHidden.setAttribute('aria-hidden', 'true');
+      valHidden.textContent = stateObj[key];
+      right.appendChild(valHidden);
+
+      const statusPill = document.createElement('div');
+      statusPill.className = 'opt-status-pill' + (isBinary ? '' : ' wide');
+      right.appendChild(statusPill);
+
+      let toggleSwitch = null;
+      if (isBinary) {
+        toggleSwitch = document.createElement('div');
+        toggleSwitch.className = 'opt-toggle-switch';
+        toggleSwitch.setAttribute('aria-hidden', 'true');
+        right.appendChild(toggleSwitch);
+      }
+
+      function commitState(newState) {
+        stateObj[key] = newState;
+        applyVisual();
+        onChange?.();
+        updateOptionsPanelBadge(panelBadge, stateObj);
+      }
 
       function applyVisual() {
-        const isYok = lymState[key] === 'YOK';
-        valEl.style.color = isYok ? LYM_OPTION_YOK_COLOR : col.active;
-        leftSym.style.borderColor = isYok ? col.border : (col.active + '99');
-        rightSym.style.borderColor = col.active + '80';
-        rightSym.style.background = 'rgba(15,23,42,0.35)';
+        const current = stateObj[key];
+        valHidden.textContent = current;
+        const isYok = current === 'YOK';
+        row.classList.toggle('is-active', !isYok);
+        statusPill.textContent = isBinary ? current : optSegLabel(current);
+        statusPill.title = current;
+        statusPill.style.color = isYok ? yokColor : col.active;
+        statusPill.style.borderColor = isYok ? 'rgba(100,116,139,0.55)' : col.active + '90';
+        statusPill.style.background = isYok ? 'rgba(51,65,85,0.55)' : col.active + '18';
+        if (toggleSwitch) {
+          toggleSwitch.classList.toggle('on', !isYok);
+          toggleSwitch.style.setProperty('--toggle-color', col.active);
+        }
       }
-      wrap._applyVisual = applyVisual;
-      applyVisual();
 
-      wrap.addEventListener('click', () => {
-        const idx = states.indexOf(lymState[key]);
-        lymState[key] = states[(idx + 1) % states.length];
-        valEl.textContent = lymState[key];
-        applyVisual();
-        updateMakinaGucu();
-        const _curModel = document.getElementById('standart-model-select')?.value;
-        if (_curModel) renderStandartBOM(_curModel);
+      row.appendChild(left);
+      row.appendChild(right);
+
+      row.addEventListener('click', () => {
+        if (isBinary) {
+          commitState(stateObj[key] === 'YOK' ? 'VAR' : 'YOK');
+        } else {
+          const idx = states.indexOf(stateObj[key]);
+          commitState(states[(idx + 1) % states.length]);
+        }
       });
 
-      return wrap;
+      row._applyVisual = applyVisual;
+      applyVisual();
+      return row;
     }
 
-    function makeLymBasincPompaBtn() {
+    function makeLymBasincPompaRow() {
       const key = 'basincPompa';
       const col = optColors[key];
-      const wrap = document.createElement('button');
-      wrap.type = 'button';
-      wrap.className = 'option-btn lym-basinc-btn rounded-lg px-3 py-2 text-left flex-shrink-0 flex flex-col justify-evenly';
-      wrap.dataset.optKey = key;
+      const row = document.createElement('div');
+      row.className = 'standart-option-row option-btn is-toggle';
+      row.dataset.optKey = key;
 
-      const valueRow = document.createElement('div');
-      valueRow.className = 'lym-basinc-value-row flex items-center justify-center gap-2';
-
-      const leftSym = document.createElement('div');
-      leftSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
-      leftSym.style.background = col.bg;
-      leftSym.style.border = '1px solid ' + col.border;
+      const left = document.createElement('div');
+      left.className = 'standart-option-left';
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'standart-option-icon';
+      iconWrap.style.background = col.bg;
+      iconWrap.style.border = '1px solid ' + col.border;
       const iEl = document.createElement('i');
       iEl.setAttribute('data-lucide', 'gauge');
       iEl.className = 'w-3.5 h-3.5 ' + col.iconCls;
-      leftSym.appendChild(iEl);
+      iconWrap.appendChild(iEl);
+      const labelEl = document.createElement('div');
+      labelEl.className = 'standart-option-label label-tag';
+      labelEl.textContent = 'Basınçlı Pompa';
+      left.appendChild(iconWrap);
+      left.appendChild(labelEl);
 
-      const centerSlot = document.createElement('div');
-      centerSlot.className = 'lym-basinc-center';
-      centerSlot.addEventListener('click', e => e.stopPropagation());
+      const right = document.createElement('div');
+      right.className = 'standart-option-right';
+      const valHidden = document.createElement('span');
+      valHidden.className = 'value-tag';
+      valHidden.style.cssText = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
+      valHidden.textContent = lymState[key];
+      right.appendChild(valHidden);
 
-      const valEl = document.createElement('div');
-      valEl.className = 'text-base font-bold value-tag tracking-wide text-center flex items-center justify-center';
-      valEl.textContent = lymState[key];
+      const statusPill = document.createElement('div');
+      statusPill.className = 'opt-status-pill';
+      right.appendChild(statusPill);
+
+      const toggleSwitch = document.createElement('div');
+      toggleSwitch.className = 'opt-toggle-switch';
+      right.appendChild(toggleSwitch);
 
       const basincInp = document.createElement('input');
       basincInp.id = 'lym-basinc-pompa-inp';
       basincInp.type = 'text';
       basincInp.inputMode = 'decimal';
-      basincInp.placeholder = 'Akım (A)';
-      basincInp.className = 'lym-basinc-inp px-1 rounded-md bg-slate-900/70 border border-sky-500/40 text-xs mono font-bold text-sky-300 text-center focus:border-sky-400 focus:outline-none';
+      basincInp.placeholder = 'Akım A';
+      basincInp.className = 'standart-basinc-inp';
       basincInp.value = lymBasincPompaAmp;
+      basincInp.addEventListener('input', () => {
+        lymBasincPompaAmp = basincInp.value;
+        rerenderBom();
+      });
+      basincInp.addEventListener('click', e => e.stopPropagation());
+      right.appendChild(basincInp);
 
-      centerSlot.appendChild(valEl);
-      centerSlot.appendChild(basincInp);
-
-      const rightSym = document.createElement('div');
-      rightSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
-      rightSym.style.background = 'rgba(15,23,42,0.35)';
-      rightSym.style.border = '1px solid ' + col.active + '80';
-      const refreshI = document.createElement('i');
-      refreshI.setAttribute('data-lucide', 'refresh-cw');
-      refreshI.className = 'w-3.5 h-3.5';
-      refreshI.style.color = col.active;
-      rightSym.appendChild(refreshI);
-
-      valueRow.appendChild(leftSym);
-      valueRow.appendChild(centerSlot);
-      valueRow.appendChild(rightSym);
-      wrap.appendChild(valueRow);
-
-      const labelEl = document.createElement('div');
-      labelEl.className = 'label-tag option-name-tag mono text-[12px] text-center';
-      labelEl.style.color = col.active;
-      labelEl.textContent = 'Basınçlı Pompa';
-      wrap.appendChild(labelEl);
+      row.appendChild(left);
+      row.appendChild(right);
 
       function rerenderBom() {
         const _curModel = document.getElementById('standart-model-select')?.value;
@@ -5351,52 +5897,55 @@
 
       function applyVisual() {
         const isYok = lymState[key] === 'YOK';
-        valEl.textContent = lymState[key];
-        valEl.style.color = isYok ? LYM_OPTION_YOK_COLOR : col.active;
-        leftSym.style.borderColor = isYok ? col.border : (col.active + '99');
-        valEl.style.visibility = isYok ? 'visible' : 'hidden';
-        basincInp.style.visibility = isYok ? 'hidden' : 'visible';
-        basincInp.style.pointerEvents = isYok ? 'none' : 'auto';
+        valHidden.textContent = lymState[key];
+        row.classList.toggle('is-active', !isYok);
+        statusPill.textContent = lymState[key];
+        statusPill.style.color = isYok ? LYM_OPTION_YOK_COLOR : col.active;
+        statusPill.style.borderColor = isYok ? 'rgba(100,116,139,0.55)' : col.active + '90';
+        statusPill.style.background = isYok ? 'rgba(51,65,85,0.55)' : col.active + '18';
+        toggleSwitch.classList.toggle('on', !isYok);
+        toggleSwitch.style.setProperty('--toggle-color', col.active);
+        basincInp.style.display = isYok ? 'none' : '';
         if (isYok) {
           basincInp.value = '';
           lymBasincPompaAmp = '';
         }
       }
-      wrap._applyVisual = applyVisual;
-      applyVisual();
 
-      basincInp.addEventListener('input', () => {
-        lymBasincPompaAmp = basincInp.value;
-        rerenderBom();
-      });
-
-      wrap.addEventListener('click', () => {
+      row.addEventListener('click', () => {
         lymState[key] = lymState[key] === 'YOK' ? 'VAR' : 'YOK';
         applyVisual();
-        if (lymState[key] === 'VAR') {
-          setTimeout(() => basincInp.focus(), 0);
-        }
+        updateOptionsPanelBadge(lymOptBadge, lymState);
+        if (lymState[key] === 'VAR') setTimeout(() => basincInp.focus(), 0);
         rerenderBom();
       });
 
-      return wrap;
+      row._applyVisual = applyVisual;
+      applyVisual();
+      return row;
     }
 
-    lymOptionsRow.appendChild(makeLymToggleBtn('interlockKilit',   'İnterlock Kilit',    'lock',         ['YOK','VAR']));
-    lymOptionsRow.appendChild(makeLymToggleBtn('yagSiyirici',      'Yağ Sıyırıcı',       'droplets',     ['YOK','VAR']));
-    lymOptionsRow.appendChild(makeLymToggleBtn('egzosFani',        'Egzos Fanı',          'wind',         ['YOK','VAR']));
-    lymOptionsRow.appendChild(makeLymToggleBtn('kurutmaFani',      'Kurutma Fanı',        'flame',        kurutmaFaniStates));
-    lymOptionsRow.appendChild(makeLymToggleBtn('drenajPompasi',    'Drenaj Pompası',      'droplet',      ['YOK','VAR']));
-    lymOptionsRow.appendChild(makeLymToggleBtn('gercekZamanSaati', 'Gerçek Zaman Saati', 'clock',        ['YOK','VAR']));
-    lymOptionsRow.appendChild(makeLymToggleBtn('emniyetRolesi',    'Emniyet Rölesi',      'shield-check', ['YOK','VAR']));
-    lymOptionsRow.appendChild(makeLymToggleBtn('invertor',         'İnvertör',             'cpu',          ['YOK','VAR']));
-    lymOptionsRow.appendChild(makeLymBasincPompaBtn());
+    const lymOnChange = () => {
+      updateMakinaGucu();
+      const _curModel = document.getElementById('standart-model-select')?.value;
+      if (_curModel) renderStandartBOM(_curModel);
+    };
 
-    // === KBN OPSİYON SATIRI ===
-    const kbnOptionsRow = document.createElement('div');
-    kbnOptionsRow.id = 'kbn-options-row';
-    kbnOptionsRow.className = 'flex flex-wrap gap-3 p-3 rounded-xl border border-slate-700/50 bg-slate-800/30';
-    kbnOptionsRow.style.display = 'none';
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'interlockKilit', label: 'İnterlock Kilit', icon: 'lock', states: ['YOK', 'VAR'], col: optColors.interlockKilit, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'yagSiyirici', label: 'Yağ Sıyırıcı', icon: 'droplets', states: yagSiyiriciStates, col: optColors.yagSiyirici, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'egzosFani', label: 'Egzos Fanı', icon: 'wind', states: ['YOK', 'VAR'], col: optColors.egzosFani, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'kurutmaFani', label: 'Kurutma Fanı', icon: 'flame', states: kurutmaFaniStates, col: optColors.kurutmaFani, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'drenajPompasi', label: 'Drenaj Pompası', icon: 'droplet', states: ['YOK', 'VAR'], col: optColors.drenajPompasi, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'gercekZamanSaati', label: 'Zamanlayıcılı Isıtma Sistemi', icon: 'timer', states: ['YOK', 'VAR'], col: optColors.gercekZamanSaati, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'emniyetRolesi', label: 'Emniyet Rölesi', icon: 'shield-check', states: ['YOK', 'VAR'], col: optColors.emniyetRolesi, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeStandartOptionRow({ stateObj: lymState, key: 'invertor', label: 'İnvertör', icon: 'cpu', states: ['YOK', 'VAR'], col: optColors.invertor, yokColor: LYM_OPTION_YOK_COLOR, onChange: lymOnChange, panelBadge: lymOptBadge }));
+    lymOptBody.appendChild(makeLymBasincPompaRow());
+
+    // === KBN OPSİYON PANELİ ===
+    const kbnOptionsPanel = createOptionsPanel('kbn-options-row', 'KBN Opsiyonları');
+    const kbnOptionsRow = kbnOptionsPanel.panel;
+    const kbnOptBody = kbnOptionsPanel.body;
+    const kbnOptBadge = kbnOptionsPanel.badge;
 
     const kbnOptColors = {
       yagSiyirici:      { bg: 'rgba(251,146,60,0.12)',  border: 'rgba(251,146,60,0.3)',  iconCls: 'text-orange-400',  active: '#fb923c' },
@@ -5408,53 +5957,29 @@
     };
     const KBN_OPTION_YOK_COLOR = '#22d3ee';
 
-    function makeKbnToggleBtn(key, label, icon, states) {
-      const col = kbnOptColors[key];
-      const wrap = document.createElement('button');
-      wrap.className = 'option-btn rounded-lg px-3 py-2 text-left flex-shrink-0 flex flex-col justify-evenly';
-      wrap.style.minWidth = '130px'; wrap.style.minHeight = '94px';
-      wrap.dataset.optKey = key;
-      const valueRow = document.createElement('div');
-      valueRow.className = 'flex items-center justify-center gap-2';
-      const leftSym = document.createElement('div');
-      leftSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
-      leftSym.style.background = col.bg; leftSym.style.border = '1px solid ' + col.border;
-      const iEl = document.createElement('i');
-      iEl.setAttribute('data-lucide', icon); iEl.className = 'w-3.5 h-3.5 ' + col.iconCls;
-      leftSym.appendChild(iEl);
-      const rightSym = document.createElement('div');
-      rightSym.className = 'w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0';
-      rightSym.style.background = 'rgba(15,23,42,0.35)'; rightSym.style.border = '1px solid ' + col.active + '80';
-      const refreshI = document.createElement('i');
-      refreshI.setAttribute('data-lucide', 'refresh-cw'); refreshI.className = 'w-3.5 h-3.5'; refreshI.style.color = col.active;
-      rightSym.appendChild(refreshI);
-      const valEl = document.createElement('div');
-      valEl.className = 'text-base font-bold value-tag tracking-wide text-center min-w-[52px]';
-      valEl.textContent = kbnState[key];
-      valueRow.appendChild(leftSym); valueRow.appendChild(valEl); valueRow.appendChild(rightSym);
-      wrap.appendChild(valueRow);
-      const labelEl = document.createElement('div');
-      labelEl.className = 'label-tag option-name-tag mono text-[12px] text-center';
-      labelEl.style.color = col.active; labelEl.textContent = label;
-      wrap.appendChild(labelEl);
-      function applyVisualKbn() {
-        const isYok = kbnState[key] === 'YOK';
-        valEl.style.color = isYok ? KBN_OPTION_YOK_COLOR : col.active;
-        leftSym.style.borderColor = isYok ? col.border : (col.active + '99');
-      }
-      wrap._applyVisual = applyVisualKbn;
-      applyVisualKbn();
-      wrap.addEventListener('click', () => {
-        const idx = states.indexOf(kbnState[key]);
-        kbnState[key] = states[(idx + 1) % states.length];
-        valEl.textContent = kbnState[key];
-        applyVisualKbn();
-        updateMakinaGucu_KBN();
-        const _curModel = document.getElementById('standart-model-select')?.value;
-        if (_curModel) renderStandartBOM(_curModel);
-      });
-      return wrap;
+    function renderKbnInfoCards(model) {
+      lymInfoSection.innerHTML = '';
+      const cfg = kbnModelConfig[model];
+      if (!cfg) return;
+      cfg.cards.forEach((c, i) => lymInfoSection.appendChild(buildComponentStatCard(c, cardPalette[i % cardPalette.length])));
+      lymInfoSection.appendChild(buildTotalPowerCard('lym-makine-gucu-val'));
+      lymInfoSection.appendChild(buildTotalAmpCard('lym-makine-akim-val'));
+      updateMakinaGucu_KBN();
+      lucide.createIcons();
     }
+
+    const kbnOnChange = () => {
+      updateMakinaGucu_KBN();
+      const _curModel = document.getElementById('standart-model-select')?.value;
+      if (_curModel) renderStandartBOM(_curModel);
+    };
+
+    kbnOptBody.appendChild(makeStandartOptionRow({ stateObj: kbnState, key: 'yagSiyirici', label: 'Yağ Sıyırıcı', icon: 'droplets', states: ['YOK', 'VAR'], col: kbnOptColors.yagSiyirici, yokColor: KBN_OPTION_YOK_COLOR, onChange: kbnOnChange, panelBadge: kbnOptBadge }));
+    kbnOptBody.appendChild(makeStandartOptionRow({ stateObj: kbnState, key: 'kurutmaFani', label: 'Kurutma Fanı', icon: 'flame', states: kurutmaFaniStates, col: kbnOptColors.kurutmaFani, yokColor: KBN_OPTION_YOK_COLOR, onChange: kbnOnChange, panelBadge: kbnOptBadge }));
+    kbnOptBody.appendChild(makeStandartOptionRow({ stateObj: kbnState, key: 'drenajPompasi', label: 'Drenaj Pompası', icon: 'droplet', states: ['YOK', 'VAR'], col: kbnOptColors.drenajPompasi, yokColor: KBN_OPTION_YOK_COLOR, onChange: kbnOnChange, panelBadge: kbnOptBadge }));
+    kbnOptBody.appendChild(makeStandartOptionRow({ stateObj: kbnState, key: 'gercekZamanSaati', label: 'Gerçek Zaman Saati', icon: 'clock', states: ['YOK', 'VAR'], col: kbnOptColors.gercekZamanSaati, yokColor: KBN_OPTION_YOK_COLOR, onChange: kbnOnChange, panelBadge: kbnOptBadge }));
+    kbnOptBody.appendChild(makeStandartOptionRow({ stateObj: kbnState, key: 'isinBariyeri', label: 'Işın Bariyeri', icon: 'scan-line', states: ['YOK', 'VAR'], col: kbnOptColors.isinBariyeri, yokColor: KBN_OPTION_YOK_COLOR, onChange: kbnOnChange, panelBadge: kbnOptBadge }));
+    kbnOptBody.appendChild(makeStandartOptionRow({ stateObj: kbnState, key: 'otomatikDolum', label: 'Otomatik Dolum', icon: 'glass-water', states: ['YOK', 'VAR'], col: kbnOptColors.otomatikDolum, yokColor: KBN_OPTION_YOK_COLOR, onChange: kbnOnChange, panelBadge: kbnOptBadge }));
 
     function updateMakinaGucu_KBN() {
       const cfg = kbnModelConfig[select.value];
@@ -5473,71 +5998,6 @@
         recalcStandartBOM();
       }
     }
-
-    function renderKbnInfoCards(model) {
-      lymInfoSection.innerHTML = '';
-      const cfg = kbnModelConfig[model];
-      if (!cfg) return;
-      cfg.cards.forEach((c, i) => {
-        const pal = cardPalette[i % cardPalette.length];
-        const card = document.createElement('div');
-        card.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-        card.style.background = pal.bg; card.style.border = '1px solid ' + pal.border;
-        const lbl = document.createElement('div');
-        lbl.className = 'text-[10px] mono uppercase tracking-wide mb-1 font-semibold';
-        lbl.style.color = pal.lbl; lbl.textContent = c.label;
-        card.appendChild(lbl);
-        const kwEl = document.createElement('div');
-        kwEl.className = 'text-sm font-bold mono'; kwEl.style.color = pal.val;
-        kwEl.textContent = c.kw + ' kW'; card.appendChild(kwEl);
-        const aEl = document.createElement('div');
-        aEl.className = 'text-[11px] mono font-medium'; aEl.style.color = pal.lbl;
-        aEl.textContent = c.a + ' A'; card.appendChild(aEl);
-        lymInfoSection.appendChild(card);
-      });
-      const sep = document.createElement('div');
-      sep.style.cssText = 'width:1px;align-self:stretch;background:rgba(71,85,105,0.4);margin:0 4px';
-      lymInfoSection.appendChild(sep);
-      // Makine Gücü kartı
-      const gcCard = document.createElement('div');
-      gcCard.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-      gcCard.style.background = 'rgba(6,78,59,0.35)'; gcCard.style.border = '1px solid rgba(52,211,153,0.4)';
-      const gcLbl = document.createElement('div');
-      gcLbl.className = 'text-[10px] mono text-emerald-400 uppercase tracking-wide mb-1 flex items-center gap-1';
-      const gcIcon = document.createElement('i'); gcIcon.setAttribute('data-lucide', 'zap'); gcIcon.className = 'w-3 h-3';
-      gcLbl.appendChild(gcIcon); gcLbl.appendChild(document.createTextNode('Makine Gücü'));
-      gcCard.appendChild(gcLbl);
-      const gcVal = document.createElement('div');
-      gcVal.id = 'lym-makine-gucu-val'; gcVal.className = 'text-base font-bold text-emerald-400 mono';
-      gcCard.appendChild(gcVal);
-      const gcNote = document.createElement('div');
-      gcNote.className = 'text-[10px] text-slate-500 mono'; gcNote.textContent = 'standart + opsiyonlar';
-      gcCard.appendChild(gcNote); lymInfoSection.appendChild(gcCard);
-      // Makine Akımı kartı
-      const gaCard = document.createElement('div');
-      gaCard.className = 'flex flex-col px-3 py-2 rounded-lg flex-shrink-0';
-      gaCard.style.background = 'rgba(30,58,138,0.35)'; gaCard.style.border = '1px solid rgba(96,165,250,0.4)';
-      const gaLbl = document.createElement('div');
-      gaLbl.className = 'text-[10px] mono text-blue-400 uppercase tracking-wide mb-1 flex items-center gap-1';
-      const gaIcon = document.createElement('i'); gaIcon.setAttribute('data-lucide', 'activity'); gaIcon.className = 'w-3 h-3';
-      gaLbl.appendChild(gaIcon); gaLbl.appendChild(document.createTextNode('Makine Akımı'));
-      gaCard.appendChild(gaLbl);
-      const gaVal = document.createElement('div');
-      gaVal.id = 'lym-makine-akim-val'; gaVal.className = 'text-base font-bold text-blue-400 mono';
-      gaCard.appendChild(gaVal);
-      const gaNote = document.createElement('div');
-      gaNote.className = 'text-[10px] text-slate-500 mono'; gaNote.textContent = 'standart + opsiyonlar';
-      gaCard.appendChild(gaNote); lymInfoSection.appendChild(gaCard);
-      updateMakinaGucu_KBN();
-      lucide.createIcons();
-    }
-
-    kbnOptionsRow.appendChild(makeKbnToggleBtn('yagSiyirici',      'Yağ Sıyırıcı',       'droplets',  ['YOK', 'VAR']));
-    kbnOptionsRow.appendChild(makeKbnToggleBtn('kurutmaFani',      'Kurutma Fanı',        'flame',     kurutmaFaniStates));
-    kbnOptionsRow.appendChild(makeKbnToggleBtn('drenajPompasi',    'Drenaj Pompası',      'droplet',   ['YOK', 'VAR']));
-    kbnOptionsRow.appendChild(makeKbnToggleBtn('gercekZamanSaati', 'Gerçek Zaman Saati', 'clock',     ['YOK', 'VAR']));
-    kbnOptionsRow.appendChild(makeKbnToggleBtn('isinBariyeri',     'Işın Bariyeri',       'scan-line', ['YOK', 'VAR']));
-    kbnOptionsRow.appendChild(makeKbnToggleBtn('otomatikDolum',    'Otomatik Dolum',      'glass-water', ['YOK', 'VAR']));
 
     selRow.appendChild(lymOptionsRow);
     selRow.appendChild(kbnOptionsRow);
@@ -5562,9 +6022,9 @@
       const isLym = select.value.startsWith('LYM');
       const isKbn = !!kbnModelConfig[select.value];
       const hasCards = isLym || isKbn || otherModelConfig[select.value];
-      lymInfoSection.style.display = hasCards ? 'flex' : 'none';
-      lymOptionsRow.style.display  = isLym ? 'flex' : 'none';
-      kbnOptionsRow.style.display  = isKbn ? 'flex' : 'none';
+      lymInfoSection.style.display = hasCards ? 'grid' : 'none';
+      lymOptionsRow.style.display  = isLym ? 'block' : 'none';
+      kbnOptionsRow.style.display  = isKbn ? 'block' : 'none';
       // Model değiştiğinde tüm LYM opsiyonlarını sıfırla
       Object.assign(lymState, { interlockKilit:'YOK', yagSiyirici:'YOK', egzosFani:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', emniyetRolesi:'YOK', invertor:'YOK', basincPompa:'YOK' });
       lymBasincPompaAmp = '';
@@ -5575,6 +6035,7 @@
         if (valEl) valEl.textContent = 'YOK';
         if (typeof btn._applyVisual === 'function') btn._applyVisual();
       });
+      updateOptionsPanelBadge(lymOptBadge, lymState);
       // KBN opsiyonlarını sıfırla
       Object.assign(kbnState, { yagSiyirici:'YOK', kurutmaFani:'YOK', drenajPompasi:'YOK', gercekZamanSaati:'YOK', isinBariyeri:'YOK', otomatikDolum:'YOK' });
       kbnOptionsRow.querySelectorAll('.option-btn').forEach(btn => {
@@ -5584,6 +6045,7 @@
         if (valEl) valEl.textContent = 'YOK';
         if (typeof btn._applyVisual === 'function') btn._applyVisual();
       });
+      updateOptionsPanelBadge(kbnOptBadge, kbnState);
       if (isLym) renderLymInfoCards(select.value);
       else if (isKbn) renderKbnInfoCards(select.value);
       else if (otherModelConfig[select.value]) renderOtherModelCards(select.value);
@@ -5605,9 +6067,10 @@
       smsDot.style.cssText = `display:inline-block;background:${dg.renk};box-shadow:0 0 8px ${dg.renk};`;
       smsTrigger.style.borderColor = dg.renk + '90'; smsTrigger.style.color = dg.renk;
     })();
-    lymInfoSection.style.display = 'flex';
-    lymOptionsRow.style.display  = 'flex';
+    lymInfoSection.style.display = 'grid';
+    lymOptionsRow.style.display  = 'block';
     renderLymInfoCards('LYM 950');
+    updateOptionsPanelBadge(lymOptBadge, lymState);
     renderStandartBOM('LYM 950');
 
     lucide.createIcons();
@@ -6484,15 +6947,13 @@
       // Form adı butonunu sadece ilk 4 sayfada göster (Seçim, Otomasyon, IO, Malzeme)
       const projectNameBtn = document.getElementById('active-project-name');
       if (projectNameBtn) projectNameBtn.style.display = hideFormBtns ? 'none' : '';
-      // Listele butonunu sadece Standart sayfasında göster
-      const standartListeleBtn = document.getElementById('btn-standart-listele');
-      if (standartListeleBtn) standartListeleBtn.style.display = isStandart ? '' : 'none';
       const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
       const duzenleBtn = document.getElementById('btn-standart-duzenle');
       const fiyatDuzenleBtn = document.getElementById('btn-fiyat-duzenle');
       const fiyatKatalogBtn = document.getElementById('btn-fiyat-katalog-supabase');
-      if (jsonSupabaseBtn) jsonSupabaseBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
-      if (duzenleBtn) duzenleBtn.classList.toggle('hidden', !(isStandart && isAdmin()));
+      if (jsonSupabaseBtn) jsonSupabaseBtn.classList.add('hidden');
+      if (duzenleBtn) duzenleBtn.classList.add('hidden');
+      updateStandartBomAdminMenu();
       if (fiyatDuzenleBtn) fiyatDuzenleBtn.classList.toggle('hidden', !(isFiyatlar && isAdmin()));
       if (fiyatKatalogBtn) fiyatKatalogBtn.classList.toggle('hidden', !(isFiyatlar && isAdmin()));
       // Fiyatlar sayfasında Excel import/export butonlarını göster
@@ -7281,12 +7742,12 @@
   function updateAuthUI() {
     const girisBtn = document.getElementById('btn-kullanici-giris');
     const bulutBtn = document.getElementById('btn-bulut-yukle');
-    const standartDuzenleBtn = document.getElementById('btn-standart-duzenle');
-    const jsonSupabaseBtn = document.getElementById('btn-standart-json-supabase');
     const fiyatDuzenleBtn = document.getElementById('btn-fiyat-duzenle');
     const fiyatKatalogBtn = document.getElementById('btn-fiyat-katalog-supabase');
-    const standartAktif = document.querySelector('[data-page="standart"]')?.classList.contains('active');
     const fiyatlarAktif = document.querySelector('[data-page="fiyatlar"]')?.classList.contains('active');
+    document.getElementById('btn-standart-duzenle')?.classList.add('hidden');
+    document.getElementById('btn-standart-json-supabase')?.classList.add('hidden');
+    updateStandartBomAdminMenu();
     if (currentUser) {
       const email = currentUser.email || '';
       const short = email.length > 18 ? email.slice(0, 15) + '…' : email;
@@ -7295,12 +7756,6 @@
       girisBtn.title = 'Çıkış yapmak için tıkla';
       bulutBtn.classList.remove('hidden');
       if (isAdmin()) {
-        if (jsonSupabaseBtn) {
-          jsonSupabaseBtn.onclick = () => uploadAllToSupabase();
-          jsonSupabaseBtn.classList.toggle('hidden', !standartAktif);
-        }
-        standartDuzenleBtn.classList.toggle('hidden', !standartAktif);
-        standartDuzenleBtn.onclick = () => openStandartEditModal();
         if (fiyatDuzenleBtn) {
           fiyatDuzenleBtn.classList.toggle('hidden', !fiyatlarAktif);
           fiyatDuzenleBtn.onclick = () => openFiyatEditModal();
@@ -7310,19 +7765,17 @@
           fiyatKatalogBtn.onclick = () => uploadKatalogToSupabase();
         }
       } else {
-        if (jsonSupabaseBtn) jsonSupabaseBtn.classList.add('hidden');
-        standartDuzenleBtn.classList.add('hidden');
         if (fiyatDuzenleBtn) fiyatDuzenleBtn.classList.add('hidden');
         if (fiyatKatalogBtn) fiyatKatalogBtn.classList.add('hidden');
       }
+      updateStandartBomAdminMenu();
     } else {
       girisBtn.innerHTML = `<i data-lucide="log-in" class="w-3.5 h-3.5"></i> Giriş`;
       girisBtn.title = '';
       bulutBtn.classList.add('hidden');
-      standartDuzenleBtn.classList.add('hidden');
-      if (jsonSupabaseBtn) jsonSupabaseBtn.classList.add('hidden');
       if (fiyatDuzenleBtn) fiyatDuzenleBtn.classList.add('hidden');
       if (fiyatKatalogBtn) fiyatKatalogBtn.classList.add('hidden');
+      updateStandartBomAdminMenu();
     }
     lucide.createIcons();
   }
@@ -7896,15 +8349,15 @@
     // === BİLEŞEN KARTLARI ===
     const infoSection = document.getElementById('lym-info-section');
     if (infoSection && infoSection.style.display !== 'none') {
-      const cards = infoSection.querySelectorAll('.flex.flex-col');
       const labels = [], kwVals = [], ampVals = [];
-      cards.forEach(card => {
-        const lbl = card.querySelector('.text-\\[10px\\]')?.textContent.trim();
-        const divs = card.querySelectorAll('div');
-        if (lbl && lbl !== 'standart + opsiyonlar') {
+      infoSection.querySelectorAll('.standart-stat-card').forEach(card => {
+        const lbl = card.querySelector('.stat-label')?.textContent.trim();
+        const kw = card.querySelector('.stat-kw')?.textContent.trim() || '';
+        const amp = card.querySelector('.stat-amp')?.textContent.trim() || '';
+        if (lbl) {
           labels.push(lbl);
-          kwVals.push(divs[1]?.textContent.trim() || '');
-          ampVals.push(divs[2]?.textContent.trim() || '');
+          kwVals.push(kw);
+          ampVals.push(amp);
         }
       });
       if (labels.length > 0) {
@@ -8010,7 +8463,9 @@
   }
 
   // Button click handlers
-  document.getElementById('btn-standart-listele')?.addEventListener('click', exportStandartToExcel);
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.standart-bom-menu-wrap')) closeAllStandartMenus();
+  });
   document.getElementById('btn-excel-dok')?.addEventListener('click', exportAll4PagesToExcel);
   
   document.getElementById('btn-fiyat-disari-aktar')?.addEventListener('click', exportFiyatlarToExcel);
