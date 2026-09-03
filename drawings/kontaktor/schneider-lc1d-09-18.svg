@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 45 77"
+     width="45mm" height="77mm"
+     data-width-mm="45" data-height-mm="77">
+<style>
+  .body-k   { fill: #3a3f47; stroke: #1e293b; stroke-width: 0.2; }
+  .body-mcb { fill: #f1f5f9; stroke: #334155; stroke-width: 0.2; }
+  .body-rcc { fill: #f8fafc; stroke: #334155; stroke-width: 0.2; }
+  .body-vfd { fill: #e8ecf0; stroke: #475569; stroke-width: 0.2; }
+  .vfd-disp { fill: #1e293b; stroke: #64748b; stroke-width: 0.12; }
+  .vfd-key  { fill: #cbd5e1; stroke: #64748b; stroke-width: 0.1; }
+  .vfd-led  { fill: #22c55e; stroke: #15803d; stroke-width: 0.08; }
+  .vfd-term { fill: #64748b; stroke: #334155; stroke-width: 0.12; }
+  .panel    { fill: #2d3239; stroke: #475569; stroke-width: 0.15; }
+  .fin      { fill: #454b54; stroke: #1e293b; stroke-width: 0.12; }
+  .screw    { fill: #cbd5e1; stroke: #64748b; stroke-width: 0.12; }
+  .screw-h  { fill: none; stroke: #94a3b8; stroke-width: 0.1; }
+  .slot     { fill: #1e293b; stroke: #64748b; stroke-width: 0.1; }
+  .act-blue { fill: #2563eb; stroke: #1d4ed8; stroke-width: 0.1; }
+  .act-red  { fill: #dc2626; stroke: #991b1b; stroke-width: 0.1; }
+  .toggle   { fill: #e2e8f0; stroke: #475569; stroke-width: 0.15; }
+  .toggle-on{ fill: #22c55e; stroke: #15803d; stroke-width: 0.12; }
+  .pole-div { fill: none; stroke: #94a3b8; stroke-width: 0.12; }
+  .lbl-w    { font: 500 2px 'Arial', sans-serif; fill: #f8fafc; }
+  .lbl-d    { font: 400 1.7px 'Arial', sans-serif; fill: #cbd5e1; }
+  .lbl-mcb  { font: 500 2px 'Arial', sans-serif; fill: #334155; }
+</style>
+<g id="footprint">
+
+  <rect x="0" y="0" width="45" height="77" rx="0.8" class="body-k"/>
+  <rect x="1.5" y="10" width="42" height="11" class="fin"/>
+  <rect x="1.5" y="56" width="42" height="11" class="fin"/>
+  
+  <circle cx="5.50" cy="6.00" r="1.15" class="screw"/>
+  <line x1="4.35" y1="6.00" x2="6.65" y2="6.00" class="screw-h"/>
+  <line x1="5.50" y1="4.85" x2="5.50" y2="7.15" class="screw-h"/>
+<text x="5.50" y="4.20" text-anchor="middle" class="lbl-d">1/L1</text>
+
+  <circle cx="13.50" cy="6.00" r="1.15" class="screw"/>
+  <line x1="12.35" y1="6.00" x2="14.65" y2="6.00" class="screw-h"/>
+  <line x1="13.50" y1="4.85" x2="13.50" y2="7.15" class="screw-h"/>
+<text x="13.50" y="4.20" text-anchor="middle" class="lbl-d">3/L2</text>
+
+  <circle cx="21.50" cy="6.00" r="1.15" class="screw"/>
+  <line x1="20.35" y1="6.00" x2="22.65" y2="6.00" class="screw-h"/>
+  <line x1="21.50" y1="4.85" x2="21.50" y2="7.15" class="screw-h"/>
+<text x="21.50" y="4.20" text-anchor="middle" class="lbl-d">5/L3</text>
+
+  <circle cx="29.50" cy="6.00" r="1.15" class="screw"/>
+  <line x1="28.35" y1="6.00" x2="30.65" y2="6.00" class="screw-h"/>
+  <line x1="29.50" y1="4.85" x2="29.50" y2="7.15" class="screw-h"/>
+<text x="29.50" y="4.20" text-anchor="middle" class="lbl-d">13/NO</text>
+
+  <circle cx="37.50" cy="6.00" r="1.15" class="screw"/>
+  <line x1="36.35" y1="6.00" x2="38.65" y2="6.00" class="screw-h"/>
+  <line x1="37.50" y1="4.85" x2="37.50" y2="7.15" class="screw-h"/>
+<text x="37.50" y="4.20" text-anchor="middle" class="lbl-d">A1</text>
+  
+  <circle cx="5.50" cy="71.00" r="1.15" class="screw"/>
+  <line x1="4.35" y1="71.00" x2="6.65" y2="71.00" class="screw-h"/>
+  <line x1="5.50" y1="69.85" x2="5.50" y2="72.15" class="screw-h"/>
+<text x="5.50" y="74.50" text-anchor="middle" class="lbl-d">2/T1</text>
+
+  <circle cx="13.50" cy="71.00" r="1.15" class="screw"/>
+  <line x1="12.35" y1="71.00" x2="14.65" y2="71.00" class="screw-h"/>
+  <line x1="13.50" y1="69.85" x2="13.50" y2="72.15" class="screw-h"/>
+<text x="13.50" y="74.50" text-anchor="middle" class="lbl-d">4/T2</text>
+
+  <circle cx="21.50" cy="71.00" r="1.15" class="screw"/>
+  <line x1="20.35" y1="71.00" x2="22.65" y2="71.00" class="screw-h"/>
+  <line x1="21.50" y1="69.85" x2="21.50" y2="72.15" class="screw-h"/>
+<text x="21.50" y="74.50" text-anchor="middle" class="lbl-d">6/T3</text>
+
+  <circle cx="29.50" cy="71.00" r="1.15" class="screw"/>
+  <line x1="28.35" y1="71.00" x2="30.65" y2="71.00" class="screw-h"/>
+  <line x1="29.50" y1="69.85" x2="29.50" y2="72.15" class="screw-h"/>
+<text x="29.50" y="74.50" text-anchor="middle" class="lbl-d">14/NO</text>
+
+  <circle cx="37.50" cy="71.00" r="1.15" class="screw"/>
+  <line x1="36.35" y1="71.00" x2="38.65" y2="71.00" class="screw-h"/>
+  <line x1="37.50" y1="69.85" x2="37.50" y2="72.15" class="screw-h"/>
+<text x="37.50" y="74.50" text-anchor="middle" class="lbl-d">A2</text>
+  <rect x="3" y="24" width="31" height="29" rx="0.5" class="panel"/>
+  <text x="5" y="28" class="lbl-w" font-size="2.4px">LC1D</text>
+  <text x="5" y="32" class="lbl-d">16M7</text>
+  <text x="22.5" y="26" text-anchor="middle" class="lbl-d">Schneider Electric</text>
+  <rect x="36" y="28" width="4" height="14" rx="0.5" class="slot"/>
+  <rect x="36.6" y="32" width="2.8" height="6" rx="0.3" class="act-blue"/>
+</g>
+</svg>

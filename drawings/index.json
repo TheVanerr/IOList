@@ -1,0 +1,167 @@
+{
+  "purpose": "Pano 2D yerleşim — ön görünüş, 1:1 mm, şeffaf zemin",
+  "scale": "1 SVG birimi = 1 mm",
+  "series": {
+    "schneider-gv2me": {
+      "file": "mks/schneider-gv2me.svg",
+      "type": "MKŞ",
+      "dimensions_mm": {
+        "w": 45,
+        "h": 89
+      },
+      "models": [
+        "GV2ME01",
+        "GV2ME22",
+        "GV2ME32"
+      ]
+    },
+    "siemens-3rv2": {
+      "file": "mks/siemens-3rv2.svg",
+      "type": "MKŞ",
+      "dimensions_mm": {
+        "w": 45,
+        "h": 97
+      },
+      "models": [
+        "3RV2011…",
+        "3RV2031…"
+      ]
+    },
+    "schneider-lc1k": {
+      "file": "kontaktor/schneider-lc1k.svg",
+      "type": "Kontaktör",
+      "dimensions_mm": {
+        "w": 45,
+        "h": 58
+      },
+      "models": [
+        "LC1K0610M7",
+        "LC1K0910M7",
+        "LC1K1610M7"
+      ]
+    },
+    "schneider-lc1d-09-18": {
+      "file": "kontaktor/schneider-lc1d-09-18.svg",
+      "type": "Kontaktör",
+      "dimensions_mm": {
+        "w": 45,
+        "h": 77
+      },
+      "models": [
+        "LC1D16M7",
+        "LC1D18M7"
+      ]
+    },
+    "schneider-lc1d-25-32": {
+      "file": "kontaktor/schneider-lc1d-25-32.svg",
+      "type": "Kontaktör",
+      "dimensions_mm": {
+        "w": 45,
+        "h": 85
+      },
+      "models": [
+        "LC1D25M7",
+        "LC1D32M7"
+      ]
+    },
+    "siemens-3rt2-s00": {
+      "file": "kontaktor/siemens-3rt2-s00.svg",
+      "type": "Kontaktör",
+      "dimensions_mm": {
+        "w": 45,
+        "h": 58
+      },
+      "models": [
+        "3RT2015…",
+        "3RT2018…"
+      ]
+    },
+    "siemens-3rt2-s0": {
+      "file": "kontaktor/siemens-3rt2-s0.svg",
+      "type": "Kontaktör",
+      "dimensions_mm": {
+        "w": 45,
+        "h": 85
+      },
+      "models": [
+        "3RT2026…",
+        "3RT2034…"
+      ]
+    },
+    "schneider-a9f741": {
+      "file": "sigorta/schneider-a9f741.svg",
+      "type": "Sigorta 1P",
+      "dimensions_mm": {
+        "w": 18,
+        "h": 85
+      },
+      "models": [
+        "A9F74103",
+        "A9F74106",
+        "A9F74110",
+        "A9F74116",
+        "A9F74125",
+        "A9F74132",
+        "A9F74140",
+        "A9F74150",
+        "A9F74163"
+      ]
+    },
+    "schneider-a9f742": {
+      "file": "sigorta/schneider-a9f742.svg",
+      "type": "Sigorta 2P",
+      "dimensions_mm": {
+        "w": 36,
+        "h": 85
+      },
+      "models": [
+        "A9F742…"
+      ]
+    },
+    "schneider-a9f743": {
+      "file": "sigorta/schneider-a9f743.svg",
+      "type": "Sigorta 3P",
+      "dimensions_mm": {
+        "w": 54,
+        "h": 85
+      },
+      "models": [
+        "A9F74306",
+        "A9F74310",
+        "A9F74316",
+        "A9F74325",
+        "A9F74332",
+        "A9F74340"
+      ]
+    },
+    "schneider-a9r414": {
+      "file": "sigorta/schneider-a9r414.svg",
+      "type": "Kaçak Akım RCCB 4P",
+      "dimensions_mm": {
+        "w": 72,
+        "h": 91
+      },
+      "models": [
+        "A9R41416",
+        "A9R41425",
+        "A9R41440",
+        "A9R41463",
+        "A9R41480",
+        "A9R414100"
+      ]
+    },
+    "delta-vfd-el21w-a1": {
+      "file": "invertor/delta-vfd-el21w-a1.svg",
+      "type": "İnvertör",
+      "dimensions_mm": {
+        "w": 92,
+        "h": 162
+      },
+      "models": [
+        "VFD004EL21W-1",
+        "VFD007EL21W-1",
+        "VFD002EL21W-1"
+      ]
+    }
+  }
+}

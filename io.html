@@ -127,6 +127,121 @@
     background: rgba(30, 41, 59, 0.8);
     color: #e2e8f0;
   }
+  /* Pano çizim — 2D tava */
+  .pano-canvas-wrap {
+    overflow: auto;
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    border-radius: 0.75rem;
+    background: #e8eaed;
+  }
+  .pano-canvas {
+    position: relative;
+    background: #f8fafc;
+    box-shadow: inset 0 0 0 1px #cbd5e1;
+  }
+  .pano-panel-outline {
+    position: absolute;
+    border: 2px solid #1e293b;
+    pointer-events: none;
+    box-sizing: border-box;
+  }
+  .pano-channel-h {
+    position: absolute;
+    background: #7eb8da;
+    border: 1px solid #5a9ec4;
+    box-sizing: border-box;
+  }
+  .pano-channel-v {
+    position: absolute;
+    background: #7eb8da;
+    border: 1px solid #5a9ec4;
+    box-sizing: border-box;
+  }
+  .pano-rail {
+    position: absolute;
+    background: linear-gradient(180deg, #fde68a 0%, #fbbf24 48%, #d97706 100%);
+    border: 1px solid #b45309;
+    box-sizing: border-box;
+  }
+  .pano-shelf-label {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  .pano-comp {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .pano-comp img {
+    display: block;
+    image-rendering: crisp-edges;
+  }
+  .pano-ph {
+    background: #fff;
+    border: 1px solid #64748b;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7px;
+    color: #334155;
+    padding: 2px;
+    line-height: 1.15;
+    overflow: hidden;
+  }
+  .pano-klemens {
+    position: absolute;
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+  }
+  .pano-klemens-block {
+    background: #fff;
+    border: 1px solid #475569;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pano-klemens-pole {
+    width: 5px;
+    height: 14px;
+    border-bottom: 1px solid #94a3b8;
+  }
+  .pano-klemens-pole.pe { background: #fef08a; }
+  .pano-klemens-pole.nu { background: #1e293b; }
+  .pano-klemens-pole.l  { background: #854d0e; }
+  .pano-klemens-pole.n  { background: #2563eb; }
+  .pano-klemens-cap {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 6px;
+    color: #475569;
+    text-align: center;
+    margin-top: 2px;
+    max-width: 48px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pano-dim {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: #64748b;
+    pointer-events: none;
+  }
+  .pano-stat-ok { color: #34d399; }
+  .pano-stat-warn { color: #fbbf24; }
+  .pano-stat-over { color: #f87171; }
   .option-btn {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
     border: 1px solid rgba(59, 130, 246, 0.3);
@@ -440,9 +555,10 @@
     font-weight: 700;
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.16);
   }
-  .secim-option-card {
+  button.standart-option-row.option-btn {
     width: 100%;
-    justify-self: stretch;
+    text-align: left;
+    font: inherit;
   }
   .value-tag {
     color: #22d3ee;
@@ -670,169 +786,184 @@
    </header><!-- Main Content Area -->
    <main class="flex-1 overflow-auto p-6 pb-24">
     <!-- SEÇİM PAGE -->
-    <section id="page-secim" class="page active flex-col gap-2 w-full">
+    <section id="page-secim" class="page active flex-col gap-6 w-full">
      <div>
-      <div class="flex items-center gap-2 mb-2">
+      <div class="flex items-center gap-2 mb-1">
        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-cyan-400"></i> <span class="label-tag mono">Step 01 / Configuration</span>
       </div>
-      <div class="header-line"></div>
-     </div><!-- Selection Buttons -->
-    <div class="grid grid-cols-2 md:grid-cols-8 gap-2">
-    <!-- Makine Gücü --> <div class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left cursor-default flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-green-500/20 flex items-center justify-center border border-green-500/40 flex-shrink-0">
-        <i data-lucide="zap" class="w-3.5 h-3.5 text-green-400"></i>
-       </div>
-      <div id="val-makine-gucu" class="text-[15px] font-bold text-green-400 tracking-wide text-center min-w-[52px]">0.00 kW</div>
-       <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-        <i data-lucide="activity" class="w-3.5 h-3.5 text-green-300"></i>
-       </div>
-      </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#4ade80;">Makine Gücü</div>
+      <div class="header-line mt-4"></div>
      </div>
-          <!-- Makine Tipi --> <button id="btn-makine-tipi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-blue-500/20 flex items-center justify-center border border-blue-500/40 flex-shrink-0">
-        <i data-lucide="box" class="w-3.5 h-3.5 text-blue-400"></i>
+     <div class="bg-slate-900/60 border border-cyan-500/20 rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-4">
+       <i data-lucide="cpu" class="w-4 h-4 text-cyan-400"></i>
+       <span class="text-sm font-bold mono text-cyan-400 uppercase tracking-wider">Makine Konfigürasyonu</span>
+      </div>
+      <div class="standart-stats-grid mb-5">
+       <div class="standart-stat-card is-total-power">
+        <div class="stat-label text-emerald-400 flex items-center gap-1">
+         <i data-lucide="zap" class="w-3 h-3"></i> Makine Gücü
+        </div>
+        <div id="val-makine-gucu" class="stat-kw text-emerald-400">0.00 kW</div>
+        <div class="stat-note">motor + rezistans + kurutma</div>
        </div>
-      <div id="val-makine-tipi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">Kabinli</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       <div class="standart-stat-card is-total-amp">
+        <div class="stat-label text-blue-400 flex items-center gap-1">
+         <i data-lucide="activity" class="w-3 h-3"></i> Makine Akımı
+        </div>
+        <div id="val-makine-akim" class="stat-kw text-blue-400">0.00 A</div>
+        <div class="stat-note">tüm yükler toplamı</div>
+       </div>
+       <div class="standart-stat-card" style="background:rgba(6,182,212,0.12);border:1px solid rgba(34,211,238,0.35)">
+        <div class="stat-label text-cyan-400 flex items-center gap-1">
+         <i data-lucide="settings-2" class="w-3 h-3"></i> Motor Toplamı
+        </div>
+        <div id="secim-motor-kw" class="stat-kw text-cyan-400">0.00 kW</div>
+        <div id="secim-motor-amp" class="stat-amp text-cyan-300">0.00 A</div>
        </div>
       </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#60a5fa;">Makine Tipi</div>
-     </button>
-          <!-- Tank Sayısı --> <button id="btn-tank-sayisi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40 flex-shrink-0">
-        <i data-lucide="container" class="w-3.5 h-3.5 text-emerald-400"></i>
+      <div class="standart-options-panel" id="secim-options-panel">
+       <div class="standart-options-header">
+        <span class="standart-options-title">Konfigürasyon Seçenekleri</span>
+        <span id="secim-options-badge" class="standart-options-badge">0 aktif</span>
        </div>
-      <div id="val-tank-sayisi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">1</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
+       <div class="standart-options-body">
+        <button type="button" id="btn-makine-tipi" class="standart-option-row option-btn is-toggle is-active">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.3)">
+           <i data-lucide="box" class="w-3.5 h-3.5 text-blue-400"></i>
+          </div>
+          <div class="standart-option-label label-tag">Makine Tipi</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-makine-tipi" class="opt-status-pill wide value-tag">Kabinli</div>
+         </div>
+        </button>
+        <button type="button" id="btn-tank-sayisi" class="standart-option-row option-btn is-toggle is-active">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3)">
+           <i data-lucide="container" class="w-3.5 h-3.5 text-emerald-400"></i>
+          </div>
+          <div class="standart-option-label label-tag">Tank Sayısı</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-tank-sayisi" class="opt-status-pill wide value-tag">1</div>
+         </div>
+        </button>
+        <button type="button" id="btn-otomatik-dolum" class="standart-option-row option-btn is-toggle is-active">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3)">
+           <i data-lucide="droplets" class="w-3.5 h-3.5 text-amber-400"></i>
+          </div>
+          <div class="standart-option-label label-tag">Otomatik Dolum</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-otomatik-dolum" class="opt-status-pill value-tag">VAR</div>
+          <div class="opt-toggle-switch on" aria-hidden="true"></div>
+         </div>
+        </button>
+        <button type="button" id="btn-tepe-lambasi" class="standart-option-row option-btn is-toggle is-active">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(250,204,21,0.12);border:1px solid rgba(250,204,21,0.3)">
+           <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-yellow-400"></i>
+          </div>
+          <div class="standart-option-label label-tag">Tepe Lambası</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-tepe-lambasi" class="opt-status-pill value-tag">VAR</div>
+          <div class="opt-toggle-switch on" aria-hidden="true"></div>
+         </div>
+        </button>
+        <button type="button" id="btn-salt-grubu" class="standart-option-row option-btn is-toggle is-active">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3)">
+           <i data-lucide="cpu" class="w-3.5 h-3.5 text-violet-400"></i>
+          </div>
+          <div class="standart-option-label label-tag">Şalt Grubu</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-salt-grubu" class="opt-status-pill wide value-tag">Schneider</div>
+         </div>
+        </button>
+        <button type="button" id="btn-kurutma-unitesi" class="standart-option-row option-btn is-toggle is-active">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3)">
+           <i data-lucide="flame" class="w-3.5 h-3.5 text-red-400"></i>
+          </div>
+          <div class="standart-option-label label-tag">Kurutma Ünitesi</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-kurutma-unitesi" class="opt-status-pill value-tag">VAR</div>
+          <div class="opt-toggle-switch on" aria-hidden="true"></div>
+         </div>
+        </button>
+        <button type="button" id="btn-isin-bariyeri" class="standart-option-row option-btn is-toggle">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(232,121,249,0.12);border:1px solid rgba(232,121,249,0.3)">
+           <i data-lucide="scan-line" class="w-3.5 h-3.5 text-fuchsia-400"></i>
+          </div>
+          <div id="label-isin-bariyeri" class="standart-option-label label-tag">Işın Bariyeri</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-isin-bariyeri" class="opt-status-pill value-tag">YOK</div>
+          <div class="opt-toggle-switch" aria-hidden="true"></div>
+         </div>
+        </button>
+        <button type="button" id="btn-buton-tipi" class="standart-option-row option-btn is-toggle is-active">
+         <div class="standart-option-left">
+          <div class="standart-option-icon" style="background:rgba(251,146,60,0.12);border:1px solid rgba(251,146,60,0.3)">
+           <i data-lucide="toggle-left" class="w-3.5 h-3.5 text-orange-400"></i>
+          </div>
+          <div class="standart-option-label label-tag">Butonlar</div>
+         </div>
+         <div class="standart-option-right">
+          <div id="val-buton-tipi" class="opt-status-pill wide value-tag">Manuel</div>
+         </div>
+        </button>
        </div>
       </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#34d399;">Tank Sayısı</div>
-     </button>
-          <!-- Otomatik Dolum --> <button id="btn-otomatik-dolum" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-amber-500/20 flex items-center justify-center border border-amber-500/40 flex-shrink-0">
-        <i data-lucide="droplets" class="w-3.5 h-3.5 text-amber-400"></i>
-       </div>
-      <div id="val-otomatik-dolum" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">VAR</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-       </div>
-      </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#f59e0b;">Otomatik Dolum</div>
-     </button>
-          <!-- Tepe Lambası --> <button id="btn-tepe-lambasi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-yellow-500/20 flex items-center justify-center border border-yellow-500/40 flex-shrink-0">
-        <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-yellow-400"></i>
-       </div>
-      <div id="val-tepe-lambasi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">VAR</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-       </div>
-      </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#facc15;">Tepe Lambası</div>
-     </button>
-          <!-- Şalt Grubu --> <button id="btn-salt-grubu" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-violet-500/20 flex items-center justify-center border border-violet-500/40 flex-shrink-0">
-        <i data-lucide="cpu" class="w-3.5 h-3.5 text-violet-400"></i>
-       </div>
-      <div id="val-salt-grubu" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">Schneider</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-       </div>
-      </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#a78bfa;">Şalt Grubu</div>
-     </button>
-          <!-- Kurutma Ünitesi --> <button id="btn-kurutma-unitesi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-red-500/20 flex items-center justify-center border border-red-500/40 flex-shrink-0">
-        <i data-lucide="flame" class="w-3.5 h-3.5 text-red-400"></i>
-       </div>
-      <div id="val-kurutma-unitesi" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">VAR</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-       </div>
-      </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#f87171;">Kurutma Ünitesi</div>
-     </button>
-          <!-- Işın Bariyeri --> <button id="btn-isin-bariyeri" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-fuchsia-500/20 flex items-center justify-center border border-fuchsia-500/40 flex-shrink-0">
-        <i data-lucide="scan-line" class="w-3.5 h-3.5 text-fuchsia-400"></i>
-       </div>
-      <div id="val-isin-bariyeri" class="text-[15px] font-bold value-tag tracking-wide text-center min-w-[52px]">YOK</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-       </div>
-      </div>
-      <div id="label-isin-bariyeri" class="label-tag option-name-tag mono text-[11px] text-center" style="color:#e879f9;">Işın Bariyeri</div>
-     </button>
-    </div>
-    <!-- İkinci Satır: Butonlar -->
-    <div class="grid grid-cols-2 md:grid-cols-8 gap-2 mt-2">
-          <!-- Buton Tipi --> <button id="btn-buton-tipi" class="option-btn secim-option-card rounded-lg px-2.5 py-1.5 text-left flex flex-col justify-evenly min-h-[94px]">
-      <div class="flex items-center justify-center gap-2">
-       <div class="w-7 h-7 rounded-md bg-orange-500/20 flex items-center justify-center border border-orange-500/40 flex-shrink-0">
-        <i data-lucide="toggle-left" class="w-3.5 h-3.5 text-orange-400"></i>
-       </div>
-      <div id="val-buton-tipi" class="text-[13px] font-bold value-tag tracking-wide text-center min-w-[52px]">Manuel</div>
-      <div class="w-7 h-7 rounded-md bg-slate-700/40 flex items-center justify-center border border-slate-600/50 flex-shrink-0">
-       <i data-role="refresh-icon" data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-500"></i>
-       </div>
-      </div>
-      <div class="label-tag option-name-tag mono text-[11px] text-center" style="color:#fb923c;">Butonlar</div>
-     </button>
-    </div>
-     <div class="mt-2">
-      <div class="flex items-center justify-between gap-2 mb-3">
+     </div>
+     <div class="bg-slate-900/60 border border-cyan-500/20 rounded-xl overflow-hidden">
+      <div class="standart-options-header">
        <div class="flex items-center gap-2">
-        <i data-lucide="wrench" class="w-4 h-4 text-cyan-400"></i> <span class="label-tag mono">Motor Listesi</span>
+        <i data-lucide="wrench" class="w-4 h-4 text-cyan-400"></i>
+        <span class="standart-options-title">Motor Listesi</span>
        </div>
-       <span id="motor-total-bar" class="text-xs mono text-slate-400">Toplam Güç: 0.00 kW  |  Toplam Akım: 0.00 A</span>
+       <span id="motor-total-bar" class="standart-options-badge">0.00 kW  ·  0.00 A</span>
       </div>
-      <div class="bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden">
-       <div class="overflow-x-auto">
-        <table class="w-full table-fixed">
-         <colgroup>
-          <col style="width:8%">
-          <col style="width:4.5%">
-          <col style="width:18%">
-          <col style="width:5.5%">
-          <col style="width:4.5%">
-          <col style="width:9%">
-          <col style="width:18%">
-          <col style="width:16%">
-          <col style="width:13%">
-          <col style="width:3.5%">
-         </colgroup>
-         <thead>
-          <tr class="border-b border-slate-700/50 bg-slate-800/40">
-           <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Motor Grubu</th>
-           <th class="px-1 py-3 text-center text-xs font-semibold text-cyan-400 mono">Grup Kodu</th>
-           <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Motor Adı</th>
-           <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Güç (kW)</th>
-           <th class="px-1 py-3 text-center text-xs font-semibold text-cyan-400 mono">Akım (A)</th>
-           <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Koruma Tipi</th>
-           <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Sürücü 1</th>
-           <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Sürücü 2</th>
-           <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Sürücü 3</th>
-           <th class="px-1 py-3 text-center text-xs font-semibold text-slate-500 mono">İşlem</th>
-          </tr>
-         </thead>
-         <tbody id="motor-tbody">
-          <tr id="motor-add-row" class="border-t border-slate-700/50 hover:bg-slate-800/30 transition">
-           <td colspan="11" class="px-2 py-4"><button id="btn-add-motor" class="w-full h-10 rounded-lg border border-dashed border-slate-600 hover:border-cyan-500 hover:bg-slate-800/30 text-slate-400 hover:text-cyan-400 transition flex items-center justify-center gap-2 font-semibold text-sm"> <i data-lucide="plus" class="w-4 h-4"></i> Yeni Motor Ekle </button></td>
-          </tr>
-         </tbody>
-        </table>
-       </div>
+      <div class="overflow-x-auto">
+       <table class="w-full table-fixed">
+        <colgroup>
+         <col style="width:8%">
+         <col style="width:4.5%">
+         <col style="width:18%">
+         <col style="width:5.5%">
+         <col style="width:4.5%">
+         <col style="width:9%">
+         <col style="width:18%">
+         <col style="width:16%">
+         <col style="width:13%">
+         <col style="width:3.5%">
+        </colgroup>
+        <thead>
+         <tr class="border-b border-slate-700/50 bg-slate-800/40">
+          <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Motor Grubu</th>
+          <th class="px-1 py-3 text-center text-xs font-semibold text-cyan-400 mono">Grup Kodu</th>
+          <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Motor Adı</th>
+          <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Güç (kW)</th>
+          <th class="px-1 py-3 text-center text-xs font-semibold text-cyan-400 mono">Akım (A)</th>
+          <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Koruma Tipi</th>
+          <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Sürücü 1</th>
+          <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Sürücü 2</th>
+          <th class="px-2 py-3 text-center text-xs font-semibold text-cyan-400 mono">Sürücü 3</th>
+          <th class="px-1 py-3 text-center text-xs font-semibold text-slate-500 mono">İşlem</th>
+         </tr>
+        </thead>
+        <tbody id="motor-tbody">
+         <tr id="motor-add-row" class="border-t border-slate-700/50 hover:bg-slate-800/30 transition">
+          <td colspan="11" class="px-2 py-4"><button id="btn-add-motor" class="w-full h-10 rounded-lg border border-dashed border-slate-600 hover:border-cyan-500 hover:bg-slate-800/30 text-slate-400 hover:text-cyan-400 transition flex items-center justify-center gap-2 font-semibold text-sm"> <i data-lucide="plus" class="w-4 h-4"></i> Yeni Motor Ekle </button></td>
+         </tr>
+        </tbody>
+       </table>
       </div>
      </div>
      <!-- Rezistans Tablosu -->
@@ -1053,11 +1184,20 @@
       <div class="header-line mt-4"></div>
      </div>
      <div id="malzeme-content"></div>
+    </section><!-- PANO ÇİZİM PAGE -->
+    <section id="page-pano" class="page flex-col gap-6 w-full">
+     <div>
+      <div class="flex items-center gap-2 mb-1">
+       <i data-lucide="layout-grid" class="w-4 h-4 text-sky-400"></i> <span class="label-tag mono">Step 05 / Panel Layout</span>
+      </div>
+      <div class="header-line mt-4"></div>
+     </div>
+     <div id="pano-content"></div>
     </section><!-- FİYATLAR PAGE -->
     <section id="page-fiyatlar" class="page flex-col gap-6 w-full">
      <div>
       <div class="flex items-center gap-2 mb-1">
-       <i data-lucide="tag" class="w-4 h-4 text-yellow-400"></i> <span class="label-tag mono">Step 05 / Prices</span>
+       <i data-lucide="tag" class="w-4 h-4 text-yellow-400"></i> <span class="label-tag mono">Step 06 / Prices</span>
       </div>
       <div class="header-line mt-4"></div>
      </div>
@@ -1066,7 +1206,7 @@
     <section id="page-standart" class="page flex-col gap-6 w-full">
      <div>
       <div class="flex items-center gap-2 mb-1">
-       <i data-lucide="layout-template" class="w-4 h-4 text-emerald-400"></i> <span class="label-tag mono">Step 06 / Templates</span>
+       <i data-lucide="layout-template" class="w-4 h-4 text-emerald-400"></i> <span class="label-tag mono">Step 07 / Templates</span>
       </div>
       <div class="header-line mt-4"></div>
      </div>
@@ -1074,8 +1214,8 @@
     </section>
    </main><!-- Bottom-Left Navigation -->
    <nav class="fixed bottom-4 left-4 z-50">
-    <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/60 rounded-xl p-1.5 shadow-2xl shadow-black/50 flex gap-1">
-     <button data-page="secim" class="nav-btn active px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> <span>Seçim</span> </button> <button data-page="otomasyon" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="cpu" class="w-4 h-4"></i> <span>Otomasyon</span> </button> <button data-page="io" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="circuit-board" class="w-4 h-4"></i> <span>IO</span> </button> <button data-page="malzeme" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="package" class="w-4 h-4"></i> <span>Malzeme</span> </button> <button data-page="fiyatlar" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="tag" class="w-4 h-4"></i> <span>Fiyatlar</span> </button> <button data-page="standart" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="layout-template" class="w-4 h-4"></i> <span>Standart</span> </button>
+    <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/60 rounded-xl p-1.5 shadow-2xl shadow-black/50 flex flex-wrap gap-1 max-w-[min(100vw-2rem,52rem)]">
+     <button data-page="secim" class="nav-btn active px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> <span>Seçim</span> </button> <button data-page="otomasyon" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="cpu" class="w-4 h-4"></i> <span>Otomasyon</span> </button> <button data-page="io" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="circuit-board" class="w-4 h-4"></i> <span>IO</span> </button> <button data-page="malzeme" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="package" class="w-4 h-4"></i> <span>Malzeme</span> </button> <button data-page="pano" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="layout-grid" class="w-4 h-4"></i> <span>Pano Çizim</span> </button> <button data-page="fiyatlar" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="tag" class="w-4 h-4"></i> <span>Fiyatlar</span> </button> <button data-page="standart" class="nav-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 flex items-center gap-2"> <i data-lucide="layout-template" class="w-4 h-4"></i> <span>Standart</span> </button>
     </div>
    </nav>
   </div>
@@ -1454,20 +1594,21 @@
 
   // Schneider GV2ME - akım aralığına göre MKŞ seçimi (max değere göre artan sıra)
   const gv2meData = [
-    { model: 'GV2ME02', max: 0.25,  display: '0.16A-0.25A' },
-    { model: 'GV2ME03', max: 0.40,  display: '0.25A-0.40A' },
-    { model: 'GV2ME04', max: 0.63,  display: '0.40A-0.63A' },
-    { model: 'GV2ME05', max: 1.0,   display: '0.63A-1.00A' },
-    { model: 'GV2ME06', max: 1.6,   display: '1.00A-1.60A' },
-    { model: 'GV2ME07', max: 2.5,   display: '1.60A-2.50A' },
-    { model: 'GV2ME08', max: 4.0,   display: '2.50A-4.00A' },
-    { model: 'GV2ME10', max: 6.3,   display: '4.00A-6.30A' },
-    { model: 'GV2ME14', max: 10.0,  display: '6.00A-10.00A' },
-    { model: 'GV2ME16', max: 14.0,  display: '9.00A-14.00A' },
-    { model: 'GV2ME20', max: 18.0,  display: '13.00A-18.00A' },
-    { model: 'GV2ME21', max: 23.0,  display: '17.00A-23.00A' },
-    { model: 'GV2ME22', max: 25.0,  display: '20.00A-25.00A' },
-    { model: 'GV2ME32', max: 32.0,  display: '24.00A-32.00A' },
+    { model: 'GV2ME01', max: 0.16,  display: '0.10A-0.16A', stok: '10 18250' },
+    { model: 'GV2ME02', max: 0.25,  display: '0.16A-0.25A', stok: '10 16799' },
+    { model: 'GV2ME03', max: 0.40,  display: '0.25A-0.40A', stok: '10 05619' },
+    { model: 'GV2ME04', max: 0.63,  display: '0.40A-0.63A', stok: '10 01368' },
+    { model: 'GV2ME05', max: 1.0,   display: '0.63A-1.00A', stok: '10 01370' },
+    { model: 'GV2ME06', max: 1.6,   display: '1.00A-1.60A', stok: '10 01367' },
+    { model: 'GV2ME07', max: 2.5,   display: '1.60A-2.50A', stok: '10 01371' },
+    { model: 'GV2ME08', max: 4.0,   display: '2.50A-4.00A', stok: '10 01369' },
+    { model: 'GV2ME10', max: 6.3,   display: '4.00A-6.30A', stok: '10 01362' },
+    { model: 'GV2ME14', max: 10.0,  display: '6.00A-10.00A', stok: '10 01363' },
+    { model: 'GV2ME16', max: 14.0,  display: '9.00A-14.00A', stok: '10 01364' },
+    { model: 'GV2ME20', max: 18.0,  display: '13.00A-18.00A', stok: '10 01366' },
+    { model: 'GV2ME21', max: 23.0,  display: '17.00A-23.00A', stok: '10 01372' },
+    { model: 'GV2ME22', max: 25.0,  display: '20.00A-25.00A', stok: '10 18165' },
+    { model: 'GV2ME32', max: 32.0,  display: '24.00A-32.00A', stok: '' },
   ];
 
   // Siemens SIRIUS 3RV2 - eşdeğer MKŞ seçimi
@@ -1487,16 +1628,27 @@
     { model: '3RV2031-4EA10', max: 32.0,  display: '22.00A-32.00A' },
   ];
 
+  function getMKSItem(akimVal) {
+    if (state.saltGrubu === 'Schneider') return gv2meData.find(d => akimVal <= d.max) || null;
+    return siemens3RV2Data.find(d => akimVal <= d.max) || null;
+  }
+
   function getMKSLabel(akimVal) {
-    if (state.saltGrubu === 'Schneider') {
-      const item = gv2meData.find(d => akimVal <= d.max);
-      if (!item) return 'GV2ME32 üzeri kapasite gereklidir';
-      return 'Schneider ' + item.model + ' (' + item.display + ')';
-    } else {
-      const item = siemens3RV2Data.find(d => akimVal <= d.max);
-      if (!item) return '3RV2031 üzeri kapasite gereklidir';
-      return 'Siemens ' + item.model + ' (' + item.display + ')';
+    const item = getMKSItem(akimVal);
+    if (!item) {
+      return state.saltGrubu === 'Schneider'
+        ? 'GV2ME32 üzeri kapasite gereklidir'
+        : '3RV2031 üzeri kapasite gereklidir';
     }
+    if (state.saltGrubu === 'Schneider') {
+      return 'MOTOR KORUMA ŞALTERİ ' + item.model;
+    }
+    return 'Siemens ' + item.model + ' (' + item.display + ')';
+  }
+
+  function getMKSStokKodu(akimVal) {
+    const item = getMKSItem(akimVal);
+    return item?.stok || '';
   }
 
   function getKontaktorLabel(akimVal) {
@@ -1523,24 +1675,32 @@
 
   // Delta VFD-EL serisi — gücü (kW) yükseltildiğinde uygun model
   const vfdElData = [
-    { maxKw: 0.20,  model: 'VFD002EL21W-1',  akim: '1.6A'  },
-    { maxKw: 0.40,  model: 'VFD004EL21W-1',  akim: '2.5A'  },
-    { maxKw: 0.75,  model: 'VFD007EL21W-1',  akim: '5.0A'  },
-    { maxKw: 1.50,  model: 'VFD015EL21W-1',  akim: '7.0A'  },
-    { maxKw: 2.20,  model: 'VFD022EL21W-1',  akim: '11.0A' },
-    { maxKw: 3.70,  model: 'VFD037EL21W-1',  akim: '16.0A' },
-    { maxKw: 5.50,  model: 'VFD055EL21W-1',  akim: '24.0A' },
-    { maxKw: 7.50,  model: 'VFD075EL21W-1',  akim: '33.0A' },
-    { maxKw: 11.00, model: 'VFD110EL43A-1',  akim: '25.0A' },
-    { maxKw: 15.00, model: 'VFD150EL43A-1',  akim: '32.0A' },
-    { maxKw: 18.50, model: 'VFD185EL43A-1',  akim: '38.0A' },
-    { maxKw: 22.00, model: 'VFD220EL43A-1',  akim: '45.0A' },
+    { maxKw: 0.20,  model: 'VFD002EL21W-1',  akim: '1.6A',  stok: ''          },
+    { maxKw: 0.40,  model: 'VFD004EL21W-1',  akim: '2.5A',  stok: '10 16319'  },
+    { maxKw: 0.75,  model: 'VFD007EL21W-1',  akim: '5.0A',  stok: '10 02391'  },
+    { maxKw: 1.50,  model: 'VFD015EL21W-1',  akim: '7.0A',  stok: '' },
+    { maxKw: 2.20,  model: 'VFD022EL21W-1',  akim: '11.0A', stok: '' },
+    { maxKw: 3.70,  model: 'VFD037EL21W-1',  akim: '16.0A', stok: '' },
+    { maxKw: 5.50,  model: 'VFD055EL21W-1',  akim: '24.0A', stok: '' },
+    { maxKw: 7.50,  model: 'VFD075EL21W-1',  akim: '33.0A', stok: '' },
+    { maxKw: 11.00, model: 'VFD110EL43A-1',  akim: '25.0A', stok: '' },
+    { maxKw: 15.00, model: 'VFD150EL43A-1',  akim: '32.0A', stok: '' },
+    { maxKw: 18.50, model: 'VFD185EL43A-1',  akim: '38.0A', stok: '' },
+    { maxKw: 22.00, model: 'VFD220EL43A-1',  akim: '45.0A', stok: '' },
   ];
 
+  function getInvertorItem(gucVal) {
+    return vfdElData.find(d => gucVal <= d.maxKw) || null;
+  }
+
   function getInvertorLabel(gucVal) {
-    const item = vfdElData.find(d => gucVal <= d.maxKw);
+    const item = getInvertorItem(gucVal);
     if (!item) return 'İNVERTÖR Delta VFD220EL43A-1 (45.0A)';
     return `İNVERTÖR Delta ${item.model} (${item.akim})`;
+  }
+
+  function getInvertorStokKodu(gucVal) {
+    return getInvertorItem(gucVal)?.stok || '';
   }
 
   // İnvertör giriş koruma sigortası — Schneider A9F74 (1P MCB) veya Siemens 5SL4
@@ -1755,7 +1915,7 @@
     hIcon.setAttribute('data-lucide', 'thermometer');
     hIcon.className = 'w-4 h-4 text-orange-400';
     const hLabel = document.createElement('span');
-    hLabel.className = 'label-tag mono';
+    hLabel.className = 'text-sm font-bold mono text-orange-400 uppercase tracking-wider';
     hLabel.textContent = 'Rezistans Listesi';
     headerDiv.appendChild(hIcon);
     headerDiv.appendChild(hLabel);
@@ -1765,23 +1925,23 @@
       if (!state.rezistanslar[t]) state.rezistanslar[t] = [];
 
       const tankSection = document.createElement('div');
-      tankSection.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden mb-3';
+      tankSection.className = 'bg-slate-900/60 border border-orange-500/20 rounded-xl overflow-hidden mb-4';
 
       const tankBar = document.createElement('div');
-      tankBar.className = 'flex items-center justify-between px-4 py-2 bg-slate-800/60 border-b border-slate-700/50';
+      tankBar.className = 'standart-options-header';
       const tankBarLeft = document.createElement('div');
       tankBarLeft.className = 'flex items-center gap-2';
       const tankIcon = document.createElement('i');
       tankIcon.setAttribute('data-lucide', 'container');
       tankIcon.className = 'w-4 h-4 text-emerald-400';
       const tankLabel = document.createElement('span');
-      tankLabel.className = 'text-sm font-semibold text-emerald-300 mono';
+      tankLabel.className = 'standart-options-title text-emerald-300';
       tankLabel.textContent = `Tank ${t}`;
       tankBarLeft.appendChild(tankIcon);
       tankBarLeft.appendChild(tankLabel);
       const tankTotalSpan = document.createElement('span');
       tankTotalSpan.id = `rez-total-bar-${t}`;
-      tankTotalSpan.className = 'text-xs mono text-slate-400';
+      tankTotalSpan.className = 'standart-options-badge';
       tankTotalSpan.textContent = 'Toplam Güç: 0.00 kW  |  Toplam Akım: 0.00 A';
       tankBar.appendChild(tankBarLeft);
       tankBar.appendChild(tankTotalSpan);
@@ -1999,14 +2159,14 @@
     hIcon.setAttribute('data-lucide', 'wind');
     hIcon.className = 'w-4 h-4 text-sky-400';
     const hLabel = document.createElement('span');
-    hLabel.className = 'label-tag mono';
+    hLabel.className = 'text-sm font-bold mono text-sky-400 uppercase tracking-wider';
     hLabel.textContent = 'Kurutma Rezistans Listesi';
     headerDiv.appendChild(hIcon);
     headerDiv.appendChild(hLabel);
     container.appendChild(headerDiv);
 
     const section = document.createElement('div');
-    section.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden mb-3';
+    section.className = 'bg-slate-900/60 border border-sky-500/20 rounded-xl overflow-hidden mb-4';
 
     const tableWrapper = document.createElement('div');
     tableWrapper.className = 'overflow-x-auto';
@@ -2238,11 +2398,11 @@
     if (!state.kacakAkim[sectionKey]) state.kacakAkim[sectionKey] = [];
 
     const section = document.createElement('div');
-    section.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden mb-3';
+    section.className = 'bg-slate-900/60 border border-rose-500/20 rounded-xl overflow-hidden mb-4';
 
     // Başlık çubuğu
     const bar = document.createElement('div');
-    bar.className = 'flex items-center justify-between px-4 py-2 bg-slate-800/60 border-b border-slate-700/50';
+    bar.className = 'standart-options-header';
     const barLeft = document.createElement('div');
     barLeft.className = 'flex items-center gap-2';
     const barIcon = document.createElement('i');
@@ -2250,13 +2410,13 @@
     barIcon.className = 'w-4 h-4';
     barIcon.style.color = color;
     const barLabel = document.createElement('span');
-    barLabel.className = 'text-sm font-semibold mono';
+    barLabel.className = 'standart-options-title';
     barLabel.style.color = color;
     barLabel.textContent = title;
     barLeft.appendChild(barIcon); barLeft.appendChild(barLabel);
     const totalSpan = document.createElement('span');
     totalSpan.id = `ka-total-${sectionKey}`;
-    totalSpan.className = 'text-xs mono text-slate-400';
+    totalSpan.className = 'standart-options-badge';
     totalSpan.textContent = 'Kaynak: 0.0 A  |  Kaçak Akım: 0 A';
     bar.appendChild(barLeft); bar.appendChild(totalSpan);
     section.appendChild(bar);
@@ -2333,7 +2493,7 @@
     hIcon.setAttribute('data-lucide', 'shield-alert');
     hIcon.className = 'w-4 h-4 text-rose-400';
     const hLabel = document.createElement('span');
-    hLabel.className = 'label-tag mono';
+    hLabel.className = 'text-sm font-bold mono text-rose-400 uppercase tracking-wider';
     hLabel.textContent = 'Kaçak Akım Grubu';
     headerDiv.appendChild(hIcon); headerDiv.appendChild(hLabel);
     container.appendChild(headerDiv);
@@ -2403,17 +2563,17 @@
     hIcon.setAttribute('data-lucide', 'zap');
     hIcon.className = 'w-4 h-4 text-violet-400';
     const hLabel = document.createElement('span');
-    hLabel.className = 'label-tag mono';
+    hLabel.className = 'text-sm font-bold mono text-violet-400 uppercase tracking-wider';
     hLabel.textContent = 'TMŞ — Termik Manyetik Şalter';
     headerDiv.appendChild(hIcon); headerDiv.appendChild(hLabel);
     container.appendChild(headerDiv);
 
     const section = document.createElement('div');
-    section.className = 'bg-slate-900/40 border border-slate-700/50 rounded-lg overflow-hidden';
+    section.className = 'bg-slate-900/60 border border-violet-500/20 rounded-xl overflow-hidden mb-4';
 
     // Bar
     const bar = document.createElement('div');
-    bar.className = 'flex items-center justify-between px-4 py-2 bg-slate-800/60 border-b border-slate-700/50';
+    bar.className = 'standart-options-header';
     const barLeft = document.createElement('div');
     barLeft.className = 'flex items-center gap-2';
     const barIcon = document.createElement('i');
@@ -2421,12 +2581,12 @@
     barIcon.className = 'w-4 h-4';
     barIcon.style.color = color;
     const barLabel = document.createElement('span');
-    barLabel.className = 'text-sm font-semibold mono';
+    barLabel.className = 'standart-options-title';
     barLabel.style.color = color;
     barLabel.textContent = `TMŞ Seçimi — ${state.saltGrubu}`;
     barLeft.appendChild(barIcon); barLeft.appendChild(barLabel);
     const barRight = document.createElement('span');
-    barRight.className = 'text-xs mono text-slate-400';
+    barRight.className = 'standart-options-badge';
     barRight.id = 'tms-total-label';
     barRight.textContent = `Makine: ${totalKw.toFixed(2)} kW  |  ${totalAkim.toFixed(1)} A`;
     bar.appendChild(barLeft); bar.appendChild(barRight);
@@ -2553,6 +2713,8 @@
     });
     const el = document.getElementById('val-makine-gucu');
     if (el) el.textContent = total.toFixed(2) + ' kW';
+    const akimEl = document.getElementById('val-makine-akim');
+    if (akimEl) akimEl.textContent = (total * 2).toFixed(2) + ' A';
 
     // Motor toplamı
     let motorTotal = 0;
@@ -2560,7 +2722,11 @@
       if (sel.value) motorTotal += parseFloat(sel.value);
     });
     const motorBar = document.getElementById('motor-total-bar');
-    if (motorBar) motorBar.textContent = `Toplam Güç: ${motorTotal.toFixed(2)} kW  |  Toplam Akım: ${(motorTotal * 2).toFixed(2)} A`;
+    const motorKwEl = document.getElementById('secim-motor-kw');
+    const motorAmpEl = document.getElementById('secim-motor-amp');
+    if (motorBar) motorBar.textContent = `${motorTotal.toFixed(2)} kW  ·  ${(motorTotal * 2).toFixed(2)} A`;
+    if (motorKwEl) motorKwEl.textContent = motorTotal.toFixed(2) + ' kW';
+    if (motorAmpEl) motorAmpEl.textContent = (motorTotal * 2).toFixed(2) + ' A';
 
     // Rezistans tank toplamları
     for (let t = 1; t <= state.tankSayisi; t++) {
@@ -2569,7 +2735,7 @@
         if (sel.value) rezTotal += parseFloat(sel.value);
       });
       const rezBar = document.getElementById(`rez-total-bar-${t}`);
-      if (rezBar) rezBar.textContent = `Toplam Güç: ${rezTotal.toFixed(2)} kW  |  Toplam Akım: ${(rezTotal * 2).toFixed(2)} A`;
+      if (rezBar) rezBar.textContent = `${rezTotal.toFixed(2)} kW  ·  ${(rezTotal * 2).toFixed(2)} A`;
     }
 
     updateKacakAkimTotals();
@@ -2966,9 +3132,9 @@
       const key = grupAdi + '|' + model;
       return { stok: stokMap[key] || '', birimFiyat: parseFloat(prices[key]) || 0 };
     }
-    function addRow(grupAdi, model, urunAdi, kullanim) {
+    function addRow(grupAdi, model, urunAdi, kullanim, defaultStok) {
       const { stok, birimFiyat } = fiyatVeStok(grupAdi, model);
-      rows.push({ stok, urunAdi, birimFiyat, adet: 0, model, grupAdi, kullanim: kullanim || '', _section: 'GÜÇ GRUBU' });
+      rows.push({ stok: stok || defaultStok || '', urunAdi, birimFiyat, adet: 0, model, grupAdi, kullanim: kullanim || '', _section: 'GÜÇ GRUBU' });
     }
 
     // Motorlar
@@ -2983,10 +3149,15 @@
       const akim = guc * 2;
       const kisa = motorAdi.replace(/\s*Motoru\s*$/i, '');
       if (korumaType === 'kontaktor') {
-        const mksModel = state.saltGrubu === 'Schneider'
-          ? (gv2meData.find(d => akim <= d.max) || {}).model || ''
-          : (siemens3RV2Data.find(d => akim <= d.max) || {}).model || '';
-        addRow(state.saltGrubu === 'Schneider' ? 'MKŞ — Schneider GV2ME' : 'MKŞ — Siemens 3RV2', mksModel, getMKSLabel(akim), kisa);
+        const mksItem = getMKSItem(akim);
+        const mksModel = mksItem?.model || '';
+        addRow(
+          state.saltGrubu === 'Schneider' ? 'MKŞ — Schneider GV2ME' : 'MKŞ — Siemens 3RV2',
+          mksModel,
+          getMKSLabel(akim),
+          kisa,
+          getMKSStokKodu(akim)
+        );
         let ktModel = '', ktGrup = '';
         if (state.saltGrubu === 'Schneider') {
           ktGrup = 'Kontaktör — Schneider LC1';
@@ -2998,8 +3169,8 @@
         addRow(ktGrup, ktModel, getKontaktorLabel(akim), kisa);
         addRow('Yardımcı Kontak', state.saltGrubu === 'Schneider' ? 'GVAE11' : '3RV2901-1E', getYardimciKontakLabel(), kisa);
       } else {
-        const invItem = vfdElData.find(d => guc <= d.maxKw);
-        addRow('İnvertör — Delta VFD-EL', invItem ? invItem.model : '', getInvertorLabel(guc), kisa);
+        const invItem = getInvertorItem(guc);
+        addRow('İnvertör — Delta VFD-EL', invItem ? invItem.model : '', getInvertorLabel(guc), kisa, getInvertorStokKodu(guc));
         const sigItem = invertorSigortaData.find(d => guc <= d.maxKw);
         const sigModel = sigItem ? (state.saltGrubu === 'Schneider' ? sigItem.schnModel : sigItem.sieModel) : '';
         addRow(state.saltGrubu === 'Schneider' ? 'Sigorta 1P — Schneider iC60N (İnvertör)' : 'Sigorta — Siemens 5SL4', sigModel, getInvertorSigortaLabel(guc), kisa);
@@ -6926,6 +7097,414 @@
   }
   // ===== END IO TABLOLARI =====
 
+  // ===== PANO ÇİZİM =====
+  let panoDrawingsCache = null;
+
+  const PANO_SPEC = {
+    chTop: 60, chMid: 40, chSide: 25, dinRail: 35,
+    gapRow1: 25, gapMid: 12, marginTop: 20, marginBot: 20,
+    compGap: 3, klemensH: 72,
+  };
+
+  const PANO_SHELF_NAMES = {
+    1: '1 · PLC / İnvertör',
+    2: '2 · Kaçak akım / Kumanda',
+    3: '3 · MKŞ / Sigorta',
+    4: '4 · Kontaktör',
+  };
+
+  async function loadPanoDrawingsIndex() {
+    if (panoDrawingsCache) return panoDrawingsCache;
+    try {
+      const res = await fetch('drawings/index.json');
+      panoDrawingsCache = await res.json();
+    } catch (_) {
+      panoDrawingsCache = { series: {} };
+    }
+    return panoDrawingsCache;
+  }
+
+  function resolvePanoDrawingKey(grupAdi, model, urunAdi) {
+    const m = (model || '').toUpperCase();
+    const g = (grupAdi || '').toUpperCase();
+    const u = (urunAdi || '').toUpperCase();
+    if (g.includes('MKŞ') || g.includes('MKS')) {
+      if (g.includes('GV2') || m.startsWith('GV2')) return 'schneider-gv2me';
+      if (g.includes('3RV') || m.startsWith('3RV')) return 'siemens-3rv2';
+    }
+    if (g.includes('KONTAKT') && !g.includes('YARDIMCI')) {
+      if (m.includes('LC1K')) return 'schneider-lc1k';
+      if (m.includes('LC1D25') || m.includes('LC1D32')) return 'schneider-lc1d-25-32';
+      if (m.includes('LC1D')) return 'schneider-lc1d-09-18';
+      if (m.includes('3RT2026') || m.includes('3RT2034')) return 'siemens-3rt2-s0';
+      if (m.includes('3RT20')) return 'siemens-3rt2-s00';
+    }
+    if (g.includes('SİGORTA') || g.includes('SIGORTA')) {
+      if (m.includes('A9F743') || u.includes('A9F743')) return 'schneider-a9f743';
+      if (m.includes('A9F742') || u.includes('A9F742')) return 'schneider-a9f742';
+      if (m.includes('A9F741') || u.includes('A9F741')) return 'schneider-a9f741';
+    }
+    if (g.includes('RCCB') || g.includes('KAÇAK') || m.includes('A9R414') || u.includes('A9R414')) return 'schneider-a9r414';
+    if (g.includes('İNVERT') || g.includes('INVERT') || u.includes('VFD')) {
+      if (/VFD00[247]/.test(m) || /VFD00[247]/.test(u)) return 'delta-vfd-el21w-a1';
+    }
+    return null;
+  }
+
+  function classifyPanoShelf(item) {
+    const g = (item.grupAdi || '').toUpperCase();
+    const u = (item.urunAdi || '').toUpperCase();
+    const k = (item.kullanim || '').toUpperCase();
+    if (item._section === 'PLC GRUBU') return 1;
+    if (g.includes('İNVERT') || u.includes('VFD')) return 1;
+    if (g.includes('RCCB') || k.includes('KAÇAK') || k.includes('ANA ŞALTER') || g.includes('TMŞ')) return 2;
+    if (k.includes('GÜÇ KAYNAĞI') || k.includes('PRİZ') || k.includes('YAPRAK') || k.includes('FAZ KORUMA')
+      || k.includes('KUMANDA') || k.includes('SWITCH') || k === 'CT' || k.includes('LAMBA')
+      || g.includes('RÖLE KÖPRÜ') || g.includes('YAPRAK')) return 2;
+    if (g.includes('SABİT|PLC SİGORTA') || k.includes('PLC SİGORTA')) return 2;
+    if (g.includes('MKŞ') || g.includes('MKS')) return 3;
+    if (g.includes('SİGORTA') || g.includes('SIGORTA')) return 3;
+    if (g.includes('KONTAKT') && !g.includes('YARDIMCI')) return 4;
+    return 0;
+  }
+
+  function defaultPanoSize(item) {
+    const u = (item.urunAdi || '').toUpperCase();
+    const adet = item.adet || 1;
+    if (u.includes('GÜÇ KAYNAĞI')) return { w: 65, h: 124 };
+    if (u.includes('PRİZ')) return { w: 45, h: 45 };
+    if (u.includes('YAPRAK RÖLE') || u.includes('APF30324')) return { w: 6.2 * Math.min(adet, 12), h: 88 };
+    if (u.includes('SWITCH')) return { w: 36, h: 85 };
+    if (u.includes('FAZ KORUMA')) return { w: 36, h: 90 };
+    if (u.includes('CT-')) return { w: 45, h: 55 };
+    if (u.includes('TEPE LAMBASI')) return { w: 72, h: 40 };
+    if (u.includes('RÖLE KÖPRÜ')) return { w: 8, h: 88 };
+    if (item._section === 'PLC GRUBU') return { w: u.includes('HMI') ? 100 : 45, h: u.includes('HMI') ? 85 : 130 };
+    if (u.includes('TMŞ')) return { w: 105, h: 161 };
+    return { w: 36, h: 85 };
+  }
+
+  function buildPanoItems(index) {
+    const shelves = { 1: [], 2: [], 3: [], 4: [] };
+    getMalzemeRows().forEach(row => {
+      const shelf = classifyPanoShelf(row);
+      if (!shelf) return;
+      const key = resolvePanoDrawingKey(row.grupAdi, row.model, row.urunAdi);
+      let w, h;
+      if (key && index.series[key]) {
+        w = index.series[key].dimensions_mm.w;
+        h = index.series[key].dimensions_mm.h;
+      } else {
+        const d = defaultPanoSize(row);
+        w = d.w; h = d.h;
+      }
+      shelves[shelf].push({
+        label: (row.kullanim || row.urunAdi || '').slice(0, 28),
+        urunAdi: row.urunAdi,
+        w, h, drawingKey: key,
+        file: key ? index.series[key]?.file : null,
+      });
+    });
+    return shelves;
+  }
+
+  function buildKlemensGroups() {
+    const groups = [];
+    document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(row => {
+      const adiSelect = row.querySelector('.motor-adi-select');
+      const name = adiSelect?.value?.replace(/\s*Motoru\s*$/i, '') || '';
+      if (name) groups.push({ label: name.slice(0, 14), poles: 4 });
+    });
+    ['GÜÇ GİRİŞİ', 'REGÜLATÖR', 'PLC 24V', 'TOPRAK'].forEach(l => groups.push({ label: l, poles: 6 }));
+    return groups.length ? groups : [{ label: 'KLEMENS', poles: 8 }];
+  }
+
+  function computePanoLayout(panelW, panelH, shelves) {
+    const S = PANO_SPEC;
+    const innerW = panelW - 2 * S.chSide;
+    const bands = [];
+    let y = S.marginTop;
+
+    bands.push({ type: 'ch-h', x: S.chSide, y, w: innerW, h: S.chTop, label: '60' });
+    y += S.chTop;
+
+    for (let s = 1; s <= 4; s++) {
+      const gap = s === 1 ? S.gapRow1 : S.gapMid;
+      y += gap;
+      const items = shelves[s] || [];
+      let maxH = items.reduce((m, it) => Math.max(m, it.h), 0);
+      if (!maxH) maxH = s === 1 ? 130 : 89;
+
+      bands.push({ type: 'shelf', shelf: s, x: S.chSide, y, w: innerW, compH: maxH, gap, items });
+      y += maxH;
+      bands.push({ type: 'rail', shelf: s, x: S.chSide, y, w: innerW, h: S.dinRail });
+      y += S.dinRail + gap;
+      bands.push({ type: 'ch-h', x: S.chSide, y, w: innerW, h: S.chMid, label: '40' });
+    }
+
+    y += S.chMid + S.gapMid;
+    const klemGroups = buildKlemensGroups();
+    bands.push({ type: 'klemens', x: S.chSide, y, w: innerW, h: S.klemensH, groups: klemGroups });
+    y += S.klemensH + S.gapMid;
+    bands.push({ type: 'ch-h', x: S.chSide, y, w: innerW, h: S.chMid, label: '40' });
+    y += S.chMid + S.marginBot;
+
+    return { bands, innerW, contentH: y, sideH: y - S.marginTop };
+  }
+
+  function mm(el, scale, v) { return (v * scale) + 'px'; }
+
+  function drawPanoCanvas(canvas, scale, panelW, panelH, layout, index) {
+    canvas.style.width = mm(null, scale, panelW);
+    canvas.style.height = mm(null, scale, panelH);
+
+    const outline = document.createElement('div');
+    outline.className = 'pano-panel-outline';
+    outline.style.left = '0'; outline.style.top = '0';
+    outline.style.width = mm(null, scale, panelW);
+    outline.style.height = mm(null, scale, panelH);
+    canvas.appendChild(outline);
+
+    const vCh = document.createElement('div');
+    vCh.className = 'pano-channel-v';
+    vCh.style.left = '0';
+    vCh.style.top = mm(null, scale, PANO_SPEC.marginTop);
+    vCh.style.width = mm(null, scale, PANO_SPEC.chSide);
+    vCh.style.height = mm(null, scale, layout.sideH);
+    canvas.appendChild(vCh);
+
+    const vChR = vCh.cloneNode();
+    vChR.style.left = mm(null, scale, panelW - PANO_SPEC.chSide);
+    canvas.appendChild(vChR);
+
+    layout.bands.forEach(b => {
+      if (b.type === 'ch-h') {
+        const ch = document.createElement('div');
+        ch.className = 'pano-channel-h';
+        ch.style.left = mm(null, scale, b.x);
+        ch.style.top = mm(null, scale, b.y);
+        ch.style.width = mm(null, scale, b.w);
+        ch.style.height = mm(null, scale, b.h);
+        canvas.appendChild(ch);
+      } else if (b.type === 'rail') {
+        const rail = document.createElement('div');
+        rail.className = 'pano-rail';
+        rail.style.left = mm(null, scale, b.x);
+        rail.style.top = mm(null, scale, b.y);
+        rail.style.width = mm(null, scale, b.w);
+        rail.style.height = mm(null, scale, b.h);
+        canvas.appendChild(rail);
+        const lbl = document.createElement('div');
+        lbl.className = 'pano-shelf-label';
+        lbl.style.left = mm(null, scale, 2);
+        lbl.style.top = mm(null, scale, b.y + 8);
+        lbl.textContent = 'DIN 35';
+        canvas.appendChild(lbl);
+      } else if (b.type === 'shelf') {
+        const lbl = document.createElement('div');
+        lbl.className = 'pano-shelf-label';
+        lbl.style.left = mm(null, scale, b.x + 2);
+        lbl.style.top = mm(null, scale, b.y - 10);
+        lbl.textContent = PANO_SHELF_NAMES[b.shelf];
+        canvas.appendChild(lbl);
+
+        const baseY = b.y + b.compH;
+        let x = b.x;
+        let usedW = 0;
+        b.items.forEach(it => {
+          const comp = document.createElement('div');
+          comp.className = 'pano-comp';
+          comp.style.left = mm(null, scale, x);
+          comp.style.top = mm(null, scale, baseY - it.h);
+          comp.style.width = mm(null, scale, it.w);
+          comp.title = it.urunAdi + ' (' + it.w + '×' + it.h + ' mm)';
+
+          if (it.file) {
+            const img = document.createElement('img');
+            img.src = 'drawings/' + it.file;
+            img.alt = it.label;
+            img.style.width = mm(null, scale, it.w);
+            img.style.height = mm(null, scale, it.h);
+            comp.appendChild(img);
+          } else {
+            const ph = document.createElement('div');
+            ph.className = 'pano-ph';
+            ph.style.width = mm(null, scale, it.w);
+            ph.style.height = mm(null, scale, it.h);
+            ph.textContent = it.label;
+            comp.appendChild(ph);
+          }
+          canvas.appendChild(comp);
+          usedW += it.w + PANO_SPEC.compGap;
+          x += it.w + PANO_SPEC.compGap;
+        });
+        b._usedW = usedW > 0 ? usedW - PANO_SPEC.compGap : 0;
+      } else if (b.type === 'klemens') {
+        const lbl = document.createElement('div');
+        lbl.className = 'pano-shelf-label';
+        lbl.style.left = mm(null, scale, b.x + 2);
+        lbl.style.top = mm(null, scale, b.y - 10);
+        lbl.textContent = '5 · Klemens';
+        canvas.appendChild(lbl);
+
+        const row = document.createElement('div');
+        row.className = 'pano-klemens';
+        row.style.left = mm(null, scale, b.x);
+        row.style.bottom = mm(null, scale, panelH - b.y - b.h);
+        b.groups.forEach(g => {
+          const blk = document.createElement('div');
+          blk.className = 'pano-klemens-block';
+          const colors = ['l', 'l', 'l', 'n', 'pe', 'nu'];
+          for (let i = 0; i < g.poles; i++) {
+            const p = document.createElement('div');
+            p.className = 'pano-klemens-pole ' + (colors[i % colors.length]);
+            blk.appendChild(p);
+          }
+          row.appendChild(blk);
+          const cap = document.createElement('div');
+          cap.className = 'pano-klemens-cap';
+          cap.textContent = g.label;
+          cap.style.width = mm(null, scale, g.poles * 5 + 4);
+          row.appendChild(cap);
+        });
+        canvas.appendChild(row);
+      }
+    });
+
+    const wDim = document.createElement('div');
+    wDim.className = 'pano-dim';
+    wDim.style.left = mm(null, scale, panelW / 2 - 20);
+    wDim.style.top = mm(null, scale, panelH + 4);
+    wDim.textContent = panelW + ' mm';
+    canvas.appendChild(wDim);
+  }
+
+  async function renderPanoPage() {
+    const container = document.getElementById('pano-content');
+    if (!container) return;
+    container.innerHTML = '<div class="text-slate-500 mono text-sm p-4">Yükleniyor…</div>';
+
+    const index = await loadPanoDrawingsIndex();
+    const shelves = buildPanoItems(index);
+    const itemCount = [1, 2, 3, 4].reduce((n, s) => n + (shelves[s]?.length || 0), 0);
+
+    let panelW = parseInt(localStorage.getItem('iolist_pano_width') || '500', 10);
+    let panelH = parseInt(localStorage.getItem('iolist_pano_height') || '700', 10);
+    if (panelW < 300) panelW = 500;
+    if (panelH < 400) panelH = 700;
+    let scale = parseFloat(localStorage.getItem('iolist_pano_scale') || '1.2');
+    if (!scale || scale < 0.5) scale = 1.2;
+
+    const layout = computePanoLayout(panelW, panelH, shelves);
+    const innerW = layout.innerW;
+    let maxShelfW = 0;
+    layout.bands.forEach(b => { if (b._usedW) maxShelfW = Math.max(maxShelfW, b._usedW); });
+    const overflowW = maxShelfW > innerW;
+    const overflowH = layout.contentH > panelH;
+
+    container.innerHTML = '';
+    const toolbar = document.createElement('div');
+    toolbar.className = 'flex flex-wrap items-end gap-4 mb-4 p-4 bg-slate-900/60 border border-slate-700/50 rounded-xl';
+
+    function field(label, el) {
+      const w = document.createElement('div');
+      w.className = 'flex flex-col gap-1';
+      const l = document.createElement('label');
+      l.className = 'text-[10px] mono uppercase text-slate-500 tracking-wider';
+      l.textContent = label;
+      w.appendChild(l); w.appendChild(el);
+      return w;
+    }
+
+    const widthIn = document.createElement('input');
+    widthIn.type = 'number'; widthIn.min = '300'; widthIn.max = '2000'; widthIn.step = '10';
+    widthIn.value = panelW;
+    widthIn.className = 'w-24 px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-sm mono text-white focus:border-sky-500 focus:outline-none';
+
+    const heightIn = document.createElement('input');
+    heightIn.type = 'number'; heightIn.min = '400'; heightIn.max = '2500'; heightIn.step = '10';
+    heightIn.value = panelH;
+    heightIn.className = widthIn.className;
+
+    const scaleIn = document.createElement('input');
+    scaleIn.type = 'range'; scaleIn.min = '0.6'; scaleIn.max = '2.5'; scaleIn.step = '0.1';
+    scaleIn.value = scale;
+    scaleIn.className = 'w-32 accent-sky-500';
+    const scaleVal = document.createElement('span');
+    scaleVal.className = 'text-xs mono text-sky-400';
+    scaleVal.textContent = scale.toFixed(1) + '×';
+    const scaleWrap = document.createElement('div');
+    scaleWrap.className = 'flex items-center gap-2';
+    scaleWrap.appendChild(scaleIn); scaleWrap.appendChild(scaleVal);
+
+    const refreshBtn = document.createElement('button');
+    refreshBtn.className = 'px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-bold mono text-white';
+    refreshBtn.textContent = 'Projeden Yenile';
+    refreshBtn.onclick = () => renderPanoPage();
+
+    toolbar.appendChild(field('Genişlik (mm)', widthIn));
+    toolbar.appendChild(field('Yükseklik (mm)', heightIn));
+    toolbar.appendChild(field('Zoom', scaleWrap));
+    toolbar.appendChild(refreshBtn);
+    container.appendChild(toolbar);
+
+    const stats = document.createElement('div');
+    stats.className = 'grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4';
+    [
+      { l: 'Pano', v: panelW + ' × ' + panelH + ' mm', c: 'text-sky-400' },
+      { l: 'Tava yüksekliği', v: layout.contentH + ' mm', c: overflowH ? 'pano-stat-over' : 'pano-stat-ok' },
+      { l: 'En geniş sıra', v: maxShelfW + ' / ' + innerW + ' mm', c: overflowW ? 'pano-stat-over' : 'pano-stat-ok' },
+      { l: 'Komponent', v: String(itemCount), c: 'text-violet-400' },
+    ].forEach(s => {
+      const c = document.createElement('div');
+      c.className = 'bg-slate-900/50 border border-slate-700/40 rounded-lg px-3 py-2';
+      c.innerHTML = `<div class="text-[10px] mono uppercase text-slate-500">${s.l}</div><div class="text-lg font-bold mono ${s.c}">${s.v}</div>`;
+      stats.appendChild(c);
+    });
+    container.appendChild(stats);
+
+    if (overflowW || overflowH) {
+      const w = document.createElement('div');
+      w.className = 'mb-3 px-4 py-2 rounded-lg bg-red-950/40 border border-red-500/40 text-red-300 text-xs mono';
+      w.textContent = overflowW && overflowH
+        ? '⚠ Hem genişlik hem yükseklik taşıyor — pano ölçüsünü büyütün.'
+        : overflowW ? '⚠ Yatayda taşma var — genişliği artırın veya komponent azaltın.'
+        : '⚠ Dikeyde taşma var — yüksekliği artırın.';
+      container.appendChild(w);
+    }
+
+    const legend = document.createElement('div');
+    legend.className = 'flex flex-wrap gap-4 mb-3 text-[10px] mono text-slate-400';
+    legend.innerHTML = '<span><span style="display:inline-block;width:12px;height:8px;background:#7eb8da;border:1px solid #5a9ec4"></span> Kablo kanalı 60/40</span>'
+      + '<span><span style="display:inline-block;width:12px;height:8px;background:#7eb8da;width:6px"></span> Yan kanal 25</span>'
+      + '<span><span style="display:inline-block;width:12px;height:8px;background:#fbbf24;border:1px solid #b45309"></span> DIN 35 ray</span>';
+    container.appendChild(legend);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'pano-canvas-wrap';
+    wrap.style.maxHeight = '75vh';
+    const canvas = document.createElement('div');
+    canvas.className = 'pano-canvas';
+    drawPanoCanvas(canvas, scale, panelW, panelH, layout, index);
+    wrap.appendChild(canvas);
+    container.appendChild(wrap);
+
+    function saveRender() {
+      localStorage.setItem('iolist_pano_width', widthIn.value);
+      localStorage.setItem('iolist_pano_height', heightIn.value);
+      localStorage.setItem('iolist_pano_scale', scaleIn.value);
+      renderPanoPage();
+    }
+    widthIn.addEventListener('change', saveRender);
+    heightIn.addEventListener('change', saveRender);
+    scaleIn.addEventListener('input', () => {
+      scaleVal.textContent = parseFloat(scaleIn.value).toFixed(1) + '×';
+      localStorage.setItem('iolist_pano_scale', scaleIn.value);
+      renderPanoPage();
+    });
+    lucide.createIcons();
+  }
+
   // Navigation
   const navButtons = document.querySelectorAll('.nav-btn');
   const pages = document.querySelectorAll('.page');
@@ -6969,6 +7548,7 @@
       if (target === 'standart') renderStandartMakineler();
       if (target === 'io') { renderIOPage(); updateEmniyetRolesiCard(); }
       if (target === 'malzeme') renderMalzemeTable();
+      if (target === 'pano') renderPanoPage();
     });
   });
 
@@ -7000,26 +7580,39 @@
     'btn-buton-tipi':      { valueId: 'val-buton-tipi',      cardColor: '#fb923c', mode: 'always' },
   };
 
+  function updateSecimOptionsBadge() {
+    const badge = document.getElementById('secim-options-badge');
+    if (!badge) return;
+    let count = 0;
+    if (state.otomatikDolum === 'VAR') count++;
+    if (state.tepeLambasi === 'VAR') count++;
+    if (state.kurutmaUnitesi === 'VAR') count++;
+    if (state.isinBariyeri === 'VAR') count++;
+    badge.textContent = count === 0 ? '0 aktif' : count + ' aktif';
+    badge.classList.toggle('empty', count === 0);
+  }
+
   function syncSelectionCardVisuals() {
     Object.entries(selectionCardVisuals).forEach(([btnId, cfg]) => {
       const btn = document.getElementById(btnId);
       const valEl = document.getElementById(cfg.valueId);
       if (!btn || !valEl) return;
       const txt = (valEl.textContent || '').trim().toUpperCase();
-      const activeColor = cfg.mode === 'varYok' && txt === 'YOK' ? selectionYokColor : cfg.cardColor;
+      const isYok = cfg.mode === 'varYok' && txt === 'YOK';
+      const activeColor = isYok ? selectionYokColor : cfg.cardColor;
 
       valEl.style.color = activeColor;
+      valEl.style.borderColor = isYok ? 'rgba(100,116,139,0.55)' : activeColor + '90';
+      valEl.style.background = isYok ? 'rgba(51,65,85,0.55)' : activeColor + '18';
+      btn.classList.toggle('is-active', cfg.mode === 'varYok' ? !isYok : true);
 
-      const refreshIcon = btn.querySelector('[data-role="refresh-icon"]');
-      if (refreshIcon) {
-        refreshIcon.style.color = cfg.cardColor;
-        const refreshWrap = refreshIcon.parentElement;
-        if (refreshWrap) {
-          refreshWrap.style.borderColor = cfg.cardColor + '80';
-          refreshWrap.style.background = 'rgba(15,23,42,0.35)';
-        }
+      const toggle = btn.querySelector('.opt-toggle-switch');
+      if (toggle) {
+        toggle.classList.toggle('on', !isYok);
+        toggle.style.setProperty('--toggle-color', cfg.cardColor);
       }
     });
+    updateSecimOptionsBadge();
   }
 
   btnMakineTipi.addEventListener('click', () => {
@@ -7039,6 +7632,7 @@
   btnTankSayisi.addEventListener('click', () => {
     state.tankSayisi = state.tankSayisi >= 4 ? 1 : state.tankSayisi + 1;
     valTankSayisi.textContent = state.tankSayisi;
+    syncSelectionCardVisuals();
     renderRezistansTable();
     renderKacakAkimTable();
     renderSensorTable();
@@ -7056,6 +7650,7 @@
   btnSaltGrubu.addEventListener('click', () => {
     state.saltGrubu = state.saltGrubu === 'Schneider' ? 'Siemens' : 'Schneider';
     valSaltGrubu.textContent = state.saltGrubu;
+    syncSelectionCardVisuals();
     // Mevcut tüm motor satırlarını güncelle
     document.querySelectorAll('[id^="motor-row-"]').forEach(row => {
       if (row.updateDriveComponents) row.updateDriveComponents();
@@ -8717,7 +9312,19 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function (e) {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        reg.update();
+        if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+        reg.addEventListener('updatefound', function () {
+          var nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', function () {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              nw.postMessage('SKIP_WAITING');
+            }
+          });
+        });
+      }).catch(function (e) {
         console.warn('SW kaydi basarisiz:', e);
       });
     });
