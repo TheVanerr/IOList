@@ -1651,6 +1651,178 @@
     return item?.stok || '';
   }
 
+  // ERP stok kodları — model ve ürün adı eşleştirmesi
+  const URUN_STOK_BY_MODEL = {
+    LC1K0610M7: '10 02314',
+    LC1K0910M7: '10 01331',
+    GVAE11: '10 01365',
+    A9R41425: '10 00303',
+    A9R41440: '10 00304',
+    A9R41463: '10 00305',
+    A9F74316: '10 04000',
+    A9F74332: '10 02774',
+    A9F74340: '10 16119',
+    A9F74350: '10 11474',
+    A9F74363: '10 02933',
+    A9F74102: '10 07106',
+    A9F74103: '10 00302',
+    A9F74106: '10 01421',
+    A9F74110: '10 01422',
+  };
+
+  const DEFAULT_STOK_GRUP_MODEL = [
+    ['Kontaktör — Schneider LC1', 'LC1K0610M7', '10 02314'],
+    ['Kontaktör — Schneider LC1', 'LC1K0910M7', '10 01331'],
+    ['Yardımcı Kontak', 'GVAE11', '10 01365'],
+    ['Sigorta 3P — Schneider iC60N', 'A9F74316', '10 04000'],
+    ['Sigorta 3P — Schneider iC60N', 'A9F74332', '10 02774'],
+    ['Sigorta 3P — Schneider iC60N', 'A9F74340', '10 16119'],
+    ['Sigorta 3P — Schneider iC60N', 'A9F74350', '10 11474'],
+    ['Sigorta 3P — Schneider iC60N', 'A9F74363', '10 02933'],
+    ['Sigorta 1P — Schneider iC60N (İnvertör)', 'A9F74102', '10 07106'],
+    ['Sigorta 1P — Schneider iC60N (İnvertör)', 'A9F74103', '10 00302'],
+    ['Sigorta 1P — Schneider iC60N (İnvertör)', 'A9F74106', '10 01421'],
+    ['Sigorta 1P — Schneider iC60N (İnvertör)', 'A9F74110', '10 01422'],
+    ['RCCB (Kaçak Akım) — Schneider iID', 'A9R41425', '10 00303'],
+    ['RCCB (Kaçak Akım) — Schneider iID', 'A9R41440', '10 00304'],
+    ['RCCB (Kaçak Akım) — Schneider iID', 'A9R41463', '10 00305'],
+  ];
+
+  function getStokByModel(model) {
+    if (!model) return '';
+    return URUN_STOK_BY_MODEL[model] || '';
+  }
+
+  function getStokByUrunAdi(urunAdi) {
+    if (!urunAdi) return '';
+    for (const [model, stok] of Object.entries(URUN_STOK_BY_MODEL)) {
+      if (urunAdi.includes(model)) return stok;
+    }
+    return '';
+  }
+
+  function ensureDefaultStokKodlari() {
+    let stokMap = {};
+    try { stokMap = JSON.parse(localStorage.getItem('iolist_stok') || '{}'); } catch (e) {}
+    let changed = false;
+    DEFAULT_STOK_GRUP_MODEL.forEach(([grup, model, stok]) => {
+      const key = grup + '|' + model;
+      if (stokMap[key] !== stok) { stokMap[key] = stok; changed = true; }
+    });
+    if (changed) localStorage.setItem('iolist_stok', JSON.stringify(stokMap));
+  }
+
+  const EK_URUN_KATALOGU = [
+    {
+      grupAdi: 'Kontaktör — Schneider LC1', renk: '#60a5fa',
+      elemanlar: [
+        { model: 'LC1K0610M7', aciklama: 'KONTAKTÖR LC1K0610M7 220V', stok: '10 02314' },
+        { model: 'LC1K0910M7', aciklama: 'KONTAKTÖR LC1K0910M7 220V', stok: '10 01331' },
+      ]
+    },
+    {
+      grupAdi: 'Yardımcı Kontak', renk: '#a78bfa',
+      elemanlar: [
+        { model: 'GVAE11', aciklama: 'YARDIMCI KONTAK GVAE11 MKŞ', stok: '10 01365' },
+      ]
+    },
+    {
+      grupAdi: 'Sigorta 3P — Schneider iC60N', renk: '#fbbf24',
+      elemanlar: [
+        { model: 'A9F74316', aciklama: 'SİGORTA A9F74316 SCHNEIDER 16A', stok: '10 04000' },
+        { model: 'A9F74332', aciklama: 'SİGORTA A9F74332 SCHNEIDER 32A', stok: '10 02774' },
+        { model: 'A9F74340', aciklama: 'SİGORTA A9F74340 SCHNEIDER 40A', stok: '10 16119' },
+        { model: 'A9F74350', aciklama: 'SİGORTA A9F74350 SCHNEIDER 50A', stok: '10 11474' },
+        { model: 'A9F74363', aciklama: 'SİGORTA A9F74363 SCHNEIDER 63A', stok: '10 02933' },
+      ]
+    },
+    {
+      grupAdi: 'Sigorta 1P — Schneider iC60N (İnvertör)', renk: '#fde68a',
+      elemanlar: [
+        { model: 'A9F74102', aciklama: 'SİGORTA A9F74102 1*2', stok: '10 07106' },
+        { model: 'A9F74103', aciklama: 'SİGORTA A9F74103 1*3', stok: '10 00302' },
+        { model: 'A9F74106', aciklama: 'SİGORTA A9F74106 1*6', stok: '10 01421' },
+        { model: 'A9F74110', aciklama: 'SİGORTA A9F74110 1*10', stok: '10 01422' },
+      ]
+    },
+    {
+      grupAdi: 'RCCB (Kaçak Akım) — Schneider iID', renk: '#fb7185',
+      elemanlar: [
+        { model: 'A9R41425', aciklama: "SİGORTA KAÇAK AKIMLI A9R41425 4'LÜ", stok: '10 00303' },
+        { model: 'A9R41440', aciklama: "SİGORTA KAÇAK AKIMLI A9R41440 4'LÜ", stok: '10 00304' },
+        { model: 'A9R41463', aciklama: "SİGORTA KAÇAK AKIMLI A9R41463 4'LÜ", stok: '10 00305' },
+      ]
+    },
+  ];
+
+  function mergeEkUrunKatalogu() {
+    EK_URUN_KATALOGU.forEach(ekGrup => {
+      let grup = FIYAT_GRUPLARI.find(g => g.grupAdi === ekGrup.grupAdi);
+      if (!grup) {
+        FIYAT_GRUPLARI.push({
+          grupAdi: ekGrup.grupAdi,
+          renk: ekGrup.renk,
+          elemanlar: ekGrup.elemanlar.map(el => ({ ...el, stok: el.stok || getStokByModel(el.model) }))
+        });
+        return;
+      }
+      ekGrup.elemanlar.forEach(el => {
+        const stok = el.stok || getStokByModel(el.model);
+        const existing = grup.elemanlar.find(e => e.model === el.model);
+        if (!existing) {
+          grup.elemanlar.push({ model: el.model, aciklama: el.aciklama, stok });
+        } else {
+          if (!existing.stok) existing.stok = stok;
+          if (!existing.aciklama) existing.aciklama = el.aciklama;
+        }
+      });
+    });
+  }
+
+  function getKontaktorStokKodu(akimVal) {
+    if (state.saltGrubu !== 'Schneider') return '';
+    if (akimVal <= 3) return URUN_STOK_BY_MODEL.LC1K0610M7;
+    if (akimVal <= 6) return URUN_STOK_BY_MODEL.LC1K0910M7;
+    return '';
+  }
+
+  function getRezKontaktorStokKodu(gucVal) {
+    const g = parseFloat(gucVal);
+    if (state.saltGrubu !== 'Schneider') return '';
+    if (g <= 1.50) return URUN_STOK_BY_MODEL.LC1K0610M7;
+    if (g <= 4.50) return URUN_STOK_BY_MODEL.LC1K0910M7;
+    return '';
+  }
+
+  function getSigorta3PStokKodu(gucVal) {
+    const g = parseFloat(gucVal);
+    if (state.saltGrubu !== 'Schneider') return '';
+    if (g <= 8.25) return URUN_STOK_BY_MODEL.A9F74316;
+    if (g <= 15.00) return URUN_STOK_BY_MODEL.A9F74332;
+    return URUN_STOK_BY_MODEL.A9F74340;
+  }
+
+  function getInvertorSigortaStokKodu(gucVal) {
+    const item = invertorSigortaData.find(d => gucVal <= d.maxKw);
+    if (!item || state.saltGrubu !== 'Schneider') return '';
+    return item.schnStok || getStokByModel(item.schnModel);
+  }
+
+  function getRccbStokKodu(akim) {
+    if (state.saltGrubu !== 'Schneider') return '';
+    const model = akim <= 16 ? 'A9R41416'
+      : akim <= 25 ? 'A9R41425'
+      : akim <= 40 ? 'A9R41440'
+      : akim <= 63 ? 'A9R41463'
+      : akim <= 80 ? 'A9R41480'
+      : 'A9R414100';
+    return getStokByModel(model);
+  }
+
+  function getYardimciKontakStokKodu() {
+    return state.saltGrubu === 'Schneider' ? URUN_STOK_BY_MODEL.GVAE11 : '';
+  }
+
   function getKontaktorLabel(akimVal) {
     if (state.saltGrubu === 'Schneider') {
       if (akimVal <= 3)  return 'KONTAKTÖR LC1K0610M7 220V';
@@ -1669,7 +1841,7 @@
 
   function getYardimciKontakLabel() {
     return state.saltGrubu === 'Schneider'
-      ? 'YARDIMCI KONTAK GVAE11'
+      ? 'YARDIMCI KONTAK GVAE11 MKŞ'
       : 'YARDIMCI KONTAK 3RV2901-1E';
   }
 
@@ -1705,14 +1877,14 @@
 
   // İnvertör giriş koruma sigortası — Schneider A9F74 (1P MCB) veya Siemens 5SL4
   const invertorSigortaData = [
-    { maxKw: 0.40,  schnModel: 'A9F74106', schnAkim: '6A',  sieModel: '5SL4106-7', sieAkim: '6A'  },
-    { maxKw: 0.75,  schnModel: 'A9F74110', schnAkim: '10A', sieModel: '5SL4110-7', sieAkim: '10A' },
-    { maxKw: 2.20,  schnModel: 'A9F74116', schnAkim: '16A', sieModel: '5SL4116-7', sieAkim: '16A' },
-    { maxKw: 3.70,  schnModel: 'A9F74125', schnAkim: '25A', sieModel: '5SL4125-7', sieAkim: '25A' },
-    { maxKw: 5.50,  schnModel: 'A9F74132', schnAkim: '32A', sieModel: '5SL4132-7', sieAkim: '32A' },
-    { maxKw: 7.50,  schnModel: 'A9F74140', schnAkim: '40A', sieModel: '5SL4140-7', sieAkim: '40A' },
-    { maxKw: 11.00, schnModel: 'A9F74150', schnAkim: '50A', sieModel: '5SL4150-7', sieAkim: '50A' },
-    { maxKw: 22.00, schnModel: 'A9F74163', schnAkim: '63A', sieModel: '5SL4163-7', sieAkim: '63A' },
+    { maxKw: 0.40,  schnModel: 'A9F74106', schnAkim: '6A',  schnStok: '10 01421', sieModel: '5SL4106-7', sieAkim: '6A'  },
+    { maxKw: 0.75,  schnModel: 'A9F74110', schnAkim: '10A', schnStok: '10 01422', sieModel: '5SL4110-7', sieAkim: '10A' },
+    { maxKw: 2.20,  schnModel: 'A9F74116', schnAkim: '16A', schnStok: '',         sieModel: '5SL4116-7', sieAkim: '16A' },
+    { maxKw: 3.70,  schnModel: 'A9F74125', schnAkim: '25A', schnStok: '',         sieModel: '5SL4125-7', sieAkim: '25A' },
+    { maxKw: 5.50,  schnModel: 'A9F74132', schnAkim: '32A', schnStok: '',         sieModel: '5SL4132-7', sieAkim: '32A' },
+    { maxKw: 7.50,  schnModel: 'A9F74140', schnAkim: '40A', schnStok: '',         sieModel: '5SL4140-7', sieAkim: '40A' },
+    { maxKw: 11.00, schnModel: 'A9F74150', schnAkim: '50A', schnStok: '',         sieModel: '5SL4150-7', sieAkim: '50A' },
+    { maxKw: 22.00, schnModel: 'A9F74163', schnAkim: '63A', schnStok: '',         sieModel: '5SL4163-7', sieAkim: '63A' },
   ];
 
   function getInvertorSigortaLabel(gucVal) {
@@ -3084,9 +3256,14 @@
       if (!grupMap.has(r.grup_sira)) {
         grupMap.set(r.grup_sira, { grupAdi: r.grup_adi, renk: r.grup_renk, elemanlar: [] });
       }
-      grupMap.get(r.grup_sira).elemanlar.push({ model: r.model, aciklama: r.aciklama });
+      grupMap.get(r.grup_sira).elemanlar.push({
+        model: r.model,
+        aciklama: r.aciklama,
+        stok: getStokByModel(r.model) || ''
+      });
     });
     FIYAT_GRUPLARI = [...grupMap.values()];
+    mergeEkUrunKatalogu();
   }
 
 
@@ -3115,7 +3292,7 @@
       { urunAdi: 'SİGORTA A9F74106 1*6', stok: '10 01421' }
     ]},
     { kullanim: 'PLC SİGORTA', urunler: [
-      { urunAdi: 'SİGORTA A9F74110 1*10', stok: '10 01421' }
+      { urunAdi: 'SİGORTA A9F74110 1*10', stok: '10 01422' }
     ]},
     { kullanim: 'SWITCH', urunler: [
       { urunAdi: 'SWITCH BS1012 ANI HARK.1NA+1NK', stok: '10 16231' }
@@ -3130,7 +3307,7 @@
 
     function fiyatVeStok(grupAdi, model) {
       const key = grupAdi + '|' + model;
-      return { stok: stokMap[key] || '', birimFiyat: parseFloat(prices[key]) || 0 };
+      return { stok: stokMap[key] || getStokByModel(model) || '', birimFiyat: parseFloat(prices[key]) || 0 };
     }
     function addRow(grupAdi, model, urunAdi, kullanim, defaultStok) {
       const { stok, birimFiyat } = fiyatVeStok(grupAdi, model);
@@ -3166,14 +3343,14 @@
           ktGrup = 'Kontaktör — Siemens 3RT2 (Motor)';
           ktModel = akim <= 3 ? '3RT2015-1AP01' : akim <= 6 ? '3RT2016-1AP01' : akim <= 10 ? '3RT2018-1AP01' : '3RT2026-1AP01';
         }
-        addRow(ktGrup, ktModel, getKontaktorLabel(akim), kisa);
-        addRow('Yardımcı Kontak', state.saltGrubu === 'Schneider' ? 'GVAE11' : '3RV2901-1E', getYardimciKontakLabel(), kisa);
+        addRow(ktGrup, ktModel, getKontaktorLabel(akim), kisa, getKontaktorStokKodu(akim));
+        addRow('Yardımcı Kontak', state.saltGrubu === 'Schneider' ? 'GVAE11' : '3RV2901-1E', getYardimciKontakLabel(), kisa, getYardimciKontakStokKodu());
       } else {
         const invItem = getInvertorItem(guc);
         addRow('İnvertör — Delta VFD-EL', invItem ? invItem.model : '', getInvertorLabel(guc), kisa, getInvertorStokKodu(guc));
         const sigItem = invertorSigortaData.find(d => guc <= d.maxKw);
         const sigModel = sigItem ? (state.saltGrubu === 'Schneider' ? sigItem.schnModel : sigItem.sieModel) : '';
-        addRow(state.saltGrubu === 'Schneider' ? 'Sigorta 1P — Schneider iC60N (İnvertör)' : 'Sigorta — Siemens 5SL4', sigModel, getInvertorSigortaLabel(guc), kisa);
+        addRow(state.saltGrubu === 'Schneider' ? 'Sigorta 1P — Schneider iC60N (İnvertör)' : 'Sigorta — Siemens 5SL4', sigModel, getInvertorSigortaLabel(guc), kisa, getInvertorSigortaStokKodu(guc));
       }
     });
 
@@ -3195,7 +3372,7 @@
             return { grupAdi: 'Sigorta — Siemens 5SL4', model: m };
           }
         })();
-        addRow(sigItem.grupAdi, sigItem.model, getSigortaLabel(guc), kullanim);
+        addRow(sigItem.grupAdi, sigItem.model, getSigortaLabel(guc), kullanim, getSigorta3PStokKodu(guc));
         const ktItem = (() => {
           const g = guc;
           if (state.saltGrubu === 'Schneider') {
@@ -3206,7 +3383,7 @@
             return { grupAdi: 'Kontaktör — Siemens 3RT2 (Rezistans)', model: m };
           }
         })();
-        addRow(ktItem.grupAdi, ktItem.model, getRezKontaktorLabel(guc), kullanim);
+        addRow(ktItem.grupAdi, ktItem.model, getRezKontaktorLabel(guc), kullanim, getRezKontaktorStokKodu(guc));
       });
     }
 
@@ -3216,8 +3393,8 @@
         const gucSelect = row.querySelector('select.guc-select-all');
         const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
         if (!guc) return;
-        addRow('Sigorta 3P — Schneider iC60N', '', getSigortaLabel(guc), 'KURUTMA REZİSTANS');
-        addRow('Kontaktör — Schneider LC1', '', getRezKontaktorLabel(guc), 'KURUTMA REZİSTANS');
+        addRow('Sigorta 3P — Schneider iC60N', '', getSigortaLabel(guc), 'KURUTMA REZİSTANS', getSigorta3PStokKodu(guc));
+        addRow('Kontaktör — Schneider LC1', '', getRezKontaktorLabel(guc), 'KURUTMA REZİSTANS', getRezKontaktorStokKodu(guc));
       });
     }
 
@@ -3232,7 +3409,7 @@
         const model = state.saltGrubu === 'Schneider'
           ? (a <= 16 ? 'A9R41416' : a <= 25 ? 'A9R41425' : a <= 40 ? 'A9R41440' : a <= 63 ? 'A9R41463' : a <= 80 ? 'A9R41480' : 'A9R414100')
           : (a <= 16 ? '5SV3312-6' : a <= 25 ? '5SV3314-6' : a <= 40 ? '5SV3316-6' : a <= 63 ? '5SV3322-6' : a <= 80 ? '5SV3324-6' : '5SV3326-6');
-        addRow(grupAdi, model, opt.textContent.trim(), 'KAÇAK AKIM');
+        addRow(grupAdi, model, opt.textContent.trim(), 'KAÇAK AKIM', getRccbStokKodu(a));
       });
     });
 
@@ -3264,7 +3441,7 @@
     rows.push({ stok: '10 03255', urunAdi: 'CT-2467', birimFiyat: 0, adet: 1, model: 'SABİT|CT|CT-2467', grupAdi: 'SABİT|CT', kullanim: 'CT', _fixedAdet: true });
     rows.push({ stok: '10 01421', urunAdi: 'SİGORTA A9F74106 1*6', birimFiyat: 0, adet: 1, model: 'SABİT|GÜÇ KAYNAĞI SİGORTA|SİGORTA A9F74106 1*6', grupAdi: 'SABİT|GÜÇ KAYNAĞI SİGORTA', kullanim: 'GÜÇ KAYNAĞI SİGORTA', _fixedAdet: true });
     rows.push({ stok: '10 01421', urunAdi: 'SİGORTA A9F74106 1*6', birimFiyat: 0, adet: 1, model: 'SABİT|GÜÇ KAYNAĞI SİGORTA 2|SİGORTA A9F74106 1*6', grupAdi: 'SABİT|GÜÇ KAYNAĞI SİGORTA 2', kullanim: 'GÜÇ KAYNAĞI SİGORTA', _fixedAdet: true });
-    rows.push({ stok: '10 01421', urunAdi: 'SİGORTA A9F74110 1*10', birimFiyat: 0, adet: 1, model: 'SABİT|PLC SİGORTA|SİGORTA A9F74110 1*10', grupAdi: 'SABİT|PLC SİGORTA', kullanim: 'PLC SİGORTA', _fixedAdet: true });
+    rows.push({ stok: '10 01422', urunAdi: 'SİGORTA A9F74110 1*10', birimFiyat: 0, adet: 1, model: 'SABİT|PLC SİGORTA|SİGORTA A9F74110 1*10', grupAdi: 'SABİT|PLC SİGORTA', kullanim: 'PLC SİGORTA', _fixedAdet: true });
     let kaAkimCount = 0;
     document.querySelectorAll('[id^="ka-tbody-"]').forEach(tb => {
       tb.querySelectorAll('[data-rccb-akim]').forEach(sel => { if (sel.value) kaAkimCount++; });
@@ -3708,7 +3885,7 @@
     addFixed('10 03255', 'CT-2467', 'CT');
     addFixed('10 01421', 'SİGORTA A9F74106 1*6', 'GÜÇ KAYNAĞI SİGORTA');
     addFixed('10 01421', 'SİGORTA A9F74106 1*6', 'GÜÇ KAYNAĞI SİGORTA 2');
-    addFixed('10 01421', 'SİGORTA A9F74110 1*10', 'PLC SİGORTA');
+    addFixed('10 01422', 'SİGORTA A9F74110 1*10', 'PLC SİGORTA');
 
     // --- Yaprak Röle + Röle Köprüsü (DO sayısına bağlı) ---
     const doCount = getPLCCikisRows().filter(r => r.cikisKomutu && r.cikisKomutu.trim() !== '').length;
@@ -3997,6 +4174,7 @@
     if (FIYAT_GRUPLARI.length === 0) {
       container.innerHTML = '<div class="text-center text-slate-500 py-16 mono text-sm">// Ürün kataloğu yükleniyor…</div>';
       await loadUrunKatalogu();
+      if (FIYAT_GRUPLARI.length === 0) mergeEkUrunKatalogu();
       if (FIYAT_GRUPLARI.length === 0) {
         container.innerHTML = '<div class="text-center text-red-400 py-16 mono text-sm">// Ürün kataloğu yüklenemedi — Supabase bağlantısını kontrol edin.</div>';
         return;
@@ -4132,7 +4310,7 @@
         const stokInp = document.createElement('input');
         stokInp.type = 'text';
         stokInp.dataset.stokKey = key;
-        stokInp.value = el.stok || savedStok[key] || '';
+        stokInp.value = el.stok || savedStok[key] || getStokByModel(el.model) || getStokByUrunAdi(el.aciklama) || '';
         stokInp.readOnly = !isEdit;
         stokInp.className = isEdit
           ? 'fiyat-edit-stok w-full h-7 px-2 bg-slate-800 border border-slate-600 rounded text-xs mono font-semibold text-cyan-300 focus:border-cyan-500 focus:outline-none text-center'
@@ -4378,15 +4556,18 @@
   }
 
   function getSigortaForAmp(amp) {
-    if (amp < 25)      return { stok: '10 00303', urun: "SİGORTA KAÇAK AKIMLI A9R41425 4'LÜ (25A)" };
-    else if (amp < 40) return { stok: '10 00304', urun: "SİGORTA KAÇAK AKIMLI A9R41440 4'LÜ (40A)" };
-    else               return { stok: '10 00305', urun: "SİGORTA KAÇAK AKIMLI A9R41463 4'LÜ (63A)" };
+    if (amp < 25)      return { stok: '10 00303', urun: "SİGORTA KAÇAK AKIMLI A9R41425 4'LÜ" };
+    else if (amp < 40) return { stok: '10 00304', urun: "SİGORTA KAÇAK AKIMLI A9R41440 4'LÜ" };
+    else               return { stok: '10 00305', urun: "SİGORTA KAÇAK AKIMLI A9R41463 4'LÜ" };
   }
 
   function getSigortaA9F(amp) {
-    if (amp < 25)      return { stok: '-', urun: 'SİGORTA A9F74325 SCHNEİDER 25A 3P' };
-    else if (amp < 40) return { stok: '-', urun: 'SİGORTA A9F74340 SCHNEİDER 40A 3P' };
-    else               return { stok: '-', urun: 'SİGORTA A9F74363 SCHNEİDER 63A 3P' };
+    if (amp < 16)      return { stok: '10 04000', urun: 'SİGORTA A9F74316 SCHNEIDER 16A 3P' };
+    else if (amp < 25) return { stok: '',         urun: 'SİGORTA A9F74325 SCHNEİDER 25A 3P' };
+    else if (amp < 32) return { stok: '10 02774', urun: 'SİGORTA A9F74332 SCHNEIDER 32A 3P' };
+    else if (amp < 40) return { stok: '10 16119', urun: 'SİGORTA A9F74340 SCHNEIDER 40A 3P' };
+    else if (amp < 50) return { stok: '10 11474', urun: 'SİGORTA A9F74350 SCHNEIDER 50A 3P' };
+    else               return { stok: '10 02933', urun: 'SİGORTA A9F74363 SCHNEIDER 63A 3P' };
   }
 
   // LYM serisi için güç sigortası (akıma göre)
@@ -9099,6 +9280,8 @@
   // ===== END SUPABASE =====
 
   // Sayfa bölümleri script etiketinden önce tanımlı — senkron başlat
+  ensureDefaultStokKodlari();
+  mergeEkUrunKatalogu();
   lucide.createIcons();
   renderRezistansTable();
   renderKurutmaTable();
