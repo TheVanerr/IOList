@@ -1655,6 +1655,11 @@
   const URUN_STOK_BY_MODEL = {
     LC1K0610M7: '10 02314',
     LC1K0910M7: '10 01331',
+    LC1K1210M7: '',
+    LC1K1610M7: '10 01332',
+    LC1K1810M7: '',
+    LC1K2510M7: '',
+    LC1K3210M7: '',
     GVAE11: '10 01365',
     A9R41425: '10 00303',
     A9R41440: '10 00304',
@@ -1673,6 +1678,7 @@
   const DEFAULT_STOK_GRUP_MODEL = [
     ['Kontaktör — Schneider LC1', 'LC1K0610M7', '10 02314'],
     ['Kontaktör — Schneider LC1', 'LC1K0910M7', '10 01331'],
+    ['Kontaktör — Schneider LC1', 'LC1K1610M7', '10 01332'],
     ['Yardımcı Kontak', 'GVAE11', '10 01365'],
     ['Sigorta 3P — Schneider iC60N', 'A9F74316', '10 04000'],
     ['Sigorta 3P — Schneider iC60N', 'A9F74332', '10 02774'],
@@ -1718,6 +1724,11 @@
       elemanlar: [
         { model: 'LC1K0610M7', aciklama: 'KONTAKTÖR LC1K0610M7 220V', stok: '10 02314' },
         { model: 'LC1K0910M7', aciklama: 'KONTAKTÖR LC1K0910M7 220V', stok: '10 01331' },
+        { model: 'LC1K1210M7', aciklama: 'KONTAKTÖR LC1K1210M7 220V', stok: '' },
+        { model: 'LC1K1610M7', aciklama: 'KONTAKTÖR LC1K1610M7 220V', stok: '10 01332' },
+        { model: 'LC1K1810M7', aciklama: 'KONTAKTÖR LC1K1810M7 220V', stok: '' },
+        { model: 'LC1K2510M7', aciklama: 'KONTAKTÖR LC1K2510M7 220V', stok: '' },
+        { model: 'LC1K3210M7', aciklama: 'KONTAKTÖR LC1K3210M7 220V', stok: '' },
       ]
     },
     {
@@ -1779,11 +1790,43 @@
     });
   }
 
+  // Schneider LC1K — motor grubu kontaktör seçimi (akıma göre)
+  const lc1kMotorData = [
+    { max: 6,  model: 'LC1K0610M7', stok: '10 02314' },
+    { max: 9,  model: 'LC1K0910M7', stok: '10 01331' },
+    { max: 12, model: 'LC1K1210M7', stok: '' },
+    { max: 16, model: 'LC1K1610M7', stok: '10 01332' },
+    { max: 18, model: 'LC1K1810M7', stok: '' },
+    { max: 25, model: 'LC1K2510M7', stok: '' },
+    { max: 32, model: 'LC1K3210M7', stok: '' },
+  ];
+
+  function getMotorKontaktorItem(akimVal) {
+    return lc1kMotorData.find(d => akimVal <= d.max) || null;
+  }
+
+  function getKontaktorModel(akimVal) {
+    if (state.saltGrubu !== 'Schneider') {
+      if (akimVal <= 3)  return '3RT2015-1AP01';
+      if (akimVal <= 6)  return '3RT2016-1AP01';
+      if (akimVal <= 10) return '3RT2018-1AP01';
+      if (akimVal <= 18) return '3RT2026-1AP01';
+      return '';
+    }
+    return getMotorKontaktorItem(akimVal)?.model || '';
+  }
+
+  function getKontaktorGrup(akimVal) {
+    return state.saltGrubu === 'Schneider'
+      ? 'Kontaktör — Schneider LC1'
+      : 'Kontaktör — Siemens 3RT2 (Motor)';
+  }
+
   function getKontaktorStokKodu(akimVal) {
     if (state.saltGrubu !== 'Schneider') return '';
-    if (akimVal <= 3) return URUN_STOK_BY_MODEL.LC1K0610M7;
-    if (akimVal <= 6) return URUN_STOK_BY_MODEL.LC1K0910M7;
-    return '';
+    const item = getMotorKontaktorItem(akimVal);
+    if (!item) return '';
+    return item.stok || getStokByModel(item.model);
   }
 
   function getRezKontaktorStokKodu(gucVal) {
@@ -1825,11 +1868,9 @@
 
   function getKontaktorLabel(akimVal) {
     if (state.saltGrubu === 'Schneider') {
-      if (akimVal <= 3)  return 'KONTAKTÖR LC1K0610M7 220V';
-      if (akimVal <= 6)  return 'KONTAKTÖR LC1K0910M7 220V';
-      if (akimVal <= 10) return 'KONTAKTÖR LC1D16M7 220V';
-      if (akimVal <= 18) return 'KONTAKTÖR LC1D25M7 220V';
-      return 'LC1D serisi daha büyük kontaktör gereklidir';
+      const item = getMotorKontaktorItem(akimVal);
+      if (!item) return 'LC1K serisi daha büyük kontaktör gereklidir';
+      return 'KONTAKTÖR ' + item.model + ' 220V';
     } else {
       if (akimVal <= 3)  return 'KONTAKTÖR 3RT2015-1AP01 220V';
       if (akimVal <= 6)  return 'KONTAKTÖR 3RT2016-1AP01 220V';
@@ -3335,14 +3376,8 @@
           kisa,
           getMKSStokKodu(akim)
         );
-        let ktModel = '', ktGrup = '';
-        if (state.saltGrubu === 'Schneider') {
-          ktGrup = 'Kontaktör — Schneider LC1';
-          ktModel = akim <= 3 ? 'LC1K0610M7' : akim <= 6 ? 'LC1K0910M7' : akim <= 10 ? 'LC1D16M7' : 'LC1D25M7';
-        } else {
-          ktGrup = 'Kontaktör — Siemens 3RT2 (Motor)';
-          ktModel = akim <= 3 ? '3RT2015-1AP01' : akim <= 6 ? '3RT2016-1AP01' : akim <= 10 ? '3RT2018-1AP01' : '3RT2026-1AP01';
-        }
+        let ktModel = getKontaktorModel(akim);
+        const ktGrup = getKontaktorGrup(akim);
         addRow(ktGrup, ktModel, getKontaktorLabel(akim), kisa, getKontaktorStokKodu(akim));
         addRow('Yardımcı Kontak', state.saltGrubu === 'Schneider' ? 'GVAE11' : '3RV2901-1E', getYardimciKontakLabel(), kisa, getYardimciKontakStokKodu());
       } else {
@@ -3770,14 +3805,8 @@
 
         // Kontaktör
         const ktLabel = getKontaktorLabel(akim);
-        let ktModel = '', ktGrup = '';
-        if (state.saltGrubu === 'Schneider') {
-          ktGrup = 'Kontaktör — Schneider LC1';
-          ktModel = akim <= 3 ? 'LC1K0610M7' : akim <= 6 ? 'LC1K0910M7' : akim <= 10 ? 'LC1D16M7' : 'LC1D25M7';
-        } else {
-          ktGrup = 'Kontaktör — Siemens 3RT2 (Motor)';
-          ktModel = akim <= 3 ? '3RT2015-1AP01' : akim <= 6 ? '3RT2016-1AP01' : akim <= 10 ? '3RT2018-1AP01' : '3RT2026-1AP01';
-        }
+        const ktModel = getKontaktorModel(akim);
+        const ktGrup = getKontaktorGrup(akim);
         addRow(ktGrup, ktModel, ktLabel);
 
         // Yardımcı kontak
@@ -4605,10 +4634,12 @@
   }
 
   function getKontaktorForBasincAmp(amp) {
-    if (amp >= 0 && amp < 3)  return { stok: '10 02314', urun: 'KONTAKTÖR LC1K0610M7 220V' };
-    if (amp >= 3 && amp < 6)  return { stok: '10 01331', urun: 'KONTAKTÖR LC1K0910M7 220V' };
-    if (amp >= 6 && amp <= 12) return { stok: '10 01332', urun: 'KONTAKTÖR LC1K1610M7 220V' };
-    return null;
+    const item = getMotorKontaktorItem(amp);
+    if (!item) return null;
+    return {
+      stok: item.stok || getStokByModel(item.model),
+      urun: 'KONTAKTÖR ' + item.model + ' 220V'
+    };
   }
 
   function reduceRowAdetByStok(rows, stokKodu) {
