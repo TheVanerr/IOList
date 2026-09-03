@@ -1790,7 +1790,7 @@
     });
   }
 
-  // Schneider LC1K — motor grubu kontaktör seçimi (akıma göre)
+  // Schneider LC1K — kontaktör seçimi (akıma göre, motor + rezistans)
   const lc1kMotorData = [
     { max: 6,  model: 'LC1K0610M7', stok: '10 02314' },
     { max: 9,  model: 'LC1K0910M7', stok: '10 01331' },
@@ -1829,12 +1829,23 @@
     return item.stok || getStokByModel(item.model);
   }
 
+  function getRezAkim(gucVal) {
+    return (parseFloat(gucVal) || 0) * 2;
+  }
+
+  function getRezKontaktorModel(gucVal) {
+    const g = parseFloat(gucVal) || 0;
+    if (state.saltGrubu === 'Schneider') return getKontaktorModel(getRezAkim(g));
+    if (g <= 1.50) return '3RT2015-1AM61';
+    if (g <= 4.50) return '3RT2016-1AM61';
+    if (g <= 8.25) return '3RT2018-1AM61';
+    if (g <= 12.00) return '3RT2026-1AM61';
+    return '3RT2034-1AM61';
+  }
+
   function getRezKontaktorStokKodu(gucVal) {
-    const g = parseFloat(gucVal);
     if (state.saltGrubu !== 'Schneider') return '';
-    if (g <= 1.50) return URUN_STOK_BY_MODEL.LC1K0610M7;
-    if (g <= 4.50) return URUN_STOK_BY_MODEL.LC1K0910M7;
-    return '';
+    return getKontaktorStokKodu(getRezAkim(gucVal));
   }
 
   function getSigorta3PStokKodu(gucVal) {
@@ -1963,11 +1974,9 @@
   function getRezKontaktorLabel(gucVal) {
     const g = parseFloat(gucVal);
     if (state.saltGrubu === 'Schneider') {
-      if (g <= 1.50) return 'KONTAKTÖR SCHNEİDER LC1K0610M7 (6A 220V)';
-      if (g <= 4.50) return 'KONTAKTÖR SCHNEİDER LC1K0910M7 (9A 220V)';
-      if (g <= 8.25) return 'KONTAKTÖR SCHNEİDER LC1D16M7 (16A 220V)';
-      if (g <= 12.00) return 'KONTAKTÖR SCHNEİDER LC1D25M7 (25A 220V)';
-      return 'KONTAKTÖR SCHNEİDER LC1D32M7 (32A 220V)';
+      const item = getMotorKontaktorItem(getRezAkim(g));
+      if (!item) return 'LC1K serisi daha büyük kontaktör gereklidir';
+      return `KONTAKTÖR SCHNEİDER ${item.model} (${item.max}A 220V)`;
     } else {
       if (g <= 1.50) return 'KONTAKTÖR SİEMENS 3RT2015-1AM61 (7A 220V)';
       if (g <= 4.50) return 'KONTAKTÖR SİEMENS 3RT2016-1AM61 (9A 220V)';
@@ -2109,6 +2118,15 @@
     return row;
   }
 
+  function refreshRezistansSurucuFields() {
+    document.querySelectorAll('[id^="rez-row-"]').forEach(row => {
+      if (row.updateRezComponents) row.updateRezComponents();
+    });
+    document.querySelectorAll('[id^="kur-row-"]').forEach(row => {
+      if (row.updateKurComponents) row.updateKurComponents();
+    });
+  }
+
   function reindexTankRows(t) {
     const tbody = document.getElementById(`rez-tbody-${t}`);
     if (!tbody) return;
@@ -2227,6 +2245,7 @@
       container.appendChild(tankSection);
     }
 
+    refreshRezistansSurucuFields();
     lucide.createIcons();
   }
   const kurutmaGucOptions = [1.50, 3.00, 4.50, 6.00, 7.50, 9.00, 10.50, 12.00];
@@ -2445,6 +2464,7 @@
     tableWrapper.appendChild(table);
     section.appendChild(tableWrapper);
     container.appendChild(section);
+    refreshRezistansSurucuFields();
     lucide.createIcons();
   }
   // ===== END REZISTANS =====
@@ -3408,17 +3428,8 @@
           }
         })();
         addRow(sigItem.grupAdi, sigItem.model, getSigortaLabel(guc), kullanim, getSigorta3PStokKodu(guc));
-        const ktItem = (() => {
-          const g = guc;
-          if (state.saltGrubu === 'Schneider') {
-            const m = g <= 1.5 ? 'LC1K0610M7' : g <= 4.5 ? 'LC1K0910M7' : g <= 8.25 ? 'LC1D16M7' : g <= 12 ? 'LC1D25M7' : 'LC1D32M7';
-            return { grupAdi: 'Kontaktör — Schneider LC1', model: m };
-          } else {
-            const m = g <= 1.5 ? '3RT2015-1AM61' : g <= 4.5 ? '3RT2016-1AM61' : g <= 8.25 ? '3RT2018-1AM61' : g <= 12 ? '3RT2026-1AM61' : '3RT2034-1AM61';
-            return { grupAdi: 'Kontaktör — Siemens 3RT2 (Rezistans)', model: m };
-          }
-        })();
-        addRow(ktItem.grupAdi, ktItem.model, getRezKontaktorLabel(guc), kullanim, getRezKontaktorStokKodu(guc));
+        const ktGrup = state.saltGrubu === 'Schneider' ? 'Kontaktör — Schneider LC1' : 'Kontaktör — Siemens 3RT2 (Rezistans)';
+        addRow(ktGrup, getRezKontaktorModel(guc), getRezKontaktorLabel(guc), kullanim, getRezKontaktorStokKodu(guc));
       });
     }
 
@@ -3429,7 +3440,7 @@
         const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
         if (!guc) return;
         addRow('Sigorta 3P — Schneider iC60N', '', getSigortaLabel(guc), 'KURUTMA REZİSTANS', getSigorta3PStokKodu(guc));
-        addRow('Kontaktör — Schneider LC1', '', getRezKontaktorLabel(guc), 'KURUTMA REZİSTANS', getRezKontaktorStokKodu(guc));
+        addRow('Kontaktör — Schneider LC1', getRezKontaktorModel(guc), getRezKontaktorLabel(guc), 'KURUTMA REZİSTANS', getRezKontaktorStokKodu(guc));
       });
     }
 
@@ -3846,17 +3857,8 @@
           }
         })();
         addRow(sigItem.grupAdi, sigItem.model, sigLabel);
-        const ktItem = (() => {
-          const g = guc;
-          if (state.saltGrubu === 'Schneider') {
-            const m = g <= 1.5 ? 'LC1K0610M7' : g <= 4.5 ? 'LC1K0910M7' : g <= 8.25 ? 'LC1D16M7' : g <= 12 ? 'LC1D25M7' : 'LC1D32M7';
-            return { grupAdi: 'Kontaktör — Schneider LC1', model: m };
-          } else {
-            const m = g <= 1.5 ? '3RT2015-1AM61' : g <= 4.5 ? '3RT2016-1AM61' : g <= 8.25 ? '3RT2018-1AM61' : g <= 12 ? '3RT2026-1AM61' : '3RT2034-1AM61';
-            return { grupAdi: 'Kontaktör — Siemens 3RT2 (Rezistans)', model: m };
-          }
-        })();
-        addRow(ktItem.grupAdi, ktItem.model, ktLabel);
+        const ktGrup = state.saltGrubu === 'Schneider' ? 'Kontaktör — Schneider LC1' : 'Kontaktör — Siemens 3RT2 (Rezistans)';
+        addRow(ktGrup, getRezKontaktorModel(guc), ktLabel);
       });
     }
 
@@ -3867,7 +3869,7 @@
         const guc = parseFloat(gucSelect ? gucSelect.value : '') || 0;
         if (!guc) return;
         addRow('Sigorta 3P — Schneider iC60N', '', getSigortaLabel(guc));
-        addRow('Kontaktör — Schneider LC1', '', getRezKontaktorLabel(guc));
+        addRow('Kontaktör — Schneider LC1', getRezKontaktorModel(guc), getRezKontaktorLabel(guc));
       });
     }
 
@@ -8661,6 +8663,7 @@
     renderKacakAkimTable();
     renderTmsTable();
     renderSensorTable();
+    refreshRezistansSurucuFields();
     updateMakineGucu();
     lucide.createIcons();
     if (document.getElementById('page-io').classList.contains('active')) renderIOPage();
@@ -8999,108 +9002,436 @@
     reader.readAsArrayBuffer(file);
   }
 
-  // Seçim, Otomasyon, IO, Malzeme sayfalarındaki tüm tabloları Excel'e aktar
+  // ===== 4 SAYFA EXCEL EXPORT (Seçim / Otomasyon / IO / Malzeme) =====
+  const XL_STYLE = {
+    ROW_H: 25,
+    BLANK_H: 8,
+    HEADER_BG: 'FF1E3A5F',
+    HEADER_FG: 'FFFFFFFF',
+    SUBHDR_BG: 'FF243447',
+    SUBHDR_FG: 'FF93C5FD',
+    SECTION_BG: 'FF0F4C35',
+    SECTION_FG: 'FF6EE7B7',
+    TH_BG: 'FF1E3A5F',
+    TH_FG: 'FFE2E8F0',
+    DATA_FG: 'FF1E293B'
+  };
+
+  function xlColLetter(n) {
+    let s = '';
+    while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); }
+    return s;
+  }
+
+  function xlApplyCell(cell, fg, bg, bold = false, size = 9) {
+    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    cell.font = { bold, size, color: { argb: fg } };
+    if (bg) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+  }
+
+  function xlGetCddText(id) {
+    return document.getElementById(id)?.querySelector('.cdd-val')?.textContent.trim() || '';
+  }
+
+  function xlStripHtml(html) {
+    if (!html) return '';
+    const d = document.createElement('div');
+    d.innerHTML = html;
+    return d.textContent.trim();
+  }
+
+  function xlExtractCellValue(cell) {
+    const cdd = cell.querySelector('.cdd');
+    if (cdd) return cdd.querySelector('.cdd-val')?.textContent.trim() || '';
+    const sel = cell.querySelector('select');
+    if (sel && sel.selectedIndex >= 0) return sel.options[sel.selectedIndex].textContent.trim();
+    const inp = cell.querySelector('input');
+    if (inp) return inp.value;
+    const btn = cell.querySelector('button.motor-grubu-cell, button[data-koruma-type]');
+    if (btn) return btn.textContent.trim();
+    return cell.textContent.trim();
+  }
+
+  function xlExtractTable(tableEl, skipIslemCol = true) {
+    let headers = Array.from(tableEl.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    const hasIslem = skipIslemCol && headers.length > 0 && headers[headers.length - 1] === 'İşlem';
+    if (hasIslem) headers = headers.slice(0, -1);
+    const rows = [];
+    tableEl.querySelectorAll('tbody tr').forEach(tr => {
+      if (tr.id === 'motor-add-row') return;
+      const cells = tr.querySelectorAll('td');
+      if (cells.length === 1 && cells[0].querySelector('button') && !cells[0].querySelector('input,select')) return;
+      if (cells.length === 1 && cells[0].colSpan > 1) {
+        const txt = cells[0].textContent.trim();
+        if (txt) rows.push({ _group: txt });
+        return;
+      }
+      let cellList = Array.from(cells);
+      if (hasIslem && cellList.length > headers.length) cellList = cellList.slice(0, headers.length);
+      const data = cellList.map(c => xlExtractCellValue(c));
+      if (data.some(v => v !== '')) rows.push(data);
+    });
+    return { headers, rows };
+  }
+
+  function createXlSheetBuilder(sheet, maxCols = 12) {
+    const S = XL_STYLE;
+    const builder = {
+      addBlank(h = S.BLANK_H) { const r = sheet.addRow([]); r.height = h; return r; },
+      addSection(title) {
+        const r = sheet.addRow([title]);
+        r.height = S.ROW_H;
+        r.eachCell({ includeEmpty: true }, (c, i) => { if (i <= maxCols) xlApplyCell(c, S.SECTION_FG, S.SECTION_BG, true, 12); });
+        sheet.mergeCells(`A${r.number}:${xlColLetter(maxCols)}${r.number}`);
+        return r;
+      },
+      addSubSection(title) {
+        const r = sheet.addRow([title]);
+        r.height = S.ROW_H;
+        for (let i = 1; i <= maxCols; i++) xlApplyCell(r.getCell(i), S.SUBHDR_FG, S.SUBHDR_BG, true, 10);
+        sheet.mergeCells(`A${r.number}:${xlColLetter(maxCols)}${r.number}`);
+        return r;
+      },
+      addKeyValueGrid(labels, values) {
+        const lr = sheet.addRow(labels);
+        lr.height = S.ROW_H;
+        lr.eachCell({ includeEmpty: true }, c => xlApplyCell(c, S.SUBHDR_FG, S.SUBHDR_BG, true, 9));
+        const vr = sheet.addRow(values);
+        vr.height = S.ROW_H;
+        vr.eachCell({ includeEmpty: true }, (c, i) => {
+          const v = values[i - 1] || '';
+          const isActive = v && v !== 'YOK' && v !== '0';
+          xlApplyCell(c, isActive ? 'FF34D399' : 'FF94A3B8', null, true, 10);
+        });
+      },
+      addTable(headers, rows, opts = {}) {
+        const ncol = headers.length;
+        if (opts.title) builder.addSubSection(opts.title);
+        const hr = sheet.addRow(headers);
+        hr.height = S.ROW_H;
+        hr.eachCell({ includeEmpty: true }, (c, i) => { if (i <= ncol) xlApplyCell(c, S.TH_FG, S.TH_BG, true, 9); });
+        rows.forEach(row => {
+          if (row && row._group) {
+            const gr = sheet.addRow([row._group]);
+            gr.height = S.ROW_H;
+            for (let i = 1; i <= ncol; i++) xlApplyCell(gr.getCell(i), S.SUBHDR_FG, S.SUBHDR_BG, true, 9);
+            sheet.mergeCells(`A${gr.number}:${xlColLetter(ncol)}${gr.number}`);
+            return;
+          }
+          const vals = Array.isArray(row) ? row : headers.map(h => row[h] ?? '');
+          const dr = sheet.addRow(vals);
+          dr.height = S.ROW_H;
+          dr.eachCell({ includeEmpty: true }, (c, i) => {
+            if (i <= ncol) xlApplyCell(c, row._bos ? 'FF64748B' : S.DATA_FG, null, false, 9);
+          });
+        });
+        if (opts.footer) {
+          const fr = sheet.addRow(opts.footer);
+          fr.height = S.ROW_H;
+          fr.eachCell({ includeEmpty: true }, (c, i) => { if (i <= ncol) xlApplyCell(c, S.HEADER_FG, S.HEADER_BG, true, 9); });
+        }
+        builder.addBlank();
+      },
+      fitColumns(minW = 12, maxW = 50) {
+        sheet.columns.forEach(col => {
+          let max = minW;
+          col.eachCell({ includeEmpty: false }, cell => {
+            const len = String(cell.value || '').length;
+            if (len + 2 > max) max = Math.min(len + 2, maxW);
+          });
+          col.width = max;
+        });
+      }
+    };
+    return builder;
+  }
+
+  function xlPreparePagesForExport() {
+    renderRezistansTable();
+    renderKurutmaTable();
+    renderKacakAkimTable();
+    renderTmsTable();
+    renderSensorTable();
+    renderIOPage();
+    renderMalzemeTable();
+  }
+
+  function xlCollectTablesFromContainer(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+    const sections = [];
+    const mainTitle = container.querySelector('span.text-sm.font-bold, span.font-bold.mono')?.textContent.trim() || '';
+    container.querySelectorAll('table').forEach(table => {
+      const sectionDiv = table.closest('.rounded-xl, [class*="border-"]');
+      const subTitle = sectionDiv?.querySelector('.standart-options-title')?.textContent.trim() || '';
+      const badge = sectionDiv?.querySelector('.standart-options-badge')?.textContent.trim() || '';
+      let title = mainTitle;
+      if (subTitle && subTitle !== mainTitle) title = mainTitle ? `${mainTitle} — ${subTitle}` : subTitle;
+      if (badge) title += ` (${badge})`;
+      const { headers, rows } = xlExtractTable(table);
+      if (headers.length && rows.length) sections.push({ type: 'table', title, headers, rows });
+    });
+    return sections;
+  }
+
+  function xlCollectSecimData() {
+    const sections = [];
+    sections.push({
+      type: 'kpi',
+      labels: ['Makine Gücü', 'Makine Akımı', 'Motor Toplamı (kW)', 'Motor Toplamı (A)'],
+      values: [
+        document.getElementById('val-makine-gucu')?.textContent.trim() || '',
+        document.getElementById('val-makine-akim')?.textContent.trim() || '',
+        document.getElementById('secim-motor-kw')?.textContent.trim() || '',
+        document.getElementById('secim-motor-amp')?.textContent.trim() || ''
+      ]
+    });
+    const optLabels = [], optVals = [];
+    document.querySelectorAll('#secim-options-panel .option-btn').forEach(btn => {
+      const lbl = btn.querySelector('.label-tag')?.textContent.trim();
+      const val = btn.querySelector('.value-tag')?.textContent.trim() || '-';
+      if (lbl) { optLabels.push(lbl); optVals.push(val); }
+    });
+    sections.push({ type: 'config', labels: optLabels, values: optVals });
+    const motorTable = document.querySelector('#page-secim table');
+    if (motorTable) {
+      const { headers, rows } = xlExtractTable(motorTable);
+      const bar = document.getElementById('motor-total-bar')?.textContent.trim();
+      sections.push({ type: 'table', title: 'Motor Listesi' + (bar ? ` (${bar})` : ''), headers, rows });
+    }
+    ['rezistans-container', 'kurutma-container', 'kacak-akim-container', 'tms-container'].forEach(id => {
+      sections.push(...xlCollectTablesFromContainer(id));
+    });
+    return sections;
+  }
+
+  function xlCollectOtomasyonData() {
+    const sections = [];
+    for (let t = 1; t <= state.tankSayisi; t++) {
+      sections.push({
+        type: 'table',
+        title: `${t}. Tank Sensör Listesi`,
+        headers: ['Sensör Grubu', 'Sensör Adı'],
+        rows: getSensorRows(t).map(r => [r.grup, r.ad])
+      });
+    }
+    if (state.ekSensorlar.length) {
+      sections.push({
+        type: 'table', title: 'Ek Sensörler',
+        headers: ['Sensör Grubu', 'Sensör Adı'],
+        rows: state.ekSensorlar.map(s => [s.grup || '', s.ad || ''])
+      });
+    }
+    if (state.ekValfler.length) {
+      sections.push({
+        type: 'table', title: 'Ek Valfler',
+        headers: ['Valf Grubu', 'Valf Adı'],
+        rows: state.ekValfler.map(v => [v.grup || '', v.ad || ''])
+      });
+    }
+    if (state.ekSwitchboxlar.length) {
+      sections.push({
+        type: 'table', title: 'Ek Switchboxlar',
+        headers: ['Switchbox Grubu', 'Switchbox Adı'],
+        rows: state.ekSwitchboxlar.map(s => [s.grup || '', s.ad || ''])
+      });
+    }
+    return sections;
+  }
+
+  function xlCollectIOData() {
+    renderIOPage();
+    const sections = [];
+    const ekModuller = [];
+    document.querySelectorAll('.ek-modul-cdd .cdd-val').forEach(el => {
+      const v = el.textContent.trim();
+      if (v && v !== '-- Seçiniz --') ekModuller.push(v);
+    });
+    sections.push({
+      type: 'kv',
+      title: 'PLC Konfigürasyon',
+      pairs: [
+        ['HMI', xlGetCddText('plc-hmi-cdd')],
+        ['CPU', xlGetCddText('plc-cpu-cdd')],
+        ['Ek Modül(ler)', ekModuller.length ? ekModuller.join(' | ') : '-'],
+        ['TC Modül', document.querySelector('.plc-tc-cdd .cdd-val')?.textContent.trim() || '-'],
+        ['Analog Modül', document.querySelector('.plc-analog-cdd .cdd-val')?.textContent.trim() || '-']
+      ]
+    });
+    sections.push({
+      type: 'kv',
+      title: 'IO Sayıları (Kullanılan / Modül Kapasitesi)',
+      pairs: [
+        ['DI', `${document.getElementById('plc-di-count')?.textContent || 0} / ${document.getElementById('plc-modul-di')?.textContent || 0}`],
+        ['DO', `${document.getElementById('plc-do-count')?.textContent || 0} / ${document.getElementById('plc-modul-do')?.textContent || 0}`],
+        ['AI', `${document.getElementById('plc-ai-count')?.textContent || 0} / ${document.getElementById('plc-modul-ai')?.textContent || 0}`],
+        ['AO', `${document.getElementById('plc-ao-count')?.textContent || 0} / ${document.getElementById('plc-modul-ao')?.textContent || 0}`]
+      ]
+    });
+    const ioHeaders = ['GİRİŞ', 'GİRİŞ KOMUTU', 'ROLE', 'ÇIKIŞ', 'ÇIKIŞ KOMUTU'];
+    const plcRows = mergePLCRows(getPLCGirisRows(), getPLCCikisRows());
+    sections.push({
+      type: 'table', title: 'PLC IO Listesi',
+      headers: ioHeaders,
+      rows: plcRows.map(r => [r.giris || '', xlStripHtml(r.girisKomutu), '', r.cikis || '', xlStripHtml(r.cikisKomutu)])
+    });
+    const tcData = getTCRows();
+    if (tcData.rows.length) {
+      sections.push({
+        type: 'table', title: 'TC MODÜL IO Listesi',
+        headers: ioHeaders,
+        rows: tcData.rows.map(r => [r.giris || '', xlStripHtml(r.girisKomutu), '', r.cikis || '', xlStripHtml(r.cikisKomutu)])
+      });
+    }
+    if (state.isinBariyeri === 'VAR' && state.makineTipi === 'Kabinli') {
+      sections.push({
+        type: 'table', title: 'SAFETY PLC',
+        headers: ioHeaders,
+        rows: SAFETY_PLC_ROWS.map(r => [r.giris || '', xlStripHtml(r.girisKomutu), '', r.cikis || '', xlStripHtml(r.cikisKomutu)])
+      });
+    }
+    return sections;
+  }
+
+  function xlCollectMalzemeData() {
+    const headers = ['Kullanım Yeri', 'Stok Kodu', 'Ürün Adı', 'Birim Fiyat (€)', 'Adet', 'Toplam (€)'];
+    const sections = [];
+    let grandTotal = 0;
+    const table = document.querySelector('#malzeme-content table');
+
+    if (table) {
+      let currentSection = null;
+      let sectionRows = [];
+      function flushSection() {
+        if (!currentSection || !sectionRows.length) return;
+        const secTotal = sectionRows.reduce((s, r) => s + (parseFloat(r[5]) || 0), 0);
+        sections.push({
+          type: 'table',
+          title: currentSection,
+          headers,
+          rows: sectionRows.slice(),
+          footer: ['', '', '', '', 'Bölüm Toplamı (€)', secTotal.toFixed(2)]
+        });
+      }
+      table.querySelectorAll('tbody tr').forEach(tr => {
+        const hdrTd = tr.querySelector('td[colspan="6"]');
+        if (hdrTd) {
+          const txt = hdrTd.textContent.trim();
+          if (txt.startsWith('▸')) {
+            flushSection();
+            currentSection = txt.replace(/^▸\s*/, '');
+            sectionRows = [];
+          }
+          return;
+        }
+        const cells = tr.querySelectorAll('td');
+        if (cells.length !== 6) return;
+        const inputs = tr.querySelectorAll('input');
+        const kullanim = cells[0].textContent.trim();
+        const stok = inputs[0]?.value || '';
+        const urunAdi = cells[2].textContent.trim();
+        const birim = parseFloat(inputs[1]?.value) || 0;
+        const adet = parseInt(inputs[2]?.value, 10) || 0;
+        const toplam = birim * adet;
+        grandTotal += toplam;
+        if (!currentSection) currentSection = 'Malzeme';
+        sectionRows.push([kullanim, stok, urunAdi, birim ? birim.toFixed(2) : '', adet, toplam.toFixed(2)]);
+      });
+      flushSection();
+    }
+
+    if (!sections.length) {
+      const rows = getMalzemeRows();
+      let currentSection = null;
+      let sectionRows = [];
+      function flushFallback() {
+        if (!currentSection) return;
+        sections.push({ type: 'table', title: currentSection, headers, rows: sectionRows.slice() });
+      }
+      rows.forEach(r => {
+        const sec = r._section || r.grupAdi || 'Diğer';
+        if (sec !== currentSection) { flushFallback(); currentSection = sec; sectionRows = []; }
+        const bf = typeof r.birimFiyat === 'number' ? r.birimFiyat : parseFloat(r.birimFiyat) || 0;
+        const adet = r.adet || 0;
+        const toplam = bf * adet;
+        grandTotal += toplam;
+        sectionRows.push([r.kullanim || '', r.stok || '', r.urunAdi || '', bf ? bf.toFixed(2) : '', adet, toplam.toFixed(2)]);
+      });
+      flushFallback();
+    }
+
+    return { sections, grandTotal, headers };
+  }
+
+  function xlWriteSectionsToSheet(sheet, pageTitle, sections, maxCols = 12) {
+    const xl = createXlSheetBuilder(sheet, maxCols);
+    xl.addSection(pageTitle);
+    xl.addBlank(12);
+    sections.forEach(sec => {
+      if (sec.type === 'kpi') {
+        xl.addSubSection('Özet Değerler');
+        xl.addKeyValueGrid(sec.labels, sec.values);
+        xl.addBlank();
+      } else if (sec.type === 'config') {
+        xl.addSubSection('Konfigürasyon Seçenekleri');
+        xl.addKeyValueGrid(sec.labels, sec.values);
+        xl.addBlank();
+      } else if (sec.type === 'kv') {
+        xl.addSubSection(sec.title);
+        xl.addKeyValueGrid(sec.pairs.map(p => p[0]), sec.pairs.map(p => p[1]));
+        xl.addBlank();
+      } else if (sec.type === 'table') {
+        xl.addTable(sec.headers, sec.rows, { title: sec.title, footer: sec.footer });
+      }
+    });
+    xl.fitColumns();
+  }
+
   async function exportAll4PagesToExcel() {
     if (typeof ExcelJS === 'undefined') {
       alert('Excel export kütüphanesi yüklenemedi. İnternet bağlantısını kontrol edin.');
       return;
     }
 
+    xlPreparePagesForExport();
+
     const workbook = new ExcelJS.Workbook();
-    const pages = [
-      { id: 'page-secim', sheetName: 'Seçim' },
-      { id: 'page-otomasyon', sheetName: 'Otomasyon' },
-      { id: 'page-io', sheetName: 'IO' },
-      { id: 'page-malzeme', sheetName: 'Malzeme' }
-    ];
+    workbook.creator = 'IOList Pano Konfigüratör';
+    workbook.created = new Date();
 
-    pages.forEach(page => {
-      const sheet = workbook.addWorksheet(page.sheetName);
-      const pageElement = document.getElementById(page.id);
-      
-      if (!pageElement) return;
+    xlWriteSectionsToSheet(workbook.addWorksheet('Seçim'), 'Seçim — Paneller', xlCollectSecimData());
+    xlWriteSectionsToSheet(workbook.addWorksheet('Otomasyon'), 'Otomasyon — Sensörler', xlCollectOtomasyonData());
+    xlWriteSectionsToSheet(workbook.addWorksheet('IO'), 'IO Listesi', xlCollectIOData(), 5);
 
-      // Tüm tabloları bul
-      const tables = pageElement.querySelectorAll('table');
-      let rowIndex = 0;
-
-      tables.forEach((table, tableIdx) => {
-        if (tableIdx > 0) {
-          // Tablolar arasında boş satır bırak
-          const blankRow = sheet.addRow([]);
-          blankRow.height = 25;
-          rowIndex++;
-        }
-
-        // Table header'ını al
-        const headers = table.querySelectorAll('thead th');
-        if (headers.length > 0) {
-          const headerRow = sheet.addRow(Array.from(headers).map(h => h.textContent.trim()));
-          headerRow.height = 25;
-          headerRow.font = { bold: true };
-          headerRow.eachCell((cell, colNumber) => {
-            cell.alignment = { vertical: 'middle', horizontal: 'center' };
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4B5563' } };
-          });
-          rowIndex++;
-        }
-
-        // Table body'sini al
-        const rows = table.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-          const cells = row.querySelectorAll('td');
-          // Sadece 1 hücresi olan ve içinde buton olan satırları (ekle butonu vb.) atla
-          if (cells.length === 1 && cells[0].querySelector('button')) return;
-          if (cells.length > 0) {
-            const data = Array.from(cells).map(cell => {
-              // Custom dropdown (cdd) varsa seçili değeri al
-              const cdd = cell.querySelector('.cdd');
-              if (cdd) {
-                const cddVal = cdd.querySelector('.cdd-val');
-                return cddVal ? cddVal.textContent.trim() : '';
-              }
-              
-              // Select elementos varsa seçili option'ı al
-              const select = cell.querySelector('select');
-              if (select && select.selectedIndex >= 0) {
-                return select.options[select.selectedIndex].textContent;
-              }
-              
-              // Input elementi varsa value'sini al
-              const input = cell.querySelector('input');
-              if (input) return input.value;
-              
-              // Yoksa textContent'i al
-              return cell.textContent.trim();
-            });
-            const dataRow = sheet.addRow(data);
-            dataRow.height = 25;
-            dataRow.eachCell((cell, colNumber) => {
-              cell.alignment = { vertical: 'middle', horizontal: 'center' };
-            });
-            rowIndex++;
-          }
-        });
+    const malData = xlCollectMalzemeData();
+    const malSheet = workbook.addWorksheet('Malzeme');
+    const malXl = createXlSheetBuilder(malSheet, 6);
+    malXl.addSection('Malzeme Listesi');
+    malXl.addBlank(12);
+    malData.sections.forEach(sec => malXl.addTable(sec.headers, sec.rows, { title: sec.title }));
+    if (malData.grandTotal > 0) {
+      malXl.addSubSection('Genel Toplam');
+      const tr = malSheet.addRow(['', '', '', '', 'Toplam (€)', malData.grandTotal.toFixed(2)]);
+      tr.height = XL_STYLE.ROW_H;
+      tr.eachCell({ includeEmpty: true }, (c, i) => {
+        if (i <= 6) xlApplyCell(c, XL_STYLE.HEADER_FG, XL_STYLE.HEADER_BG, true, 10);
       });
+    }
+    malXl.fitColumns(14, 55);
 
-      // Column widths'i otomatik ayarla
-      sheet.columns.forEach(column => {
-        column.width = 20;
-      });
-    });
-
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const baseName = (currentProjectName || 'Paneller').replace(/[\\/:*?"<>|]/g, '_').trim() || 'Paneller';
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    });
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Paneller_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.download = `${baseName}_${dateStr}.xlsx`;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    showToast('4 sayfa Excel dosyası indirildi.');
   }
 
   // Standart sayfası Excel export (Listele butonu)

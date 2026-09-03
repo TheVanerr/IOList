@@ -2,7 +2,7 @@
    html + drawings: network-first (gelistirme sirasinda eski cache servis edilmesin)
    Supabase: cache yok */
 
-const VERSION = 'io-listesi-v2';
+const VERSION = 'io-listesi-v3';
 const APP_SHELL = 'app-shell-' + VERSION;
 const RUNTIME = 'runtime-' + VERSION;
 
