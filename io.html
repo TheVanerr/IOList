@@ -3596,9 +3596,10 @@
 
     // Adet birleştir (addRow ile eklenenler adet:0 başlar, her kopya +1 sayılır)
     // _fixedAdet:true olan satırlar sabit adetini taşır
+    // Kullanım yeri (motor/rezistans adı) anahtara dahil — aynı model farklı motorlarda ayrı satır kalır
     const merged = [];
     rows.forEach(r => {
-      const key = r.grupAdi + '|' + r.model + '|' + r.urunAdi;
+      const key = (r.kullanim || '') + '|' + r.grupAdi + '|' + r.model + '|' + r.urunAdi;
       const ex = merged.find(m => m._key === key);
       if (ex) {
         if (r._fixedAdet) ex.adet = (ex.adet || 0) + r.adet;
