@@ -2363,7 +2363,17 @@
       kodInput.value = rCode;
       adiInput.value = `${idx}. Kurutma Rezistansı Grubu`;
     };
-    gucSelect.addEventListener('change', updateKurComponents);
+    gucSelect.addEventListener('change', () => {
+      const _entry = state.kurutmaRezistanslar.find(r => String(r.id) === String(rezId));
+      if (_entry) _entry.guc = gucSelect.value;
+      updateKurComponents();
+    });
+
+    const _savedKur = state.kurutmaRezistanslar.find(r => String(r.id) === String(rezId));
+    if (_savedKur && _savedKur.guc) {
+      gucSelect.value = _savedKur.guc;
+      updateKurComponents();
+    }
 
     return row;
   }
@@ -7949,19 +7959,54 @@
     for (let t = 1; t <= state.tankSayisi; t++) {
       rezData[t] = [];
       document.querySelectorAll(`#rez-tbody-${t} tr[id^="rez-row-"]`).forEach(row => {
+        const rezId = row.id.replace('rez-row-', '');
         const gucSelect = row.querySelector('select.guc-select-all');
-        rezData[t].push({ id: row.id.replace('rez-row-', ''), guc: gucSelect ? gucSelect.value : '' });
+        const guc = gucSelect ? gucSelect.value : '';
+        rezData[t].push({ id: rezId, guc });
+        const entry = (state.rezistanslar[t] || []).find(r => String(r.id) === String(rezId));
+        if (entry) entry.guc = guc;
       });
     }
 
     const kurData = [];
     document.querySelectorAll('#kur-tbody tr[id^="kur-row-"]').forEach(row => {
+      const rezId = row.id.replace('kur-row-', '');
       const gucSelect = row.querySelector('select.guc-select-all');
-      kurData.push({ id: row.id.replace('kur-row-', ''), guc: gucSelect ? gucSelect.value : '' });
+      const guc = gucSelect ? gucSelect.value : '';
+      kurData.push({ id: rezId, guc });
+      const entry = state.kurutmaRezistanslar.find(r => String(r.id) === String(rezId));
+      if (entry) entry.guc = guc;
     });
 
     // fiyatlar JSON formuna dahil edilmez — ayrı Supabase tablosunda saklanır
-    return { state: { ...state }, motorData, rezData, kurData };
+    return { state: JSON.parse(JSON.stringify(state)), motorData, rezData, kurData };
+  }
+
+  function mergeRezKurIntoState(d) {
+    if (d.rezData) {
+      Object.entries(d.rezData).forEach(([t, rows]) => {
+        const tank = parseInt(t, 10);
+        if (!state.rezistanslar[tank]) state.rezistanslar[tank] = [];
+        rows.forEach(r => {
+          let entry = state.rezistanslar[tank].find(x => String(x.id) === String(r.id));
+          if (!entry) {
+            entry = { id: r.id };
+            state.rezistanslar[tank].push(entry);
+          }
+          if (r.guc) entry.guc = r.guc;
+        });
+      });
+    }
+    if (d.kurData) {
+      d.kurData.forEach(r => {
+        let entry = state.kurutmaRezistanslar.find(x => String(x.id) === String(r.id));
+        if (!entry) {
+          entry = { id: r.id };
+          state.kurutmaRezistanslar.push(entry);
+        }
+        if (r.guc) entry.guc = r.guc;
+      });
+    }
   }
 
   let currentProjectName = null;
@@ -8601,16 +8646,18 @@
     const { data: existing } = await sb.from('projects').select('id').eq('user_id', currentUser.id).eq('name', name).maybeSingle();
     let res;
     if (existing) {
-      res = await sb.from('projects').update({ data, updated_at: new Date().toISOString() }).eq('id', existing.id);
+      res = await sb.from('projects').update({ data, updated_at: new Date().toISOString() }).eq('id', existing.id).select('id');
     } else {
-      res = await sb.from('projects').insert({ user_id: currentUser.id, name, data, updated_at: new Date().toISOString() });
+      res = await sb.from('projects').insert({ user_id: currentUser.id, name, data, updated_at: new Date().toISOString() }).select('id');
     }
     if (res.error) showToast('Bulut hatası: ' + res.error.message, 'error');
+    else if (!res.data || res.data.length === 0) showToast('Kayıt güncellenemedi — oturumu kapatıp tekrar giriş yapın.', 'error');
     else showToast('Buluta kaydedildi ✓');
   }
 
   async function applyProjectData(d) {
     Object.assign(state, d.state);
+    mergeRezKurIntoState(d);
     document.getElementById('val-makine-tipi').textContent = state.makineTipi;
     document.getElementById('val-tank-sayisi').textContent = state.tankSayisi;
     document.getElementById('val-otomatik-dolum').textContent = state.otomatikDolum;
@@ -8624,6 +8671,7 @@
     if (labelIsin) labelIsin.textContent = state.makineTipi === 'Konveyör' ? 'RFID' : 'Işın Bariyeri';
     syncSelectionCardVisuals();
     document.querySelectorAll('#motor-tbody tr[id^="motor-row-"]').forEach(r => r.remove());
+    state.motors = [];
     if (d.motorData) {
       d.motorData.forEach(m => {
         const motorId = m.id || Date.now();
